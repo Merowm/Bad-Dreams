@@ -12,7 +12,7 @@ public class DogVision : MonoBehaviour
     const int HIDDEN_LAYER = 10;
 
     GameObject player;
-    SpriteRenderer spriteRend;
+    SpriteRenderer spriteRend, playerSpriteRend;
     Vector3 currentDir;
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTime;
     int alertness;
@@ -23,6 +23,7 @@ public class DogVision : MonoBehaviour
         viewLength = 3.0f;
         viewAngle = 55.0f;
         player = GameObject.Find("Player");
+        playerSpriteRend = player.transform.Find("Sprite").GetComponent<SpriteRenderer>();
         spriteRend = transform.Find("Sprite").GetComponent<SpriteRenderer>();
         currentDir = new Vector3(spriteRend.transform.localScale.x, 0, 0);
         alertness = 0;
@@ -35,6 +36,7 @@ public class DogVision : MonoBehaviour
     void Update()
     {
         //dogmovement
+        GroundCheck();
 
         if (alerted)
         {
@@ -57,7 +59,7 @@ public class DogVision : MonoBehaviour
             }
         }
 
-        GroundCheck();
+        
 
 
 
@@ -95,16 +97,16 @@ public class DogVision : MonoBehaviour
 
     void ChangePlayerLayer()
     {
-        if (player.gameObject.layer == HIDDEN_LAYER)
+        if (playerSpriteRend.sortingLayerName == "Player Background")
         {
             Debug.Log("Player comes out from hiding");
-            player.gameObject.layer = 0;
+            playerSpriteRend.sortingLayerName = "Player Foreground";
         }
 
         else
         {
             Debug.Log("Player hides");
-            player.gameObject.layer = HIDDEN_LAYER;
+            playerSpriteRend.sortingLayerName = "Player Background";
         }
     }
 
@@ -123,7 +125,9 @@ public class DogVision : MonoBehaviour
             {
                 if (RayCastAtTarget(player)) //if the enemy has a clear line of sight at the player
                 {
-                    if (player.gameObject.layer == 9) //if player is in the hiding layer
+
+                    Debug.Log("testS");
+                    if (playerSpriteRend.sortingLayerName == "Player Background") //if player is in the hiding layer
                     {
                         if (playerVisible)
                         {
@@ -234,26 +238,6 @@ public class DogVision : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             ChangePlayerLayer();
-        }
-
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            player.transform.position += new Vector3(0, Time.deltaTime * 2.0f, 0);
-        }
-
-        if (Input.GetKey(KeyCode.DownArrow))
-        {
-            player.transform.position += new Vector3(0, -Time.deltaTime * 2.0f, 0);
-        }
-
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            player.transform.position += new Vector3(-Time.deltaTime * 2.0f, 0, 0);
-        }
-
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            player.transform.position += new Vector3(Time.deltaTime * 2.0f, 0, 0);
         }
     }
 
