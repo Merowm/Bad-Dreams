@@ -28,7 +28,7 @@ public class DogVision : MonoBehaviour
         viewLength = 6.0f;
         viewAngle = 35.0f;
         player = GameObject.Find("Player");
-        playerSpriteRend = player.transform.Find("Sprite").GetComponent<SpriteRenderer>();
+        playerSpriteRend = player.transform.Find("Animator").GetComponent<SpriteRenderer>();
         spriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
         currentDir = new Vector3(spriteRend.transform.localScale.x, 0, 0);
         alertness = 0;
