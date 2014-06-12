@@ -378,51 +378,95 @@ public class DogVision : MonoBehaviour
     {
         
 
-        Vector3 rayPosLeft = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
-        Vector3 rayPosRight = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
+        Vector3 rayLeftDown = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
+        Vector3 rayRightDown = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
+        Vector3 rayTopTowardsDirection = new Vector3(transform.position.x, spriteRend.bounds.max.y, transform.position.z);
+        Vector3 rayBotTowardsDirection = new Vector3(transform.position.x, spriteRend.bounds.min.y, transform.position.z);
 
-        Debug.DrawRay(rayPosRight, Vector3.down);
-        Debug.DrawRay(rayPosLeft, Vector3.down);
+        Debug.DrawRay(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
+        Debug.DrawRay(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
+        Debug.DrawRay(rayRightDown, Vector3.down);
+        Debug.DrawRay(rayLeftDown, Vector3.down);
 
         if (stopped)
         {
             UpdateIfStillStopped();
         }
 
-        if (!Raycast(rayPosRight, Vector3.down, 1.0f))
-        {
-            if (!stoppedBefore)
-            {
-                Debug.Log("Enemy stops");
-                stoppedBefore = true;
-                stopped = true;
-            }
+        /*
+         * if (raycast towards current direction succeeds (enemy hits a wall))
+         * {
+         *      FlipAround(reverse direction);
+         *      stop
+         *      
+         * }
+         * 
+         * */
 
-            if (!stopped)
+        if (!stopped)
+        {
+            if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
             {
-                if (!playerVisible)
+                if (!stoppedBefore)
                 {
-                    FlipAround(-1);
+                    stopped = true;
+                    stoppedBefore = true;
+                }
+                else
+                {
+                    FlipAround();
                     stoppedBefore = false;
                 }
             }
-        }
-
-        else if (!Raycast(rayPosLeft, Vector3.down, 1.0f))
-        {
-            if (!stoppedBefore)
+            else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
             {
-                Debug.Log("Enemy stops");
-                stoppedBefore = true;
-                stopped = true;
+                if (!stoppedBefore)
+                {
+                    stopped = true;
+                    stoppedBefore = true;
+                }
+                else
+                {
+                    FlipAround();
+                    stoppedBefore = false;
+                }
             }
 
-            if (!stopped)
+            if (!Raycast(rayRightDown, Vector3.down, 1.0f))
             {
-                if (!playerVisible)
+                if (!stoppedBefore)
                 {
-                    FlipAround(1);
-                    stoppedBefore = false;
+                    Debug.Log("Enemy stops");
+                    stoppedBefore = true;
+                    stopped = true;
+                }
+
+                if (!stopped)
+                {
+                    if (!playerVisible)
+                    {
+                        FlipAround(-1);
+                        stoppedBefore = false;
+                    }
+                }
+            }
+
+            else if (!Raycast(rayLeftDown, Vector3.down, 1.0f))
+            {
+                if (!stoppedBefore)
+                {
+                    Debug.Log("Enemy stops");
+                    stoppedBefore = true;
+                    stopped = true;
+                }
+
+                if (!stopped)
+                {
+                    if (!playerVisible)
+                    {
+                        FlipAround(1);
+                        stoppedBefore = false;
+                    }
                 }
             }
         }
