@@ -8,29 +8,38 @@ public class DogVision : MonoBehaviour
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 4;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
     const int VISION_BECOME_ALERTED_LIMIT = 200;
+    const float VISION_RESET_TIME = 2.0f;
     const int ENEMY_LAYER = 9;
     const int HIDDEN_LAYER = 10;
+    const int SPEED_WALK = 1;
+    const int SPEED_RUN = 2;
+    const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
 
     GameObject player;
     SpriteRenderer spriteRend, playerSpriteRend;
     Vector3 currentDir;
-    float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTime;
+    float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer;
     int alertness;
-    bool playerVisible, alerted;
+    bool playerVisible, alerted, stopped, stoppedBefore, visionAllowedToReset;
 
     void Start()
     {
-        viewLength = 3.0f;
-        viewAngle = 55.0f;
+        viewLength = 6.0f;
+        viewAngle = 35.0f;
         player = GameObject.Find("Player");
         playerSpriteRend = player.transform.Find("Sprite").GetComponent<SpriteRenderer>();
-        spriteRend = transform.Find("Sprite").GetComponent<SpriteRenderer>();
+        spriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
         currentDir = new Vector3(spriteRend.transform.localScale.x, 0, 0);
         alertness = 0;
         alertTimer = 0.0f;
         playerVisible = false;
         alerted = false;
-        lastVisionCheckTime = 0.0f;
+        stopped = false;
+        stoppedBefore = false;
+        lastVisionCheckTimer = 0.0f;
+        stoppedTimer = 0.0f;
+        visionResetTimer = 0.0f;
+        visionAllowedToReset = true;
     }
 
     void Update()
@@ -38,24 +47,47 @@ public class DogVision : MonoBehaviour
         //dogmovement
         GroundCheck();
 
-        if (alerted)
+        if (!visionAllowedToReset)
         {
-            if (playerVisible)
+            visionResetTimer += Time.deltaTime;
+            UpdateIfAllowedToResetVision();
+        }
+
+        if (stopped)
+        {
+            if (!playerVisible)
             {
+                stoppedTimer += Time.deltaTime;
             }
             else
             {
-                transform.position += new Vector3(currentDir.x * 2 * Time.deltaTime, 0, 0);
+                stoppedTimer = 0.0f;
             }
         }
+
         else
         {
-            if (playerVisible)
+            if (alerted)
             {
+                if (playerVisible)
+                {
+                }
+                else
+                {
+                    if (!stopped)
+                    transform.position += new Vector3(Mathf.Sign(currentDir.x) * SPEED_RUN * Time.deltaTime, 0, 0);
+                }
             }
             else
             {
-                transform.position += new Vector3(currentDir.x * Time.deltaTime, 0, 0);
+                if (playerVisible)
+                {
+                }
+                else
+                {
+                    if (!stopped)
+                    transform.position += new Vector3(Mathf.Sign(currentDir.x) * SPEED_WALK * Time.deltaTime, 0, 0);
+                }
             }
         }
 
@@ -63,10 +95,10 @@ public class DogVision : MonoBehaviour
 
 
 
+        //vision
+        lastVisionCheckTimer += Time.deltaTime;
 
-        lastVisionCheckTime += Time.deltaTime;
-
-        if (lastVisionCheckTime >= VISION_UPDATE_INTERVAL)
+        if (lastVisionCheckTimer >= VISION_UPDATE_INTERVAL)
         {
             ResetVisionTime();
             PlayerVisibilityCheck();
@@ -74,6 +106,7 @@ public class DogVision : MonoBehaviour
             DEBUG_UPDATECOLOR();
         }
 
+        //alertness timer
         if (alerted)
         {
             if (!playerVisible)
@@ -86,6 +119,7 @@ public class DogVision : MonoBehaviour
         }
 
         DEBUG_KEYPRESSES();
+        DEBUG_DRAWCURRENTDIR();
     }
 
     void FlipAround()
@@ -93,6 +127,13 @@ public class DogVision : MonoBehaviour
         spriteRend.transform.localScale = new Vector3(-spriteRend.transform.localScale.x, 1, 1);
 
         currentDir = new Vector3(spriteRend.transform.localScale.x, 0, 0);
+    }
+
+    void FlipAround(int dir)
+    {
+        spriteRend.transform.localScale = new Vector3(dir, 1, 1);
+
+        currentDir = new Vector3(dir, 0, 0);
     }
 
     void ChangePlayerLayer()
@@ -126,18 +167,20 @@ public class DogVision : MonoBehaviour
                 if (RayCastAtTarget(player)) //if the enemy has a clear line of sight at the player
                 {
 
-                    Debug.Log("testS");
                     if (playerSpriteRend.sortingLayerName == "Player Background") //if player is in the hiding layer
                     {
                         if (playerVisible)
                         {
                             if (alerted)
                             {
+                                AimEyesAtPlayer();
+                                visionAllowedToReset = false;
                                 Debug.Log("Hidden in plain sight");
                             }
                             else
                             {
                                 playerVisible = false;
+                                ResetVision();
                             }
                         }
                         else
@@ -149,13 +192,27 @@ public class DogVision : MonoBehaviour
                     else //if player is in the visible layer
                     {
                         playerVisible = true;
+                        AimEyesAtPlayer();
+                        visionAllowedToReset = false;
                     }
                 }
-                else playerVisible = false;
+                else
+                {
+                    playerVisible = false;
+                    ResetVision();
+                }
             }
-            else playerVisible = false;
+            else
+            {
+                playerVisible = false;
+                ResetVision();
+            }
         }
-        else playerVisible = false;
+        else
+        {
+            playerVisible = false;
+            ResetVision();
+        }
     }
 
     void UpdateAlertness()
@@ -225,7 +282,7 @@ public class DogVision : MonoBehaviour
 
     void ResetVisionTime()
     {
-        lastVisionCheckTime = 0.0f;
+        lastVisionCheckTimer = 0.0f;
     }
 
     void DEBUG_KEYPRESSES()
@@ -265,6 +322,11 @@ public class DogVision : MonoBehaviour
         Debug.DrawRay(transform.position, player.transform.position - transform.position, color);
     }
 
+    void DEBUG_DRAWCURRENTDIR()
+    {
+        Debug.DrawRay(transform.position, currentDir, Color.green);
+    }
+
     //requires player to have a RigidBody2D
     void OnTriggerEnter2D(Collider2D col)
     {
@@ -275,11 +337,11 @@ public class DogVision : MonoBehaviour
             {
                 alertness = 100;
             }
-            FacePlayer();
+            FlipToFacePlayer();
         }
     }
 
-    void FacePlayer()
+    void FlipToFacePlayer()
     {
         if (player.transform.position.x <= transform.position.x)
         {
@@ -295,24 +357,83 @@ public class DogVision : MonoBehaviour
         }
     }
 
+    void AimEyesAtPlayer()
+    {
+        spriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 1, 1, 1);
+
+        currentDir = Vector3.Normalize(player.transform.position - transform.position);
+    }
+
+    void ResetVision()
+    {
+        if (visionAllowedToReset)
+        {
+            currentDir = new Vector3(Mathf.Sign(currentDir.x) * 1, 0, 0);
+        }
+    }
+
     //movement methods
 
     void GroundCheck()
     {
+        
+
         Vector3 rayPosLeft = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
         Vector3 rayPosRight = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
 
         Debug.DrawRay(rayPosRight, Vector3.down);
         Debug.DrawRay(rayPosLeft, Vector3.down);
 
-        if (!Raycast(rayPosRight, Vector3.down, 1.0f))
+        if (stopped)
         {
-            FlipAround();
+            UpdateIfStillStopped();
         }
 
-        if (!Raycast(rayPosLeft, Vector3.down, 1.0f))
+        if (!Raycast(rayPosRight, Vector3.down, 1.0f))
         {
-            FlipAround();
+            if (!stoppedBefore)
+            {
+                Debug.Log("Enemy stops");
+                stoppedBefore = true;
+                stopped = true;
+            }
+
+            if (!stopped)
+            {
+                if (!playerVisible)
+                {
+                    FlipAround(-1);
+                    stoppedBefore = false;
+                }
+            }
+        }
+
+        else if (!Raycast(rayPosLeft, Vector3.down, 1.0f))
+        {
+            if (!stoppedBefore)
+            {
+                Debug.Log("Enemy stops");
+                stoppedBefore = true;
+                stopped = true;
+            }
+
+            if (!stopped)
+            {
+                if (!playerVisible)
+                {
+                    FlipAround(1);
+                    stoppedBefore = false;
+                }
+            }
+        }
+    }
+
+    void UpdateIfStillStopped()
+    {
+        if (stoppedTimer >= TIME_SPENT_STILL_BEFORE_TURNING)
+        {
+            stoppedTimer = 0.0f;
+            stopped = false;
         }
     }
 
@@ -329,5 +450,14 @@ public class DogVision : MonoBehaviour
             }
         }
         return false;
+    }
+
+    void UpdateIfAllowedToResetVision()
+    {
+        if (visionResetTimer >= VISION_RESET_TIME)
+        {
+            visionResetTimer = 0.0f;
+            visionAllowedToReset = true;
+        }
     }
 }
