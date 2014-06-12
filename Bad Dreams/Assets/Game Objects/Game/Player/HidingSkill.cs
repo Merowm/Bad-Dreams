@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
 /// <summary>
-/// Swaps the player's sorting layer
-/// for the stealth skill.
+/// Performs the player's 
+/// hiding skill.
 /// </summary>
 public class HidingSkill : MonoBehaviour
 {

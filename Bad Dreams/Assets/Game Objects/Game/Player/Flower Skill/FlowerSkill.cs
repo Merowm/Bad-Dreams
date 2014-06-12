@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
 /// <summary>
 /// Player skill that spawns 
 /// a flower on the ground.
@@ -17,7 +16,7 @@ public class FlowerSkill : MonoBehaviour
     private void Start()
     {
         flower = Instantiate(Resources.Load("Flower")) as GameObject;
-        playerSpriteRenderer = flower.GetComponent<SpriteRenderer>();
+        playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();// flower.GetComponent<SpriteRenderer>();
         flower.SetActive(false);
         playerMovement = GetComponent<Player>();
     }
@@ -43,7 +42,7 @@ public class FlowerSkill : MonoBehaviour
         flower.SetActive(true);
 
         flower.transform.position = new Vector3(
-            transform.position.x + playerSpriteRenderer.sprite.bounds.size.x * 2,
+            transform.position.x + playerSpriteRenderer.sprite.bounds.size.x,
             transform.position.y,
             transform.position.z);
     }
