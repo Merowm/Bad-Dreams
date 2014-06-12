@@ -299,10 +299,18 @@ public class DogVision : MonoBehaviour
 
     void GroundCheck()
     {
-        
-        Vector3 rayPosRight = transform.position + new Vector3(spriteRend.bounds.max.x / 100, 0, 0);
+        Vector3 rayPosLeft = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
+        Vector3 rayPosRight = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
+
         Debug.DrawRay(rayPosRight, Vector3.down);
+        Debug.DrawRay(rayPosLeft, Vector3.down);
+
         if (!Raycast(rayPosRight, Vector3.down, 1.0f))
+        {
+            FlipAround();
+        }
+
+        if (!Raycast(rayPosLeft, Vector3.down, 1.0f))
         {
             FlipAround();
         }
