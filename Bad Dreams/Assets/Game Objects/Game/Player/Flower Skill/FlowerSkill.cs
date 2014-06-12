@@ -26,7 +26,6 @@ public class FlowerSkill : MonoBehaviour
     private void Update()
     {
         HandleInput();
-        Debug.Log("flower usable: " + skillUsable);
     }
 
     private void HandleInput()

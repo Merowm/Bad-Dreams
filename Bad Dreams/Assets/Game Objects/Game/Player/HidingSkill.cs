@@ -21,8 +21,6 @@ public class HidingSkill : MonoBehaviour
     private void Update()
     {
         HandleInput();
-        Debug.Log("IsHiding: " + IsHiding);
-        Debug.Log("Hiding possible: " + HidingPossible);
     }
 
     private void HandleInput()
