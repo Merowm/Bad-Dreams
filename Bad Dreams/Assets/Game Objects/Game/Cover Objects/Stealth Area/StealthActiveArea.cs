@@ -30,8 +30,7 @@ public class StealthActiveArea : MonoBehaviour
 
             if (player.IsHiding)
             {
-                player.SwapLayer();
-                player.IsHiding = false;
+                player.Unhide();
             }
 
             player.HidingPossible = true;

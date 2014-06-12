@@ -10,45 +10,59 @@ public class FlowerSkill : MonoBehaviour
     public float skillDuration;
 
     private GameObject flower;
-    private SpriteRenderer playerSpriteRenderer;
     private Player playerMovement;
+    private HidingSkill hidingSkill;
+    private bool skillUsable;
 
     private void Start()
     {
         flower = Instantiate(Resources.Load("Flower")) as GameObject;
-        playerSpriteRenderer = GetComponentInChildren<SpriteRenderer>();// flower.GetComponent<SpriteRenderer>();
         flower.SetActive(false);
         playerMovement = GetComponent<Player>();
+        hidingSkill = GetComponent<HidingSkill>();
+        skillUsable = true;
     }
 
     private void Update()
     {
         HandleInput();
+        Debug.Log("flower usable: " + skillUsable);
     }
 
     private void HandleInput()
     {
         if (Input.GetButtonDown("Flower Skill") &&
-            !flower.activeSelf &&
+            skillUsable &&
             playerMovement.onGround)
         {
-            ActivateSkill();                
-            Invoke("ResetSkill", skillDuration);
+            ActivateSkill();
+            Invoke("StopSkill", skillDuration);    
+            Invoke("CooldownFinished", skillDuration);
         }
     }
 
     private void ActivateSkill()
     {
+        skillUsable = false;
         flower.SetActive(true);
-
         flower.transform.position = new Vector3(
-            transform.position.x + playerSpriteRenderer.sprite.bounds.size.x,
+            transform.position.x,
             transform.position.y,
             transform.position.z);
+
+        hidingSkill.Hide(flower);
     }
 
-    private void ResetSkill()
+    public void StopSkill()
     {
+        if (hidingSkill.IsHiding)
+            hidingSkill.Unhide();
+
         flower.SetActive(false);
+    }
+
+    private void CooldownFinished()
+    {
+        skillUsable = true;
     }
 }

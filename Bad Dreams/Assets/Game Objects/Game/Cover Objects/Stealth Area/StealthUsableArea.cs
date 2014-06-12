@@ -19,7 +19,7 @@ public class StealthUsableArea : MonoBehaviour
         if (other.name == targetObject)
         {
             HidingSkill player = other.GetComponent<HidingSkill>();
-            player.CoverObject = transform.root;
+            player.CoverObject = gameObject;
             player.HidingPossible = true;
         }
     }
