@@ -13,6 +13,7 @@ public class DogVision : MonoBehaviour
     const int HIDDEN_LAYER = 10;
     const int SPEED_WALK = 1;
     const int SPEED_RUN = 2;
+    const int SPEED_CHARGE = 5;
     const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
 
     GameObject player;
@@ -61,6 +62,7 @@ public class DogVision : MonoBehaviour
             }
             else
             {
+                //stopped = false;
                 stoppedTimer = 0.0f;
             }
         }
@@ -71,6 +73,8 @@ public class DogVision : MonoBehaviour
             {
                 if (playerVisible)
                 {
+                    if (!stopped)
+                    transform.position += new Vector3(Mathf.Sign(currentDir.x) * SPEED_CHARGE * Time.deltaTime, 0, 0);
                 }
                 else
                 {
@@ -328,7 +332,7 @@ public class DogVision : MonoBehaviour
     }
 
     //requires player to have a RigidBody2D
-    void OnTriggerEnter2D(Collider2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
         Debug.Log(col.gameObject.name + " hits the enemy collider");
         if (col.gameObject.name == "Player")
@@ -376,54 +380,40 @@ public class DogVision : MonoBehaviour
 
     void GroundCheck()
     {
-        
+        Vector3 rayLeftDown = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
+        Vector3 rayRightDown = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
+        Vector3 rayTopTowardsDirection = new Vector3(transform.position.x, spriteRend.bounds.max.y, transform.position.z);
+        Vector3 rayBotTowardsDirection = new Vector3(transform.position.x, spriteRend.bounds.min.y, transform.position.z);
 
-        Vector3 rayPosLeft = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
-        Vector3 rayPosRight = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
-
-        Debug.DrawRay(rayPosRight, Vector3.down);
-        Debug.DrawRay(rayPosLeft, Vector3.down);
+        Debug.DrawRay(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
+        Debug.DrawRay(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
+        Debug.DrawRay(rayRightDown, Vector3.down);
+        Debug.DrawRay(rayLeftDown, Vector3.down);
 
         if (stopped)
         {
             UpdateIfStillStopped();
         }
 
-        if (!Raycast(rayPosRight, Vector3.down, 1.0f))
+        if (!stopped)
         {
-            if (!stoppedBefore)
+            if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
             {
-                Debug.Log("Enemy stops");
-                stoppedBefore = true;
-                stopped = true;
+                GroundCheckActions();
+            }
+            else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
+            {
+                GroundCheckActions();
             }
 
-            if (!stopped)
+            if (!Raycast(rayRightDown, Vector3.down, 1.0f))
             {
-                if (!playerVisible)
-                {
-                    FlipAround(-1);
-                    stoppedBefore = false;
-                }
-            }
-        }
-
-        else if (!Raycast(rayPosLeft, Vector3.down, 1.0f))
-        {
-            if (!stoppedBefore)
-            {
-                Debug.Log("Enemy stops");
-                stoppedBefore = true;
-                stopped = true;
+                GroundCheckActions();
             }
 
-            if (!stopped)
+            else if (!Raycast(rayLeftDown, Vector3.down, 1.0f))
             {
-                if (!playerVisible)
-                {
-                    FlipAround(1);
-                    stoppedBefore = false;
-                }
+                GroundCheckActions();
             }
         }
     }
@@ -434,6 +424,25 @@ public class DogVision : MonoBehaviour
         {
             stoppedTimer = 0.0f;
             stopped = false;
+        }
+    }
+
+    void GroundCheckActions()
+    {
+        if (!stoppedBefore)
+        {
+            Debug.Log("Enemy stops");
+            stoppedBefore = true;
+            stopped = true;
+        }
+
+        if (!stopped)
+        {
+            if (!playerVisible)
+            {
+                FlipAround();
+                stoppedBefore = false;
+            }
         }
     }
 
