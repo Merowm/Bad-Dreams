@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 	//Vector3 velocity = Vector3.zero;
 	public Vector3 lastPos, faceDirection, glideVelocity, glideFall, glideDefaceDirection;
 	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost;
-	public float moveSpeed, dashTimer, dashLength, dashSpeed, glideControl, glideSteepness, glideMinSpeed, glideZeroAcc, glideDeFaceThreshold, glideGravityResistance, boostStrength, jumpStrength, moveAccel, moveDecel, glideHitWallTimer, glideHitWallPenalty;
+	public float moveSpeed, dashTimer, dashLength, dashSpeed, glideControl, glideSteepness, glideMinSpeed, glideZeroAcc, glideDeFaceThreshold, glideGravityResistance, boostStrength, jumpStrength, moveAccel, moveDecel, glideHitWallTimer, glideHitWallPenalty, airFriction;
 	Rigidbody2D rigid;
 	Vector2 padInput;
 
@@ -17,11 +17,14 @@ public class Player : MonoBehaviour
 		padInput = Vector2.zero;
 		onGround = false;
 		
+
 		//basic
 		moveAccel = 35.0f; //movement accel. and decel.
 		moveDecel = 40.0f;
 		moveSpeed = 4.0f; //max move speed
 		jumpStrength = 7.0f;
+		airFriction = 9.0f; //velocity.x slow down in air
+
 
 		//while gliding
 		gliding = false; //gliding state
@@ -53,6 +56,9 @@ public class Player : MonoBehaviour
 	void Update()
 	{
 		padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
+		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
+
 		//Debug.Log("inpu " + padInput);
 		//Debug.Log("vel " + rigid.velocity);
 
@@ -67,7 +73,7 @@ public class Player : MonoBehaviour
 		}
 
 		//stop gliding if we slow down or hit a wall
-		GlideWallInteract();
+		GlideWallInteract(colliderWidth, colliderHeight);
 
 		//movement
 		if (dashing && !gliding) //dash movement
@@ -132,7 +138,8 @@ public class Player : MonoBehaviour
 		float maxY = 10.0f;
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxX, maxX), Mathf.Clamp(rigid.velocity.y, -maxY, maxY), 0.0f);
 
-		TerrainCollision();
+		
+		TerrainCollision(colliderWidth, colliderHeight);
 	}
 
 	void MovementNormal()
@@ -151,18 +158,35 @@ public class Player : MonoBehaviour
 		{
 			//rigid.velocity = new Vector2(0.0f, rigid.velocity.y);
 
-
-			if (rigid.velocity.x > 0.0f) //alt
+			if (onGround)
 			{
-				rigid.velocity -= new Vector2(moveDecel * Time.deltaTime, 0.0f);
+				if (rigid.velocity.x > 0.0f) //alt
+				{
+					rigid.velocity -= new Vector2(moveDecel * Time.deltaTime, 0.0f);
 
-				rigid.velocity = new Vector2(Mathf.Max(0.0f, rigid.velocity.x), rigid.velocity.y);
+					rigid.velocity = new Vector2(Mathf.Max(0.0f, rigid.velocity.x), rigid.velocity.y);
+				}
+				else if (rigid.velocity.x < 0.0f) //alt
+				{
+					rigid.velocity += new Vector2(moveDecel * Time.deltaTime, 0.0f);
+
+					rigid.velocity = new Vector2(Mathf.Min(0.0f, rigid.velocity.x), rigid.velocity.y);
+				}
 			}
-			else if (rigid.velocity.x < 0.0f) //alt
+			else
 			{
-				rigid.velocity += new Vector2(moveDecel * Time.deltaTime, 0.0f);
+				if (rigid.velocity.x > 0.0f)
+				{
+					rigid.velocity -= new Vector2(airFriction * Time.deltaTime, 0.0f);
 
-				rigid.velocity = new Vector2(Mathf.Min(0.0f, rigid.velocity.x), rigid.velocity.y);
+					rigid.velocity = new Vector2(Mathf.Max(0.0f, rigid.velocity.x), rigid.velocity.y);
+				}
+				else if (rigid.velocity.x < 0.0f)
+				{
+					rigid.velocity += new Vector2(airFriction * Time.deltaTime, 0.0f);
+
+					rigid.velocity = new Vector2(Mathf.Min(0.0f, rigid.velocity.x), rigid.velocity.y);
+				}
 			}
 		}
 
@@ -274,20 +298,38 @@ public class Player : MonoBehaviour
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y, 0.0f);
 	}
 
-	void GlideWallInteract()
+	void GlideWallInteract(float colliderWidth, float colliderHeight)
 	{
-		if (glideAllowDeFace)
+		/*bool tests = false;
+		if (GameObject.Find("Test Point(Clone)") == null)
 		{
-			if (rigid.velocity.x < 0.2f && rigid.velocity.x > -0.2f)
+			tests = true;
+		}*/
+
+		Vector3 point = transform.position + new Vector3(colliderWidth / 2.0f + 0.005f, 0.0f);
+		float gap = colliderWidth / 2.0f;
+
+		onGround = false;
+		for (float offset = -gap; offset <= gap; offset += gap)
+		{
+			Vector3 pos = point + new Vector3(0.0f, offset);
+			
+			/*if (tests)
+			{
+				GameObject tp = Instantiate(Resources.Load("Test Point",typeof(GameObject)), pos, Quaternion.identity) as GameObject;
+				tp.transform.parent = this.transform;
+			}*/
+
+			if (Raycast(pos, new Vector3(1.0f, 0.0f), 0.03f))
 			{
 				if (gliding)
 				{
 					glideHitWallTimer = glideHitWallPenalty;
 				}
 				gliding = false;
-				
 			}
 		}
+		
 		if (glideHitWallTimer > 0.0f)
 		{
 			glideHitWallTimer -= Time.deltaTime;
@@ -296,7 +338,7 @@ public class Player : MonoBehaviour
 				glideHitWallTimer = 0.0f;
 			}
 		}
-		
+
 	}
 
 	void JumpBoost()
@@ -319,11 +361,8 @@ public class Player : MonoBehaviour
 		onGround = false;
 	}
 
-	void TerrainCollision()
+	void TerrainCollision(float colliderWidth, float colliderHeight)
 	{
-		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x;
-		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
-
 		Vector3 bottomPoint = transform.position + new Vector3(0.0f, -colliderHeight / 2.0f - 0.005f);
 		float gap = colliderWidth / 2.0f;
 

@@ -1,0 +1,5 @@
+Bad Dreams/Library/
+Bad Dreams/obj/
+*.csproj
+*.sln
+*.suo
