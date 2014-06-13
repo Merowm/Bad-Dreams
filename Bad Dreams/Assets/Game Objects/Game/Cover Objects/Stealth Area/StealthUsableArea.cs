@@ -8,19 +8,38 @@ using System.Collections;
 public class StealthUsableArea : MonoBehaviour
 {
     private string targetObject;
+    private HidingSkill player;
 
     private void Start()
     {
         targetObject = "Player";
+        player = GameObject.Find("Player").GetComponent<HidingSkill>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.name == targetObject)
         {
-            HidingSkill player = other.GetComponent<HidingSkill>();
+            if (player.IsHiding)
+                player.Unhide();
+
             player.CoverObject = gameObject;
             player.HidingPossible = true;
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.name == targetObject)
+        {
+            if (player.CoverObject.name != "Flower(Clone)" ||
+                !player.IsHiding)
+            {
+                if (!player.OverCoverObject)
+                    player.HidingPossible = true;
+
+                player.CoverObject = gameObject;
+            }
         }
     }
 
@@ -28,8 +47,9 @@ public class StealthUsableArea : MonoBehaviour
     {
         if (other.name == targetObject)
         {
-            HidingSkill player = other.GetComponent<HidingSkill>();
             player.HidingPossible = false;
+            if (player.IsHiding)
+                player.Unhide();
         }
     }
 }

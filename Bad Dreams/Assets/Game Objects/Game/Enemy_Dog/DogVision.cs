@@ -3,25 +3,45 @@ using System.Collections;
 
 public class DogVision : MonoBehaviour
 {
+    #region Constants
+
     const float VISION_UPDATE_INTERVAL = 0.0f;
+    const float TIME_VISION_RESET = 2.0f;
+    const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
+    const float TIME_ALERT_TIMER_MAX = 10.0f;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 2;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 4;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
-    const int VISION_BECOME_ALERTED_LIMIT = 200;
-    const float VISION_RESET_TIME = 2.0f;
+    const int VISION_BECOME_ALERTED_THRESHOLD = 200;
     const int ENEMY_LAYER = 9;
-    const int HIDDEN_LAYER = 10;
     const int SPEED_WALK = 1;
     const int SPEED_RUN = 2;
     const int SPEED_CHARGE = 5;
-    const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
+
+    #endregion
+
+    #region Public Variables
+
+    public bool Alerted
+    {
+        get 
+        {
+            return alerted;
+        }
+    }
+
+    #endregion
+
+    #region Private Variables
 
     GameObject player;
-    SpriteRenderer spriteRend, playerSpriteRend;
+    SpriteRenderer thisSpriteRend, playerSpriteRend;
     Vector3 currentDir;
-    float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer;
+    float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     int alertness;
-    bool playerVisible, alerted, stopped, stoppedBefore, visionAllowedToReset;
+    bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed;
+
+    #endregion
 
     void Start()
     {
@@ -29,22 +49,23 @@ public class DogVision : MonoBehaviour
         viewAngle = 35.0f;
         player = GameObject.Find("Player");
         playerSpriteRend = player.transform.Find("Animator").GetComponent<SpriteRenderer>();
-        spriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
-        currentDir = new Vector3(spriteRend.transform.localScale.x, 0, 0);
+        thisSpriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
+        currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
         alertness = 0;
         alertTimer = 0.0f;
         playerVisible = false;
         alerted = false;
         stopped = false;
-        stoppedBefore = false;
         lastVisionCheckTimer = 0.0f;
         stoppedTimer = 0.0f;
         visionResetTimer = 0.0f;
         visionAllowedToReset = true;
+        velocity = 0.0f;
     }
 
     void Update()
     {
+        velocity = 0;
         //dogmovement
         GroundCheck();
 
@@ -56,14 +77,13 @@ public class DogVision : MonoBehaviour
 
         if (stopped)
         {
-            if (!playerVisible)
+            if (playerVisible)
             {
-                stoppedTimer += Time.deltaTime;
+                stoppedTimer = 0.0f; //if enemy sees player while enemy is on edge of its platform, reset stop timer
             }
             else
             {
-                //stopped = false;
-                stoppedTimer = 0.0f;
+                stoppedTimer += Time.deltaTime; //if it doesn't see player, keep adding to the timer
             }
         }
 
@@ -73,31 +93,18 @@ public class DogVision : MonoBehaviour
             {
                 if (playerVisible)
                 {
-                    if (!stopped)
-                    transform.position += new Vector3(Mathf.Sign(currentDir.x) * SPEED_CHARGE * Time.deltaTime, 0, 0);
+                    velocity = Mathf.Sign(currentDir.x) * SPEED_CHARGE;
                 }
                 else
                 {
-                    if (!stopped)
-                    transform.position += new Vector3(Mathf.Sign(currentDir.x) * SPEED_RUN * Time.deltaTime, 0, 0);
+                    velocity = Mathf.Sign(currentDir.x) * SPEED_RUN;
                 }
             }
             else
             {
-                if (playerVisible)
-                {
-                }
-                else
-                {
-                    if (!stopped)
-                    transform.position += new Vector3(Mathf.Sign(currentDir.x) * SPEED_WALK * Time.deltaTime, 0, 0);
-                }
+                velocity = Mathf.Sign(currentDir.x) * SPEED_WALK;
             }
         }
-
-        
-
-
 
         //vision
         lastVisionCheckTimer += Time.deltaTime;
@@ -109,6 +116,12 @@ public class DogVision : MonoBehaviour
             UpdateAlertness();
             DEBUG_UPDATECOLOR();
         }
+
+        if (stopped)
+        {
+            velocity = 0;
+        }
+        transform.position += new Vector3(velocity * Time.deltaTime, 0, 0);
 
         //alertness timer
         if (alerted)
@@ -126,17 +139,24 @@ public class DogVision : MonoBehaviour
         DEBUG_DRAWCURRENTDIR();
     }
 
+    public bool ReturnIfPlayerInsideEnemyFOV()
+    {
+        if (ReturnAngleToPlayer() <= viewAngle)
+        {
+            return true;
+        }
+        return false;
+    }
+
     void FlipAround()
     {
-        spriteRend.transform.localScale = new Vector3(-spriteRend.transform.localScale.x, 1, 1);
-
-        currentDir = new Vector3(spriteRend.transform.localScale.x, 0, 0);
+            thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, 1, 1);
+            currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
     }
 
     void FlipAround(int dir)
     {
-        spriteRend.transform.localScale = new Vector3(dir, 1, 1);
-
+        thisSpriteRend.transform.localScale = new Vector3(dir, 1, 1);
         currentDir = new Vector3(dir, 0, 0);
     }
 
@@ -166,7 +186,7 @@ public class DogVision : MonoBehaviour
 
         if (playerDistance < viewLength) //if player is in the enemy's vicinity
         {
-            if (ReturnAngleToPlayer() <= viewAngle) //if player is in the enemy's cone of vision
+            if (ReturnIfPlayerInsideEnemyFOV()) //if player is in the enemy's cone of vision
             {
                 if (RayCastAtTarget(player)) //if the enemy has a clear line of sight at the player
                 {
@@ -223,10 +243,10 @@ public class DogVision : MonoBehaviour
     {
         if (playerVisible)
         {
-            if (alertness >= VISION_BECOME_ALERTED_LIMIT)
+            if (alertness >= VISION_BECOME_ALERTED_THRESHOLD)
             {
                 DEBUG_DRAWVISIONLINETOPLAYER(Color.red);
-                alertTimer = 10.0f;
+                alertTimer = TIME_ALERT_TIMER_MAX;
                 if (alerted == false)
                 {
                     ToggleAlerted(true);
@@ -300,23 +320,30 @@ public class DogVision : MonoBehaviour
         {
             ChangePlayerLayer();
         }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            alerted = false;
+            alertness = 0;
+            alertTimer = 0.0f;
+        }
     }
 
     void DEBUG_UPDATECOLOR()
     {
         if (alerted)
         {
-            spriteRend.color = new Color(255, 0, 0);
+            thisSpriteRend.color = new Color(255, 0, 0);
         }
         else
         {
             if (playerVisible)
             {
-                spriteRend.color = new Color(255, 255, 0);
+                thisSpriteRend.color = new Color(255, 255, 0);
             }
             else
             {
-                spriteRend.color = new Color(255, 255, 255);
+                thisSpriteRend.color = new Color(255, 255, 255);
             }
         }
     }
@@ -331,17 +358,21 @@ public class DogVision : MonoBehaviour
         Debug.DrawRay(transform.position, currentDir, Color.green);
     }
 
-    //requires player to have a RigidBody2D
     void OnCollisionEnter2D(Collision2D col)
     {
         Debug.Log(col.gameObject.name + " hits the enemy collider");
         if (col.gameObject.name == "Player")
         {
+            alertness += 20;
             if (alertness < 100)
             {
                 alertness = 100;
             }
-            FlipToFacePlayer();
+            else
+            {
+                FlipToFacePlayer();
+                AimEyesAtPlayer();
+            }
         }
     }
 
@@ -349,13 +380,13 @@ public class DogVision : MonoBehaviour
     {
         if (player.transform.position.x <= transform.position.x)
         {
-            spriteRend.transform.localScale = new Vector3(-1, 1, 1);
+            thisSpriteRend.transform.localScale = new Vector3(-1, 1, 1);
 
             currentDir = new Vector3(-1, 0, 0);
         }
         else
         {
-            spriteRend.transform.localScale = new Vector3(1, 1, 1);
+            thisSpriteRend.transform.localScale = new Vector3(1, 1, 1);
 
             currentDir = new Vector3(1, 0, 0);
         }
@@ -363,7 +394,7 @@ public class DogVision : MonoBehaviour
 
     void AimEyesAtPlayer()
     {
-        spriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 1, 1, 1);
+        thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 1, 1, 1);
 
         currentDir = Vector3.Normalize(player.transform.position - transform.position);
     }
@@ -376,27 +407,21 @@ public class DogVision : MonoBehaviour
         }
     }
 
-    //movement methods
-
     void GroundCheck()
     {
-        Vector3 rayLeftDown = new Vector3(spriteRend.bounds.min.x, transform.position.y, transform.position.z);
-        Vector3 rayRightDown = new Vector3(spriteRend.bounds.max.x, transform.position.y, transform.position.z);
-        Vector3 rayTopTowardsDirection = new Vector3(transform.position.x, spriteRend.bounds.max.y, transform.position.z);
-        Vector3 rayBotTowardsDirection = new Vector3(transform.position.x, spriteRend.bounds.min.y, transform.position.z);
+        Vector3 rayFrontDown = new Vector3(thisSpriteRend.bounds.center.x + (Mathf.Sign(currentDir.x) * (thisSpriteRend.bounds.max.x - thisSpriteRend.bounds.center.x)), thisSpriteRend.bounds.center.y, 0); //draw a ray from the lower front of the enemy
+        Vector3 rayTopTowardsDirection = new Vector3(transform.position.x, thisSpriteRend.bounds.max.y, transform.position.z);
+        Vector3 rayBotTowardsDirection = new Vector3(transform.position.x, thisSpriteRend.bounds.min.y, transform.position.z);
 
         Debug.DrawRay(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
         Debug.DrawRay(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
-        Debug.DrawRay(rayRightDown, Vector3.down);
-        Debug.DrawRay(rayLeftDown, Vector3.down);
+        Debug.DrawRay(rayFrontDown, Vector3.down);
 
         if (stopped)
         {
             UpdateIfStillStopped();
         }
 
-        if (!stopped)
-        {
             if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
             {
                 GroundCheckActions();
@@ -406,16 +431,14 @@ public class DogVision : MonoBehaviour
                 GroundCheckActions();
             }
 
-            if (!Raycast(rayRightDown, Vector3.down, 1.0f))
+            else if (!Raycast(rayFrontDown, Vector3.down, 1.0f))
             {
                 GroundCheckActions();
             }
-
-            else if (!Raycast(rayLeftDown, Vector3.down, 1.0f))
+            else
             {
-                GroundCheckActions();
+                stopped = false;
             }
-        }
     }
 
     void UpdateIfStillStopped()
@@ -423,27 +446,33 @@ public class DogVision : MonoBehaviour
         if (stoppedTimer >= TIME_SPENT_STILL_BEFORE_TURNING)
         {
             stoppedTimer = 0.0f;
-            stopped = false;
+            flipAllowed = true;
         }
     }
 
     void GroundCheckActions()
     {
-        if (!stoppedBefore)
+        if (!stopped)
         {
-            Debug.Log("Enemy stops");
-            stoppedBefore = true;
             stopped = true;
+            flipAllowed = false;
+            Debug.Log("Enemy is stopped");
         }
 
-        if (!stopped)
+        if (flipAllowed)
         {
             if (!playerVisible)
             {
-                FlipAround();
-                stoppedBefore = false;
+                if (stopped)
+                {
+                    stopped = false;
+                    FlipAround();
+                }
             }
         }
+
+        if (stopped)
+            velocity = 0;
     }
 
     bool Raycast(Vector3 pos, Vector3 direction, float length) //terrain
@@ -463,7 +492,7 @@ public class DogVision : MonoBehaviour
 
     void UpdateIfAllowedToResetVision()
     {
-        if (visionResetTimer >= VISION_RESET_TIME)
+        if (visionResetTimer >= TIME_VISION_RESET)
         {
             visionResetTimer = 0.0f;
             visionAllowedToReset = true;

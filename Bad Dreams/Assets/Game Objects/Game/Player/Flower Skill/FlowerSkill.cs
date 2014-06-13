@@ -32,7 +32,9 @@ public class FlowerSkill : MonoBehaviour
     {
         if (Input.GetButtonDown("Flower Skill") &&
             skillUsable &&
-            playerMovement.onGround)
+            playerMovement.onGround &&
+            !hidingSkill.IsHiding &&
+            !hidingSkill.OverCoverObject)
         {
             ActivateSkill();
             Invoke("StopSkill", skillDuration);    
@@ -54,8 +56,12 @@ public class FlowerSkill : MonoBehaviour
 
     public void StopSkill()
     {
-        if (hidingSkill.IsHiding)
+        if (hidingSkill.IsHiding &&
+            hidingSkill.CoverObject.name == "Flower(Clone)")
+        {
             hidingSkill.Unhide();
+            hidingSkill.HidingPossible = false;
+        }
 
         flower.SetActive(false);
     }
