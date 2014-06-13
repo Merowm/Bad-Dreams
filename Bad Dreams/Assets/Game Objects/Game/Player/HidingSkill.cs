@@ -22,10 +22,6 @@ public class HidingSkill : MonoBehaviour
     private void Update()
     {
         HandleInput();
-        Debug.Log("cover: " + CoverObject.name);
-        Debug.Log("Hiding possible: " + HidingPossible);
-        Debug.Log("IsHiding: " + IsHiding);
-        Debug.Log("Over cover: " + OverCoverObject);
     }
 
     private void HandleInput()
