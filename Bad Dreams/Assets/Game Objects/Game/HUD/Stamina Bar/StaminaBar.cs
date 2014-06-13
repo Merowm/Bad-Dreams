@@ -37,12 +37,16 @@ public class StaminaBar : MonoBehaviour
 	public void AddBar(int stam)
 	{
 		Debug.Log("AddBar " + stam);
-		if (stam <= bars.Length)
+		if (bars != null)
 		{
-			if (bars.Length != 0)
+			if (stam <= bars.Length)
 			{
-				bars[stam - 1].SetActive(true);
-				Debug.Log("add " + (stam - 1));
+				if (bars.Length != 0)
+				{
+					Debug.Log("add " + (stam - 1));
+					bars[stam - 1].SetActive(true);
+					
+				}
 			}
 		}
 	}
@@ -50,12 +54,16 @@ public class StaminaBar : MonoBehaviour
 	public void SubBar(int stam)
 	{
 		Debug.Log("SubBar " + stam);
-		if (stam >= 0)
+		if (bars != null)
 		{
-			if (bars.Length != 0)
+			if (stam >= 0)
 			{
-				bars[stam].SetActive(false);
-				Debug.Log("sub " + (stam + 1));
+				if (bars.Length != 0)
+				{
+					Debug.Log("sub " + (stam + 1));
+					bars[stam].SetActive(false);
+					
+				}
 			}
 		}
 	}
