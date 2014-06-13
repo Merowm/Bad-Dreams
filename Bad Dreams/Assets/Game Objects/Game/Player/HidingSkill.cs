@@ -9,6 +9,7 @@ public class HidingSkill : MonoBehaviour
 {
     public bool IsHiding { get; set; }
     public bool HidingPossible { get; set; }
+    public bool OverCoverObject { get; set; }
     public GameObject CoverObject { get; set; }
 
     private SpriteRenderer spriteRenderer;
@@ -21,6 +22,10 @@ public class HidingSkill : MonoBehaviour
     private void Update()
     {
         HandleInput();
+        Debug.Log("cover: " + CoverObject.name);
+        Debug.Log("Hiding possible: " + HidingPossible);
+        Debug.Log("IsHiding: " + IsHiding);
+        Debug.Log("Over cover: " + OverCoverObject);
     }
 
     private void HandleInput()
@@ -37,8 +42,9 @@ public class HidingSkill : MonoBehaviour
     {
         IsHiding = true;
         HidingPossible = false;
-        SwapLayer();
+        SwapLayerTo("Player Background");
         transform.position = cover.transform.position;
+        CoverObject = cover;
         // Play animation?
         // Play sound?
         // Play particle effect?
@@ -48,15 +54,12 @@ public class HidingSkill : MonoBehaviour
     {
         IsHiding = false;
         HidingPossible = true;
-        SwapLayer();
+        SwapLayerTo("Player Foreground");
     }
 
-    private void SwapLayer()
+    private void SwapLayerTo(string layer)
     {
-        if (spriteRenderer.sortingLayerName == "Player Foreground")
-            spriteRenderer.sortingLayerName = "Player Background";
-        else
-            spriteRenderer.sortingLayerName = "Player Foreground";
+        spriteRenderer.sortingLayerName = layer;
     }
 }
 
