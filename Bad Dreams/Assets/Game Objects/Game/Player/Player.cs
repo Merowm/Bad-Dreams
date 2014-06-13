@@ -462,14 +462,17 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        Debug.Log(LayerMask.NameToLayer("Enemy"));
         if (col.gameObject.name == "Dog")
         {
-            if (col.gameObject.GetComponent<DogVision>().Alerted || col.gameObject.GetComponent<DogVision>().ReturnIfPlayerInsideEnemyFOV())
-            {
-                Debug.Log("Player is killed in a horrible dogfighting accident");
-                transform.position = Vector3.zero;
-                rigid.velocity = Vector3.zero;
-            }
+
+                if (col.gameObject.GetComponent<DogVision>().Alerted || col.gameObject.GetComponent<DogVision>().ReturnIfPlayerInsideEnemyFOV())
+                {
+                    Debug.Log("Player is killed in a horrible dogfighting accident");
+                    Vector3 spawn = GameObject.Find("Player Start").transform.position;
+                    transform.position = spawn;
+                    rigid.velocity = Vector3.zero;
+                }
         }
     }
 }

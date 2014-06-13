@@ -285,8 +285,8 @@ public class DogVision : MonoBehaviour
     bool RayCastAtTarget(GameObject target)
     {
         //layermask just for testing
-        int layerMask = 1 << ENEMY_LAYER;
-        layerMask = ~layerMask;
+        int layerMask = 1 << 8;
+        layerMask |= 1 << 10;
         RaycastHit2D rayCastResult = Physics2D.Raycast(transform.position, target.transform.position - transform.position, Vector3.Distance(target.transform.position, transform.position), layerMask);
         if (rayCastResult.collider == target.collider2D)
             return true;
@@ -478,6 +478,8 @@ public class DogVision : MonoBehaviour
     bool Raycast(Vector3 pos, Vector3 direction, float length) //terrain
     {
         //user layer 8 on terraincollision
+        int layerm = (1 << 8);
+        layerm |= (1 << 10);
         RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, 1 << 8);
 
         if (hit != null)

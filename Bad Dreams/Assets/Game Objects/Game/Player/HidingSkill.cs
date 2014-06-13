@@ -43,6 +43,7 @@ public class HidingSkill : MonoBehaviour
         IsHiding = true;
         HidingPossible = false;
         SwapLayerTo("Player Background");
+        Physics2D.IgnoreLayerCollision(9, 10, true);
         transform.position = cover.transform.position;
         CoverObject = cover;
         // Play animation?
@@ -55,6 +56,7 @@ public class HidingSkill : MonoBehaviour
         IsHiding = false;
         HidingPossible = true;
         SwapLayerTo("Player Foreground");
+        Physics2D.IgnoreLayerCollision(9, 10, false);
     }
 
     private void SwapLayerTo(string layer)
