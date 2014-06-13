@@ -459,4 +459,17 @@ public class Player : MonoBehaviour
 		}
 		return false;
 	}
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.name == "Dog")
+        {
+            if (col.gameObject.GetComponent<DogVision>().Alerted || col.gameObject.GetComponent<DogVision>().ReturnIfPlayerInsideEnemyFOV())
+            {
+                Debug.Log("Player is killed in a horrible dogfighting accident");
+                transform.position = Vector3.zero;
+                rigid.velocity = Vector3.zero;
+            }
+        }
+    }
 }
