@@ -71,9 +71,6 @@ public class Player : MonoBehaviour
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
 
-		//Debug.Log("inpu " + padInput);
-		//Debug.Log("vel " + rigid.velocity);
-
 		//facing direction
 		if (rigid.velocity.x > 0.0f)
 		{
@@ -100,8 +97,7 @@ public class Player : MonoBehaviour
 		ator.SetBool("onGround", onGround);
 		
 
-		//glide uusi testi
-		//---->
+		//glide
 		if (Input.GetButton("Glide"))
 		{
 			if (!onGround && !dashing && rigid.velocity.y < 0.0f && glideHitWallTimer == 0.0f)
@@ -117,7 +113,6 @@ public class Player : MonoBehaviour
 			gliding = false;
 			glideAllowDeFace = true;
 		}
-		//<-----
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
@@ -156,26 +151,6 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		//glide vanha
-		//---->
-		/*if (Input.GetButton("Glide"))
-		{
-			if (!onGround && !dashing && rigid.velocity.y < 0.0f && glideHitWallTimer == 0.0f)
-			{
-				gliding = true;
-				if (Input.GetButtonDown("Glide"))
-				{
-					stamina.Use();
-				}
-			}
-		}
-		else
-		{
-			gliding = false;
-			glideAllowDeFace = true;
-		}*/
-		//<-----
-
 		if (gliding && !onGround)
 		{
 			if (stamina.GetRegen())
@@ -193,7 +168,6 @@ public class Player : MonoBehaviour
 			}
 		}
 
-
 		//dash
 		if (Input.GetButton("Dash"))
 		{
@@ -209,7 +183,6 @@ public class Player : MonoBehaviour
 		float maxY = 10.0f;
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxX, maxX), Mathf.Clamp(rigid.velocity.y, -maxY, maxY), 0.0f);
 
-		
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
 	}

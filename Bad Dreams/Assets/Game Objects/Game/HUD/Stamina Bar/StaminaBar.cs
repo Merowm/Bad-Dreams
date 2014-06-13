@@ -70,11 +70,6 @@ public class StaminaBar : MonoBehaviour
 			{
 				Debug.Log("player found");
 				playerObj.GetComponent<Stamina>().InitStaminaBar(this);
-				/*stamina = playerObj.GetComponent<Stamina>();
-				if (stamina == null)
-				{
-					Debug.Log("stamina comp not found");
-				}*/
 				InitBars();
 				return true;
 			}
