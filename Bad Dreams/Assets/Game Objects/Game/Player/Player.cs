@@ -6,11 +6,15 @@ public class Player : MonoBehaviour
 	//Vector3 velocity = Vector3.zero;
 	public Vector3 lastPos, faceDirection, glideVelocity, glideFall, glideDefaceDirection;
 	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost;
-	public float moveSpeed, dashTimer, dashLength, dashSpeed, glideControl, glideSteepness, glideMinSpeed, glideZeroAcc, glideDeFaceThreshold, glideGravityResistance, boostStrength, jumpStrength, moveAccel, moveDecel, glideHitWallTimer, glideHitWallPenalty, airFriction;
+	public float moveSpeed, dashTimer, dashLength, dashSpeed, glideControl, glideSteepness,
+		glideMinSpeed, glideZeroAcc, glideDeFaceThreshold, glideGravityResistance, boostStrength,
+		jumpStrength, moveAccel, moveDecel, glideHitWallTimer, glideHitWallPenalty, airFriction;
+
 	Rigidbody2D rigid;
 	Vector2 padInput;
 	Animator ator;
 	Transform animT;
+	Stamina stamina;
 
 	public Animation animIdle, animRun;
 
@@ -19,6 +23,8 @@ public class Player : MonoBehaviour
 		rigid = transform.rigidbody2D;
 		animT = transform.FindChild("Animator");
 		ator = animT.GetComponent<Animator>();
+		stamina = GetComponent<Stamina>();
+
 		lastPos = Vector3.zero;
 		padInput = Vector2.zero;
 		onGround = false;
@@ -65,9 +71,6 @@ public class Player : MonoBehaviour
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
 
-		//Debug.Log("inpu " + padInput);
-		//Debug.Log("vel " + rigid.velocity);
-
 		//facing direction
 		if (rigid.velocity.x > 0.0f)
 		{
@@ -85,16 +88,31 @@ public class Player : MonoBehaviour
 		{
 			//idle
 			ator.SetBool("running", false);
-			Debug.Log("idle");
 		}
 		else
 		{
 			//run
 			ator.SetBool("running", true);
-			Debug.Log("run");
 		}
 		ator.SetBool("onGround", onGround);
 		
+
+		//glide
+		if (Input.GetButton("Glide"))
+		{
+			if (!onGround && !dashing && rigid.velocity.y < 0.0f && glideHitWallTimer == 0.0f)
+			{
+				if (stamina.Remaining())
+				{
+					gliding = true;
+				}
+			}
+		}
+		else
+		{
+			gliding = false;
+			glideAllowDeFace = true;
+		}
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
@@ -133,24 +151,27 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		//glide
-		if (Input.GetButton("Glide"))
+		if (gliding && !onGround)
 		{
-			if (!onGround && !dashing && rigid.velocity.y < 0.0f && glideHitWallTimer == 0.0f)
+			if (stamina.GetRegen())
 			{
-				gliding = true;
+				stamina.Use();
+				stamina.SetRegen(false);
+				
 			}
 		}
 		else
 		{
-			gliding = false;
-			glideAllowDeFace = true;
+			if (!stamina.GetRegen())
+			{
+				stamina.SetRegen(true);
+			}
 		}
 
 		//dash
 		if (Input.GetButton("Dash"))
 		{
-			if (onGround)
+			if (onGround && !dashing && stamina.Use())
 			{
 				dashing = true;
 				dashTimer = dashLength;
@@ -162,7 +183,6 @@ public class Player : MonoBehaviour
 		float maxY = 10.0f;
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxX, maxX), Mathf.Clamp(rigid.velocity.y, -maxY, maxY), 0.0f);
 
-		
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
 	}
@@ -401,16 +421,22 @@ public class Player : MonoBehaviour
 
 	void JumpBoost()
 	{
-		rigid.velocity = new Vector2(rigid.velocity.x, boostStrength);
-		allowBoost = false;
-		Debug.Log("boost");
+		if (stamina.Use())
+		{
+			rigid.velocity = new Vector2(rigid.velocity.x, boostStrength);
+			allowBoost = false;
+			Debug.Log("boost");
+		}
 	}
 
 	void JumpBoostWeak()
 	{
-		rigid.velocity += new Vector2(0.0f, boostStrength * 0.8f);
-		allowBoost = false;
-		Debug.Log("boost weak");
+		if (stamina.Use())
+		{
+			rigid.velocity += new Vector2(0.0f, boostStrength * 0.8f);
+			allowBoost = false;
+			Debug.Log("boost weak");
+		}
 	}
 
 	void Jump()
