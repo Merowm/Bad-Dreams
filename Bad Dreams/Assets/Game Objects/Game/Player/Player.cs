@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
 	{
 		rigid = transform.rigidbody2D;
 		animT = transform.FindChild("Animator");
+		animT.localPosition = new Vector3(-0.15f, 0.0f, 1.0f);
 		ator = animT.GetComponent<Animator>();
 		stamina = GetComponent<Stamina>();
 
@@ -55,8 +56,8 @@ public class Player : MonoBehaviour
 		//dashing
 		dashing = false;
 		dashTimer = 0.0f;
-		dashLength = 0.15f;
-		dashSpeed = 10.0f;
+		dashLength = 0.3f;
+		dashSpeed = 8.0f;
 		faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
 
 
@@ -75,12 +76,14 @@ public class Player : MonoBehaviour
 		if (rigid.velocity.x > 0.0f)
 		{
 			faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
-			animT.localScale = new Vector3(0.25f, 0.25f, 1.0f);
+			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+			animT.localPosition = new Vector3(-0.15f, 0.0f, 1.0f);
 		}
 		else if (rigid.velocity.x < 0.0f)
 		{
 			faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
-			animT.localScale = new Vector3(-0.25f, 0.25f, 1.0f);
+			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+			animT.localPosition = new Vector3(0.15f, 0.0f, 1.0f);
 		}
 
 		//animation
@@ -89,11 +92,15 @@ public class Player : MonoBehaviour
 			//idle
 			ator.SetBool("running", false);
 		}
-		else
+		else if (!dashing)
 		{
 			//run
 			ator.SetBool("running", true);
 		}
+
+		ator.SetBool("dashing", dashing);
+		
+		
 		ator.SetBool("onGround", onGround);
 		
 
