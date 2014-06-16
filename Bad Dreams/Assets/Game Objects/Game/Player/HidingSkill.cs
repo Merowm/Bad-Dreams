@@ -16,7 +16,7 @@ public class HidingSkill : MonoBehaviour
         
     private void Start()
     {
-        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        spriteRenderer = transform.FindChild("Animator").GetComponent<SpriteRenderer>();
     }
 
     private void Update()
@@ -40,7 +40,11 @@ public class HidingSkill : MonoBehaviour
         HidingPossible = false;
         SwapLayerTo("Player Background");
         Physics2D.IgnoreLayerCollision(9, 10, true);
-        transform.position = cover.transform.position;
+        transform.position = new Vector3(
+            cover.transform.position.x,
+            transform.position.y,
+            cover.transform.position.z);
+
         CoverObject = cover;
         // Play animation?
         // Play sound?
