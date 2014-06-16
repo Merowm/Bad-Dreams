@@ -73,13 +73,13 @@ public class Player : MonoBehaviour
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
 
 		//facing direction
-		if (rigid.velocity.x > 0.0f)
+		if (rigid.velocity.x > 0.01f)
 		{
 			faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
 			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
 			animT.localPosition = new Vector3(-0.15f, 0.0f, 1.0f);
 		}
-		else if (rigid.velocity.x < 0.0f)
+		else if (rigid.velocity.x < -0.01f)
 		{
 			faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
 			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
@@ -91,12 +91,25 @@ public class Player : MonoBehaviour
 		{
 			//idle
 			ator.SetBool("running", false);
+
+			
 		}
 		else if (!dashing)
 		{
 			//run
 			ator.SetBool("running", true);
+
+			
 		}
+
+		/*if (Input.GetKey(KeyCode.X))
+		{
+			GetComponent<BoxCollider2D>().sharedMaterial = Resources.Load<PhysicsMaterial2D>("Player/PlayerPhysMat");
+		}
+		else
+		{
+			GetComponent<BoxCollider2D>().sharedMaterial = Resources.Load<PhysicsMaterial2D>("Player/PlayerPhysMatFriction");
+		}*/
 
 		ator.SetBool("dashing", dashing);
 		
@@ -123,6 +136,14 @@ public class Player : MonoBehaviour
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
+
+		//raputest
+		/*Debug.DrawRay(transform.position + new Vector3(colliderWidth / 2.0f + 0.005f, -colliderHeight/2.0f + 0.01f), faceDirection * 0.05f);
+		if (Raycast(transform.position + new Vector3(colliderWidth / 2.0f + 0.005f, -colliderHeight / 2.0f + 0.01f), faceDirection, 0.05f))
+		{
+			Debug.Log("adfsag");
+			transform.position += new Vector3(0.005f,0.1f);
+		}*/
 
 		//movement
 		if (dashing && !gliding) //dash movement
@@ -385,7 +406,7 @@ public class Player : MonoBehaviour
 		{
 			point -= new Vector3(colliderWidth - 0.01f, 0.0f);
 		}
-		float gap = colliderWidth / 2.0f;
+		float gap = colliderHeight / 2.0f;
 		
 		for (float offset = -gap; offset <= gap; offset += gap)
 		{
@@ -469,6 +490,7 @@ public class Player : MonoBehaviour
 				gliding = false;
 				allowBoost = true;
 				glideHitWallTimer = 0.0f;
+				
 			}
 			/*else
 			{
