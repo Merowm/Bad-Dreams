@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
 		moveAccel = 35.0f; //movement accel. and decel.
 		moveDecel = 40.0f;
 		moveSpeed = 4.0f; //max move speed
-		jumpStrength = 7.0f;
+		jumpStrength = 5.8f;
 		airFriction = 9.0f; //velocity.x slow down in air
 
 
@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
 
 		//boost
 		allowBoost = true; //clears after boosting, sets when touching ground or ?
-		boostStrength = 6.0f;
+		boostStrength = 5.5f;
 	}
 
 	void Update()
