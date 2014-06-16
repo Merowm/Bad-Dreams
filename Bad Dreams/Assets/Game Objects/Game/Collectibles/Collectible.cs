@@ -19,13 +19,13 @@ public class Collectible : MonoBehaviour
 
     void Time()
     {
-        Debug.Log("+N SECONDS (AKA I guess we need a timer somewhere in the level)");
+        Debug.Log("+N SECONDS (AKA I guess we need a timer somewhere, maybe in global?)");
         Destroy(this.gameObject);
     }
 
     void Flower()
     {
-        Debug.Log("SEEEEEEEEEEEEEEEDS (AKA Flower power needs a limit so that this will have any use)");
+        Debug.Log("SEEEEEEEEEEEEEEEDS (AKA Flower power needs a limit so these will have any use)");
         Destroy(this.gameObject);
     }
 
