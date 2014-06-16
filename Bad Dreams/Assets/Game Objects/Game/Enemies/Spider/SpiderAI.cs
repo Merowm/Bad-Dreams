@@ -3,24 +3,32 @@ using System.Collections;
 
 public class SpiderAI : MonoBehaviour
 {
-    public SpiderAIState State { get; set; }
+    public float regularSpeed;
+    public float attackSpeed;
 
+    private SpiderAIState state;
+    private GameObject player;
     private Vector2 targetPosition;
     private Rigidbody2D spiderRigidbody;
     private CircleCollider2D webCollider;
-    private int spiderWebRadius;
+    private float spiderWebRadius;
+
+    private bool getTarget = true;
 
     private void Start()
     {
-        State = SpiderAIState.Idle;
+        state = SpiderAIState.Moving;
+        player = GameObject.Find("Player");
         spiderRigidbody = GetComponent<Rigidbody2D>();
         webCollider = transform.parent.GetComponent<CircleCollider2D>();
-        spiderWebRadius = (int)transform.parent.GetComponent<SpriteRenderer>().sprite.bounds.size.x / 2;
+        spiderWebRadius = transform.parent.GetComponent<CircleCollider2D>().radius;
+        NewRandomTarget();
+        RotateTowardsTarget();
     }
 
     private void Update()
     {
-        switch (State)
+        switch (state)
         {
             case SpiderAIState.Idle:
                 UpdateIdle();
@@ -36,76 +44,130 @@ public class SpiderAI : MonoBehaviour
         }
     }
 
+    public void SwitchTo(SpiderAIState spiderAIState)
+    {
+        state = spiderAIState;
+
+        switch (spiderAIState)
+        {
+            case SpiderAIState.Idle:
+                OnSwitchToIdle();
+                break;
+
+            case SpiderAIState.Moving:
+                OnSwitchToMoving();
+                break;
+
+            case SpiderAIState.Attacking:
+                OnSwitchToAttacking();
+                break;
+        }
+    }
+
     #region Idle
 
-    private bool getTarget = true;
+    private void OnSwitchToIdle()
+    {
+        Invoke("StartMoving", Random.Range(1.0F, 3.0F));
+    }
 
     private void UpdateIdle()
     {
-        if (getTarget)
-        {
-            Invoke("NewTarget", 3.0F);// NewTarget();
-            getTarget = false;
-        }
+    }
 
-
-        Vector3.Lerp(transform.position, targetPosition, Time.deltaTime);
-
-        //State = SpiderAIState.Moving;
+    private void StartMoving()
+    {
+        SwitchTo(SpiderAIState.Moving);
     }
 
     #endregion Idle
 
     #region Moving
 
+    private void OnSwitchToMoving()
+    {
+        NewRandomTarget();
+        RotateTowardsTarget();
+    }
+
     private void UpdateMoving()
     {
         MovingUpdatePosition();
+
+        if (getTarget && IsNearTarget)
+        {
+            NewRandomTarget();
+            RotateTowardsTarget();
+            getTarget = false;
+        }
+
+        if (IsNearTarget)
+        {
+            getTarget = true;
+            SwitchTo(SpiderAIState.Idle);
+        }
     }
 
     private void MovingUpdatePosition()
     {
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * regularSpeed);
+    }
 
+    private float isNearThreshold = 0.2F;
+
+    private bool IsNearTarget
+    {
+        get
+        {
+            return Vector3.Distance(transform.position, targetPosition) <= isNearThreshold;
+        }
     }
 
     #endregion Moving
 
     #region Attacking
 
+    private void OnSwitchToAttacking()
+    {
+        
+    }
+
     private void UpdateAttacking()
     {
         AttackingUpdatePosition();
+        AttackPlayer();
     }
 
     private void AttackingUpdatePosition()
     {
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * attackSpeed);
+    }
+
+    private void AttackPlayer()
+    {
+        targetPosition = player.transform.position;
+        RotateTowardsTarget();
     }
 
     #endregion Attacking
 
-    private void NewTarget()
+    private void NewRandomTarget()
     {
-        int count = 0;
+        targetPosition = transform.parent.position + new Vector3(
+                Random.Range(-spiderWebRadius, spiderWebRadius),
+                Random.Range(-spiderWebRadius, spiderWebRadius),
+                0.0F);
+    }
 
-        do
-        {
-            if (count > 50)
-                break;
-
-            count++;
-            targetPosition = new Vector2(
-                transform.position.x + Random.Range(-spiderWebRadius, spiderWebRadius),
-                transform.position.y + Random.Range(-spiderWebRadius, spiderWebRadius));
-        }
-        while (!webCollider.OverlapPoint(targetPosition));
-
+    private void RotateTowardsTarget()
+    {
         float angleRadians = Mathf.Atan2(
             (targetPosition.y - transform.position.y),
             (targetPosition.x - transform.position.x));
 
         float angleDegrees = angleRadians * (180 / Mathf.PI);
 
+        transform.rotation = Quaternion.identity;
         transform.Rotate(0.0F, 0.0F, angleDegrees);
-        getTarget = true;
     }
 }
