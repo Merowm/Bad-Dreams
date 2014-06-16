@@ -43,7 +43,7 @@ public class HidingSkill : MonoBehaviour
         transform.position = new Vector3(
             cover.transform.position.x,
             transform.position.y,
-            cover.transform.position.z);
+            transform.position.z);
 
         CoverObject = cover;
         // Play animation?

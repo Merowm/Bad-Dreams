@@ -102,7 +102,15 @@ public class DogVision : MonoBehaviour
             }
             else
             {
-                velocity = Mathf.Sign(currentDir.x) * SPEED_WALK;
+                if (playerVisible)
+                {
+                    velocity = 0;
+                }
+
+                else
+                {
+                    velocity = Mathf.Sign(currentDir.x) * SPEED_WALK;
+                }
             }
         }
 
@@ -211,7 +219,6 @@ public class DogVision : MonoBehaviour
                         {
                             DEBUG_DRAWVISIONLINETOPLAYER(Color.gray);
                         }
-                        //add check for if the player went into hiding in plain sight
                     }
                     else //if player is in the visible layer
                     {
@@ -300,7 +307,8 @@ public class DogVision : MonoBehaviour
 
     float ReturnAngleToPlayer()
     {
-        float angle = Vector3.Angle(currentDir, player.transform.position - transform.position);
+        Vector2 angleToPlayer = new Vector2(player.transform.position.x - transform.position.x, player.transform.position.y - transform.position.y);
+        float angle = Vector2.Angle(currentDir, angleToPlayer);
         return angle;
     }
 
@@ -454,6 +462,7 @@ public class DogVision : MonoBehaviour
     {
         if (!stopped)
         {
+            stoppedTimer = 0.0f;
             stopped = true;
             flipAllowed = false;
             Debug.Log("Enemy is stopped");
@@ -470,9 +479,6 @@ public class DogVision : MonoBehaviour
                 }
             }
         }
-
-        if (stopped)
-            velocity = 0;
     }
 
     bool Raycast(Vector3 pos, Vector3 direction, float length) //terrain
