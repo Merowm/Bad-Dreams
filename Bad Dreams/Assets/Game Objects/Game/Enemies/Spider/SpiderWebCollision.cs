@@ -18,6 +18,14 @@ public class SpiderWebCollision : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.name == "Player")
+        {
+            spider.SwitchTo(SpiderAIState.Attacking);
+        }
+    }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.name == "Player")
