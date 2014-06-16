@@ -17,12 +17,13 @@ public class SpiderAI : MonoBehaviour
 
     private void Start()
     {
-        state = SpiderAIState.Idle;
+        state = SpiderAIState.Moving;
         player = GameObject.Find("Player");
         spiderRigidbody = GetComponent<Rigidbody2D>();
         webCollider = transform.parent.GetComponent<CircleCollider2D>();
         spiderWebRadius = transform.parent.GetComponent<CircleCollider2D>().radius;
         NewRandomTarget();
+        RotateTowardsTarget();
     }
 
     private void Update()
@@ -67,25 +68,16 @@ public class SpiderAI : MonoBehaviour
 
     private void OnSwitchToIdle()
     {
-        NewRandomTarget();
-        RotateTowardsTarget();
+        Invoke("StartMoving", Random.Range(1.0F, 3.0F));
     }
 
     private void UpdateIdle()
     {
-        IdleUpdatePosition();
-
-        if (getTarget)
-        {
-            Invoke("NewRandomTarget", 3.0F);
-            RotateTowardsTarget();
-            getTarget = false;
-        }
     }
 
-    private void IdleUpdatePosition()
+    private void StartMoving()
     {
-        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * regularSpeed);
+        SwitchTo(SpiderAIState.Moving);
     }
 
     #endregion Idle
@@ -94,17 +86,41 @@ public class SpiderAI : MonoBehaviour
 
     private void OnSwitchToMoving()
     {
-
+        NewRandomTarget();
+        RotateTowardsTarget();
     }
 
     private void UpdateMoving()
     {
         MovingUpdatePosition();
+
+        if (getTarget && IsNearTarget)
+        {
+            NewRandomTarget();
+            RotateTowardsTarget();
+            getTarget = false;
+        }
+
+        if (IsNearTarget)
+        {
+            getTarget = true;
+            SwitchTo(SpiderAIState.Idle);
+        }
     }
 
     private void MovingUpdatePosition()
     {
+        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * regularSpeed);
+    }
 
+    private float isNearThreshold = 0.2F;
+
+    private bool IsNearTarget
+    {
+        get
+        {
+            return Vector3.Distance(transform.position, targetPosition) <= isNearThreshold;
+        }
     }
 
     #endregion Moving
@@ -141,8 +157,6 @@ public class SpiderAI : MonoBehaviour
                 Random.Range(-spiderWebRadius, spiderWebRadius),
                 Random.Range(-spiderWebRadius, spiderWebRadius),
                 0.0F);
-
-        getTarget = true;
     }
 
     private void RotateTowardsTarget()
