@@ -300,7 +300,8 @@ public class DogVision : MonoBehaviour
 
     float ReturnAngleToPlayer()
     {
-        float angle = Vector3.Angle(currentDir, player.transform.position - transform.position);
+        Vector2 angleToPlayer = new Vector2(player.transform.position.x - transform.position.x, player.transform.position.y - transform.position.y);
+        float angle = Vector2.Angle(currentDir, angleToPlayer);
         return angle;
     }
 
