@@ -10,10 +10,10 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void Start()
     {
-        SwitchTo(GameplayState.Playing);
         GameplayStateManager.UpdateReferences();
-
         GetGameOverObjects();
+
+        SwitchTo(GameplayState.Playing);
     }
 
     private void GetGameOverObjects()

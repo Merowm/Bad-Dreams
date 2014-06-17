@@ -11,11 +11,12 @@ public class MainMenuStateSystem : MonoBehaviour
 
     private void Start()
     {
-        SwitchTo(MainMenuState.Main);
         GameplayStateManager.UpdateReferences();
 
         GetMainObjects();
         GetCreditsObjects();
+
+        SwitchTo(MainMenuState.Main);
     }
 
     private void GetMainObjects()
@@ -23,7 +24,6 @@ public class MainMenuStateSystem : MonoBehaviour
         MainObjects = new List<GameObject>();
 
         MainObjects.Add(GameObject.Find("Main UI"));
-        MainObjects.Add(GameObject.Find("Main Objects"));
     }
 
     private void GetCreditsObjects()
@@ -31,8 +31,6 @@ public class MainMenuStateSystem : MonoBehaviour
         CreditsObjects = new List<GameObject>();
 
         CreditsObjects.Add(GameObject.Find("Credits UI"));
-        CreditsObjects.Add(GameObject.Find("Credits Objects"));
-        SetGameObjectsActive(CreditsObjects, false);
     }
 
     public void SwitchTo(MainMenuState state)
@@ -65,8 +63,8 @@ public class MainMenuStateSystem : MonoBehaviour
 
     private void SwitchToMain()
     {
-        SetGameObjectsActive(CreditsObjects, true);
-        SetGameObjectsActive(MainObjects, false);
+        SetGameObjectsActive(CreditsObjects, false);
+        SetGameObjectsActive(MainObjects, true);
     }
 
     private void SwitchToLevelSelection()
