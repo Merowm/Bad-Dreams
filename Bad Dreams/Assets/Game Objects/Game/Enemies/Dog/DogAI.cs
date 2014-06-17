@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DogVision : MonoBehaviour
+public class DogAI : MonoBehaviour
 {
     #region Constants
 
@@ -36,20 +36,25 @@ public class DogVision : MonoBehaviour
 
     GameObject player;
     SpriteRenderer thisSpriteRend, playerSpriteRend;
+    Animator thisAnimator;
     Vector3 currentDir;
+    BoxCollider2D thisCollider2D;
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     int alertness;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed;
+    Bounds thisBounds;
 
     #endregion
 
     void Start()
     {
+        thisCollider2D = GetComponent<BoxCollider2D>();
         viewLength = 6.0f;
         viewAngle = 35.0f;
         player = GameObject.Find("Player");
         playerSpriteRend = player.transform.Find("Animator").GetComponent<SpriteRenderer>();
         thisSpriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
+        thisAnimator = transform.FindChild("Sprite").GetComponent<Animator>();
         currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
         alertness = 0;
         alertTimer = 0.0f;
@@ -65,6 +70,8 @@ public class DogVision : MonoBehaviour
 
     void Update()
     {
+        thisBounds = new Bounds(transform.position, thisCollider2D.size);
+
         velocity = 0;
         //dogmovement
         GroundCheck();
@@ -102,12 +109,6 @@ public class DogVision : MonoBehaviour
             }
             else
             {
-                if (playerVisible)
-                {
-                    velocity = 0;
-                }
-
-                else
                 {
                     velocity = Mathf.Sign(currentDir.x) * SPEED_WALK;
                 }
@@ -129,6 +130,24 @@ public class DogVision : MonoBehaviour
         {
             velocity = 0;
         }
+
+        if (velocity == 0)
+        {
+            CancelAnimations();
+            thisAnimator.SetBool("stopped", true);
+        }
+        else if (Mathf.Abs(velocity) == 1)
+        {
+            CancelAnimations();
+            thisAnimator.SetBool("walking", true);
+        }
+        else if (Mathf.Abs(velocity) > 1)
+        {
+            CancelAnimations();
+            thisAnimator.SetBool("running", true);
+        }
+
+
         transform.position += new Vector3(velocity * Time.deltaTime, 0, 0);
 
         //alertness timer
@@ -156,15 +175,22 @@ public class DogVision : MonoBehaviour
         return false;
     }
 
+    void CancelAnimations()
+    {
+        thisAnimator.SetBool("stopped", false);
+        thisAnimator.SetBool("walking", false);
+        thisAnimator.SetBool("running", false);
+    }
+
     void FlipAround()
     {
-            thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, 1, 1);
+        thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
             currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
     }
 
     void FlipAround(int dir)
     {
-        thisSpriteRend.transform.localScale = new Vector3(dir, 1, 1);
+        thisSpriteRend.transform.localScale = new Vector3(dir * thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
         currentDir = new Vector3(dir, 0, 0);
     }
 
@@ -208,6 +234,10 @@ public class DogVision : MonoBehaviour
                                 AimEyesAtPlayer();
                                 visionAllowedToReset = false;
                                 Debug.Log("Hidden in plain sight");
+                                if (Physics2D.GetIgnoreLayerCollision(9, 10))
+                                {
+                                    Physics2D.IgnoreLayerCollision(9, 10, false);
+                                }
                             }
                             else
                             {
@@ -257,6 +287,8 @@ public class DogVision : MonoBehaviour
                 if (alerted == false)
                 {
                     ToggleAlerted(true);
+                    thisAnimator.SetBool("running", true);
+
                 }
             }
             else
@@ -276,6 +308,7 @@ public class DogVision : MonoBehaviour
                     if (alertness <= 0)
                     {
                         ToggleAlerted(false);
+                        thisAnimator.SetBool("running", false);
                     }
                 }
             }
@@ -388,13 +421,13 @@ public class DogVision : MonoBehaviour
     {
         if (player.transform.position.x <= transform.position.x)
         {
-            thisSpriteRend.transform.localScale = new Vector3(-1, 1, 1);
+            thisSpriteRend.transform.localScale = new Vector3(-0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
             currentDir = new Vector3(-1, 0, 0);
         }
         else
         {
-            thisSpriteRend.transform.localScale = new Vector3(1, 1, 1);
+            thisSpriteRend.transform.localScale = new Vector3(0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
             currentDir = new Vector3(1, 0, 0);
         }
@@ -402,7 +435,7 @@ public class DogVision : MonoBehaviour
 
     void AimEyesAtPlayer()
     {
-        thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 1, 1, 1);
+        thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
         currentDir = Vector3.Normalize(player.transform.position - transform.position);
     }
@@ -417,29 +450,29 @@ public class DogVision : MonoBehaviour
 
     void GroundCheck()
     {
-        Vector3 rayFrontDown = new Vector3(thisSpriteRend.bounds.center.x + (Mathf.Sign(currentDir.x) * (thisSpriteRend.bounds.max.x - thisSpriteRend.bounds.center.x)), thisSpriteRend.bounds.center.y, 0); //draw a ray from the lower front of the enemy
-        Vector3 rayTopTowardsDirection = new Vector3(transform.position.x, thisSpriteRend.bounds.max.y, transform.position.z);
-        Vector3 rayBotTowardsDirection = new Vector3(transform.position.x, thisSpriteRend.bounds.min.y, transform.position.z);
+        Vector3 rayFrontDown = new Vector3(thisBounds.center.x + (Mathf.Sign(currentDir.x) * (thisBounds.max.x - thisBounds.center.x)), thisBounds.center.y, 0); //draw a ray from the lower front of the enemy
+        Vector3 rayTopTowardsDirection = new Vector3(thisBounds.center.x, thisBounds.max.y, thisBounds.center.z);
+        Vector3 rayBotTowardsDirection = new Vector3(thisBounds.center.x, thisBounds.min.y, thisBounds.center.z);
 
-        Debug.DrawRay(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
-        Debug.DrawRay(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.5f, 0, 0));
-        Debug.DrawRay(rayFrontDown, Vector3.down);
+        Debug.DrawRay(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.7f, 0, 0));
+        Debug.DrawRay(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.7f, 0, 0));
+        Debug.DrawRay(rayFrontDown, new Vector3(0, -0.6f, 0));
 
         if (stopped)
         {
             UpdateIfStillStopped();
         }
 
-            if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
+            if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
             {
                 GroundCheckActions();
             }
-            else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.5f))
+            else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
             {
                 GroundCheckActions();
             }
 
-            else if (!Raycast(rayFrontDown, Vector3.down, 1.0f))
+            else if (!Raycast(rayFrontDown, Vector3.down, 0.6f))
             {
                 GroundCheckActions();
             }

@@ -506,7 +506,7 @@ public class Player : MonoBehaviour
         if (col.gameObject.name == "Dog")
         {
 
-                if (col.gameObject.GetComponent<DogVision>().Alerted || col.gameObject.GetComponent<DogVision>().ReturnIfPlayerInsideEnemyFOV())
+                if (col.gameObject.GetComponent<DogAI>().Alerted || col.gameObject.GetComponent<DogAI>().ReturnIfPlayerInsideEnemyFOV())
                 {
                     Debug.Log("Player is killed in a horrible dogfighting accident");
                     Vector3 spawn = GameObject.Find("Player Start").transform.position;
