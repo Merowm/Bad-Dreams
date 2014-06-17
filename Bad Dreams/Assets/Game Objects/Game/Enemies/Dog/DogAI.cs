@@ -234,6 +234,10 @@ public class DogAI : MonoBehaviour
                                 AimEyesAtPlayer();
                                 visionAllowedToReset = false;
                                 Debug.Log("Hidden in plain sight");
+                                if (Physics2D.GetIgnoreLayerCollision(9, 10))
+                                {
+                                    Physics2D.IgnoreLayerCollision(9, 10, false);
+                                }
                             }
                             else
                             {
