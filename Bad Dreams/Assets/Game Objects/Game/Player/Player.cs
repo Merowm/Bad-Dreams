@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
 		glideZeroAcc = 6.0f; //acceleration from zero velocity
 		glideGravityResistance = 15.0f; //how much gravity resistance when starting to glide while falling
 		glideHitWallTimer = 0.0f;
-		glideHitWallPenalty = 0.6f; //
+		glideHitWallPenalty = 0.6f;
 
 
 		//dashing
@@ -64,6 +64,8 @@ public class Player : MonoBehaviour
 		//boost
 		allowBoost = true; //clears after boosting, sets when touching ground or ?
 		boostStrength = 5.5f;
+
+		
 	}
 
 	void Update()
@@ -91,31 +93,19 @@ public class Player : MonoBehaviour
 		{
 			//idle
 			ator.SetBool("running", false);
-
-			
 		}
 		else if (!dashing)
 		{
 			//run
 			ator.SetBool("running", true);
-
-			
 		}
-
-		/*if (Input.GetKey(KeyCode.X))
-		{
-			GetComponent<BoxCollider2D>().sharedMaterial = Resources.Load<PhysicsMaterial2D>("Player/PlayerPhysMat");
-		}
-		else
-		{
-			GetComponent<BoxCollider2D>().sharedMaterial = Resources.Load<PhysicsMaterial2D>("Player/PlayerPhysMatFriction");
-		}*/
-
+		
 		ator.SetBool("dashing", dashing);
-		
-		
+
+		//Debug.Log("onground " + ator.GetBool("onGround"));
 		ator.SetBool("onGround", onGround);
-		
+		ator.SetBool("gliding", gliding);
+
 
 		//glide
 		if (Input.GetButton("Glide"))
@@ -133,17 +123,12 @@ public class Player : MonoBehaviour
 			gliding = false;
 			glideAllowDeFace = true;
 		}
+		//Debug.Log("asdadfg " + ator.GetBool("gliding"));
+		
+		
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
-
-		//raputest
-		/*Debug.DrawRay(transform.position + new Vector3(colliderWidth / 2.0f + 0.005f, -colliderHeight/2.0f + 0.01f), faceDirection * 0.05f);
-		if (Raycast(transform.position + new Vector3(colliderWidth / 2.0f + 0.005f, -colliderHeight / 2.0f + 0.01f), faceDirection, 0.05f))
-		{
-			Debug.Log("adfsag");
-			transform.position += new Vector3(0.005f,0.1f);
-		}*/
 
 		//movement
 		if (dashing && !gliding) //dash movement
