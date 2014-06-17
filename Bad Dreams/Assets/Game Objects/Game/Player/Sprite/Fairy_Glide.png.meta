@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 94d587b57914d8245879e49966f39b59
+guid: eefcdf948e6592f43ba456612359fc57
 TextureImporter:
   serializedVersion: 2
   mipmaps:
@@ -45,102 +45,111 @@ TextureImporter:
     compressionQuality: 50
   spriteSheet:
     sprites:
-    - name: Fairy_Glide__0
+    - name: Fairy_Glide_0
       rect:
         serializedVersion: 2
         x: 0
         y: 220
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__1
+    - name: Fairy_Glide_1
       rect:
         serializedVersion: 2
-        x: 77
+        x: 78
         y: 220
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__2
+    - name: Fairy_Glide_2
       rect:
         serializedVersion: 2
-        x: 154
+        x: 156
         y: 220
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__3
+    - name: Fairy_Glide_3
       rect:
         serializedVersion: 2
-        x: 231
+        x: 234
         y: 220
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__4
+    - name: Fairy_Glide_4
       rect:
         serializedVersion: 2
         x: 0
         y: 110
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__5
+    - name: Fairy_Glide_5
       rect:
         serializedVersion: 2
-        x: 77
+        x: 78
         y: 110
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__6
+    - name: Fairy_Glide_6
       rect:
         serializedVersion: 2
-        x: 154
+        x: 156
         y: 110
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__7
+    - name: Fairy_Glide_7
       rect:
         serializedVersion: 2
-        x: 231
+        x: 234
         y: 110
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__8
+    - name: Fairy_Glide_8
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__9
+    - name: Fairy_Glide_9
       rect:
         serializedVersion: 2
-        x: 77
+        x: 78
         y: 0
-        width: 77
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: Fairy_Glide__10
+    - name: Fairy_Glide_10
       rect:
         serializedVersion: 2
-        x: 154
+        x: 156
         y: 0
-        width: 77
+        width: 78
+        height: 110
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: Fairy_Glide_11
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
         height: 110
       alignment: 0
       pivot: {x: 0, y: 0}
