@@ -2,11 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Manages which objects are active based on 
+/// main menu state.
+/// </summary>
 public class MainMenuStateSystem : MonoBehaviour
 {
     public MainMenuState CurrentState { get; private set; }
 
     private List<GameObject> MainObjects { get; set; }
+    private List<GameObject> OptionsObjects { get; set; }
     private List<GameObject> CreditsObjects { get; set; }
 
     private void Start()
@@ -14,6 +19,7 @@ public class MainMenuStateSystem : MonoBehaviour
         GameplayStateManager.UpdateReferences();
 
         GetMainObjects();
+        GetOptionsObjects();
         GetCreditsObjects();
 
         SwitchTo(MainMenuState.Main);
@@ -24,6 +30,13 @@ public class MainMenuStateSystem : MonoBehaviour
         MainObjects = new List<GameObject>();
 
         MainObjects.Add(GameObject.Find("Main UI"));
+    }
+
+    private void GetOptionsObjects()
+    {
+        OptionsObjects = new List<GameObject>();
+
+        OptionsObjects.Add(GameObject.Find("Options UI"));
     }
 
     private void GetCreditsObjects()
@@ -64,6 +77,7 @@ public class MainMenuStateSystem : MonoBehaviour
     private void SwitchToMain()
     {
         SetGameObjectsActive(CreditsObjects, false);
+        SetGameObjectsActive(OptionsObjects, false);
         SetGameObjectsActive(MainObjects, true);
     }
 
@@ -73,6 +87,8 @@ public class MainMenuStateSystem : MonoBehaviour
 
     private void SwitchToOptions()
     {
+        SetGameObjectsActive(OptionsObjects, true);
+        SetGameObjectsActive(MainObjects, false);
     }
 
     private void SwitchToCredits()
