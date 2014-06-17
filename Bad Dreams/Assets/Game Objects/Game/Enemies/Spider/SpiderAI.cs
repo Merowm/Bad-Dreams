@@ -3,32 +3,34 @@ using System.Collections;
 
 public class SpiderAI : MonoBehaviour
 {
+    public SpiderAIState State { get; private set; }
     public float regularSpeed;
     public float attackSpeed;
 
-    private SpiderAIState state;
     private GameObject player;
     private Vector2 targetPosition;
     private Rigidbody2D spiderRigidbody;
     private CircleCollider2D webCollider;
     private float spiderWebRadius;
+    private SpiderAnimation animation;
 
     private bool getTarget = true;
 
     private void Start()
     {
-        state = SpiderAIState.Moving;
+        State = SpiderAIState.Moving;
         player = GameObject.Find("Player");
         spiderRigidbody = GetComponent<Rigidbody2D>();
         webCollider = transform.parent.GetComponent<CircleCollider2D>();
         spiderWebRadius = transform.parent.GetComponent<CircleCollider2D>().radius;
+        animation = GetComponentInChildren<SpiderAnimation>();
         NewRandomTarget();
         RotateTowardsTarget();
     }
 
     private void Update()
     {
-        switch (state)
+        switch (State)
         {
             case SpiderAIState.Idle:
                 UpdateIdle();
@@ -46,7 +48,8 @@ public class SpiderAI : MonoBehaviour
 
     public void SwitchTo(SpiderAIState spiderAIState)
     {
-        state = spiderAIState;
+        State = spiderAIState;
+        animation.SwitchAnimationTo(spiderAIState);
 
         switch (spiderAIState)
         {
@@ -165,7 +168,7 @@ public class SpiderAI : MonoBehaviour
             (targetPosition.y - transform.position.y),
             (targetPosition.x - transform.position.x));
 
-        float angleDegrees = angleRadians * (180 / Mathf.PI);
+        float angleDegrees = angleRadians * (180 / Mathf.PI) + 90.0F;
 
         transform.rotation = Quaternion.identity;
         transform.Rotate(0.0F, 0.0F, angleDegrees);

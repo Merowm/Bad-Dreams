@@ -39,7 +39,7 @@ public class FlowerCharges : MonoBehaviour
 
     private void SetObjectsActive(List<GameObject> objects, int count)
     {
-        if (count < objects.Count)
+        if (count <= objects.Count)
         {
             for (int i = 0; i < objects.Count; ++i)
                 objects[i].SetActive(false);
