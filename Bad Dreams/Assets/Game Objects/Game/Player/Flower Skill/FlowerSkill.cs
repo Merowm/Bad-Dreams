@@ -13,14 +13,16 @@ public class FlowerSkill : MonoBehaviour
     private Player playerMovement;
     private HidingSkill hidingSkill;
     private bool skillUsable;
+    private int _Charges;
 
     private void Start()
     {
-        flower = Instantiate(Resources.Load("Flower")) as GameObject;
+        flower = Instantiate(Resources.Load("Player/Flower")) as GameObject;
         flower.SetActive(false);
         playerMovement = GetComponent<Player>();
         hidingSkill = GetComponent<HidingSkill>();
         skillUsable = true;
+        Charges = 3;
     }
 
     private void Update()
@@ -34,7 +36,8 @@ public class FlowerSkill : MonoBehaviour
             skillUsable &&
             playerMovement.onGround &&
             !hidingSkill.IsHiding &&
-            !hidingSkill.OverCoverObject)
+            !hidingSkill.OverCoverObject &&
+            Charges > 0)
         {
             ActivateSkill();
             Invoke("StopSkill", skillDuration);    
@@ -45,6 +48,7 @@ public class FlowerSkill : MonoBehaviour
     private void ActivateSkill()
     {
         skillUsable = false;
+        --Charges;
         flower.SetActive(true);
         flower.transform.position = new Vector3(
             transform.position.x,
@@ -69,5 +73,14 @@ public class FlowerSkill : MonoBehaviour
     private void CooldownFinished()
     {
         skillUsable = true;
+    }
+
+    public int Charges
+    {
+        get { return _Charges; }
+        set
+        {
+            _Charges = Mathf.Clamp(value, 0, 3);
+        }
     }
 }
