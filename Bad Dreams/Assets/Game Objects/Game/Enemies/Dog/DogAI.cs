@@ -34,20 +34,27 @@ public class DogAI : MonoBehaviour
 
     #region Private Variables
 
-    GameObject player;
-    SpriteRenderer thisSpriteRend, playerSpriteRend;
+    SpriteRenderer thisSpriteRend;
     Animator thisAnimator;
-    Vector3 currentDir;
     BoxCollider2D thisCollider2D;
+    Bounds thisBounds;
+
+    GameObject player;
+    SpriteRenderer playerSpriteRend;
+
+    Vector3 currentDir;
+
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     int alertness;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed;
-    Bounds thisBounds;
+
+    Transform eyePos;
 
     #endregion
 
     void Start()
     {
+        Physics2D.IgnoreLayerCollision(ENEMY_LAYER, ENEMY_LAYER); //ignores collisions between enemies in the same layer
         thisCollider2D = GetComponent<BoxCollider2D>();
         viewLength = 6.0f;
         viewAngle = 35.0f;
@@ -66,6 +73,8 @@ public class DogAI : MonoBehaviour
         visionResetTimer = 0.0f;
         visionAllowedToReset = true;
         velocity = 0.0f;
+
+        eyePos = transform.FindChild("Eye Position");
     }
 
     void Update()
@@ -119,6 +128,7 @@ public class DogAI : MonoBehaviour
         {
             ResetVisionTime();
             PlayerVisibilityCheck();
+            CalculateVisionAngle();
             UpdateAlertness();
             DEBUG_UPDATECOLOR();
         }
@@ -144,6 +154,7 @@ public class DogAI : MonoBehaviour
             thisAnimator.SetBool("running", true);
         }
 
+        thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
         transform.position += new Vector3(velocity * Time.deltaTime, 0, 0);
 
@@ -182,13 +193,8 @@ public class DogAI : MonoBehaviour
     void FlipAround()
     {
         thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
-            currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
-    }
-
-    void FlipAround(int dir)
-    {
-        thisSpriteRend.transform.localScale = new Vector3(dir * thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
-        currentDir = new Vector3(dir, 0, 0);
+        currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
+        eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
     }
 
     void ChangePlayerSortingLayer()
@@ -230,6 +236,7 @@ public class DogAI : MonoBehaviour
                             {
                                 AimEyesAtPlayer();
                                 visionAllowedToReset = false;
+                                visionResetTimer = 0.0f;
                                 Debug.Log("Hidden in plain sight");
                                 if (Physics2D.GetIgnoreLayerCollision(9, 10))
                                 {
@@ -252,6 +259,7 @@ public class DogAI : MonoBehaviour
                         playerVisible = true;
                         AimEyesAtPlayer();
                         visionAllowedToReset = false;
+                        visionResetTimer = 0.0f;
                     }
                 }
                 else
@@ -259,6 +267,10 @@ public class DogAI : MonoBehaviour
                     playerVisible = false;
                     ResetVision();
                 }
+            }
+            else if (playerVisible)
+            {
+                AimEyesAtPlayer();
             }
             else
             {
@@ -324,7 +336,7 @@ public class DogAI : MonoBehaviour
         //layermask just for testing
         int layerMask = 1 << 8;
         layerMask |= 1 << 10;
-        RaycastHit2D rayCastResult = Physics2D.Raycast(transform.position, target.transform.position - transform.position, Vector3.Distance(target.transform.position, transform.position), layerMask);
+        RaycastHit2D rayCastResult = Physics2D.Raycast(eyePos.position, target.transform.position - eyePos.position, Vector3.Distance(target.transform.position, eyePos.position), layerMask);
         if (rayCastResult.collider == target.collider2D)
             return true;
         else return false;
@@ -388,12 +400,12 @@ public class DogAI : MonoBehaviour
 
     void DEBUG_DRAWVISIONLINETOPLAYER(Color color)
     {
-        Debug.DrawRay(transform.position, player.transform.position - transform.position, color);
+        Debug.DrawRay(eyePos.position, player.transform.position - eyePos.position, color);
     }
 
     void DEBUG_DRAWCURRENTDIR()
     {
-        Debug.DrawRay(transform.position, currentDir, Color.green);
+        Debug.DrawRay(eyePos.position, currentDir, Color.green);
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -428,13 +440,16 @@ public class DogAI : MonoBehaviour
 
             currentDir = new Vector3(1, 0, 0);
         }
+        eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
     }
 
     void AimEyesAtPlayer()
     {
+        currentDir = Vector3.Normalize(player.transform.position - eyePos.position);
+
         thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
-        currentDir = Vector3.Normalize(player.transform.position - transform.position);
+        eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
     }
 
     void ResetVision()
@@ -460,23 +475,23 @@ public class DogAI : MonoBehaviour
             UpdateIfStillStopped();
         }
 
-            if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
-            {
-                GroundCheckActions();
-            }
-            else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
-            {
-                GroundCheckActions();
-            }
+        if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
+        {
+            GroundCheckActions();
+        }
+        else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
+        {
+            GroundCheckActions();
+        }
 
-            else if (!Raycast(rayFrontDown, Vector3.down, 0.6f))
-            {
-                GroundCheckActions();
-            }
-            else
-            {
-                stopped = false;
-            }
+        else if (!Raycast(rayFrontDown, Vector3.down, 0.6f))
+        {
+            GroundCheckActions();
+        }
+        else
+        {
+            stopped = false;
+        }
     }
 
     void UpdateIfStillStopped()
@@ -511,11 +526,10 @@ public class DogAI : MonoBehaviour
         }
     }
 
-    bool Raycast(Vector3 pos, Vector3 direction, float length) //terrain
+    bool Raycast(Vector3 pos, Vector3 direction, float length)
     {
-        //user layer 8 on terraincollision
-        int layerm = (1 << 8);
-        layerm |= (1 << 10);
+        //LAYER 8 = TERRAIN
+        //LAYER 9 = ENEMY
         RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, 1 << 8);
 
         if (hit != null)
@@ -535,5 +549,12 @@ public class DogAI : MonoBehaviour
             visionResetTimer = 0.0f;
             visionAllowedToReset = true;
         }
+    }
+
+    void CalculateVisionAngle()
+    {
+        float angle = Mathf.Atan2(currentDir.y, currentDir.x) * Mathf.Rad2Deg;
+        Debug.Log(angle);
+        eyePos.rotation = Quaternion.Euler(0, 0, angle);
     }
 }
