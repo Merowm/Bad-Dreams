@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MainMenuPlayButton : MonoBehaviour
+public class LevelSelectionBackButton : MonoBehaviour
 {
     private void OnClick()
     {

@@ -11,14 +11,20 @@ public class MainMenuStateSystem : MonoBehaviour
     public MainMenuState CurrentState { get; private set; }
 
     private List<GameObject> MainObjects { get; set; }
+    private List<GameObject> GameSelectionObjects { get; set; }
+    private List<GameObject> LevelSelectionObjects { get; set; }
     private List<GameObject> OptionsObjects { get; set; }
     private List<GameObject> CreditsObjects { get; set; }
+
+    #region Finding objects for each state
 
     private void Start()
     {
         GameplayStateManager.UpdateReferences();
 
         GetMainObjects();
+        GetGameSelectionObjects();
+        GetLevelSelectionObjects();
         GetOptionsObjects();
         GetCreditsObjects();
 
@@ -32,11 +38,28 @@ public class MainMenuStateSystem : MonoBehaviour
         MainObjects.Add(GameObject.Find("Main UI"));
     }
 
+    private void GetGameSelectionObjects()
+    {
+        GameSelectionObjects = new List<GameObject>();
+
+        GameSelectionObjects.Add(GameObject.Find("Game Selection UI"));
+        SetGameObjectsActive(GameSelectionObjects, false);
+    }
+
+    private void GetLevelSelectionObjects()
+    {
+        LevelSelectionObjects = new List<GameObject>();
+
+        LevelSelectionObjects.Add(GameObject.Find("Level Selection UI"));
+        SetGameObjectsActive(LevelSelectionObjects, false);
+    }
+
     private void GetOptionsObjects()
     {
         OptionsObjects = new List<GameObject>();
 
         OptionsObjects.Add(GameObject.Find("Options UI"));
+        SetGameObjectsActive(OptionsObjects, false);
     }
 
     private void GetCreditsObjects()
@@ -44,7 +67,10 @@ public class MainMenuStateSystem : MonoBehaviour
         CreditsObjects = new List<GameObject>();
 
         CreditsObjects.Add(GameObject.Find("Credits UI"));
+        SetGameObjectsActive(CreditsObjects, false);
     }
+
+    #endregion Finding objects for each state
 
     public void SwitchTo(MainMenuState state)
     {
@@ -58,6 +84,10 @@ public class MainMenuStateSystem : MonoBehaviour
         {
             case MainMenuState.Main:
                 SwitchToMain();
+                break;
+
+            case MainMenuState.GameSelection:
+                SwitchToGameSelection();
                 break;
 
             case MainMenuState.LevelSelection:
@@ -74,15 +104,27 @@ public class MainMenuStateSystem : MonoBehaviour
         }
     }
 
+    #region Perform actions when switching to a state
+
     private void SwitchToMain()
     {
         SetGameObjectsActive(CreditsObjects, false);
         SetGameObjectsActive(OptionsObjects, false);
+        SetGameObjectsActive(GameSelectionObjects, false);
         SetGameObjectsActive(MainObjects, true);
+    }
+
+    private void SwitchToGameSelection()
+    {
+        SetGameObjectsActive(MainObjects, false);
+        SetGameObjectsActive(LevelSelectionObjects, false);
+        SetGameObjectsActive(GameSelectionObjects, true);
     }
 
     private void SwitchToLevelSelection()
     {
+        SetGameObjectsActive(GameSelectionObjects, false);
+        SetGameObjectsActive(LevelSelectionObjects, true);
     }
 
     private void SwitchToOptions()
@@ -96,6 +138,8 @@ public class MainMenuStateSystem : MonoBehaviour
         SetGameObjectsActive(MainObjects, false);
         SetGameObjectsActive(CreditsObjects, true);
     }
+
+    #endregion Perform actions when switching to a state
 
     private void SetGameObjectsActive(List<GameObject> gameObjects, bool active)
     {

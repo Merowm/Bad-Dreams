@@ -6,5 +6,6 @@ public enum MainMenuState
     Main,
     LevelSelection,
     Options,
-    Credits
+    Credits,
+    GameSelection
 }
