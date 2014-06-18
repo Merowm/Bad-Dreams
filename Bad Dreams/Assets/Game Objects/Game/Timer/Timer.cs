@@ -36,4 +36,9 @@ public class Timer : MonoBehaviour
 			}
 		}
 	}
+
+    public void TimeBonus()
+    {
+        time += 20;
+    }
 }
