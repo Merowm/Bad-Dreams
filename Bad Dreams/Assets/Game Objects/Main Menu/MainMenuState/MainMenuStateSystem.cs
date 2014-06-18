@@ -20,7 +20,7 @@ public class MainMenuStateSystem : MonoBehaviour
 
     private void Start()
     {
-        GameplayStateManager.UpdateReferences();
+        MainMenuStateManager.UpdateReferences();
 
         GetMainObjects();
         GetGameSelectionObjects();
