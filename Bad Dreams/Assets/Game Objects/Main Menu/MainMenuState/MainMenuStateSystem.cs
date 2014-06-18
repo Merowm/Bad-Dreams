@@ -16,11 +16,11 @@ public class MainMenuStateSystem : MonoBehaviour
     private List<GameObject> OptionsObjects { get; set; }
     private List<GameObject> CreditsObjects { get; set; }
 
-    #region Finding objects for each state
+    #region Find objects for each state
 
     private void Start()
     {
-        GameplayStateManager.UpdateReferences();
+        MainMenuStateManager.UpdateReferences();
 
         GetMainObjects();
         GetGameSelectionObjects();
@@ -70,7 +70,7 @@ public class MainMenuStateSystem : MonoBehaviour
         SetGameObjectsActive(CreditsObjects, false);
     }
 
-    #endregion Finding objects for each state
+    #endregion Find objects for each state
 
     public void SwitchTo(MainMenuState state)
     {
