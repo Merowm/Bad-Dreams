@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
 	{
 		rigid = transform.rigidbody2D;
 		animT = transform.FindChild("Animator");
-		animT.localPosition = new Vector3(-0.15f, 0.0f, 1.0f);
+		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		ator = animT.GetComponent<Animator>();
 		stamina = GetComponent<Stamina>();
 
@@ -79,13 +79,13 @@ public class Player : MonoBehaviour
 		{
 			faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
 			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-			animT.localPosition = new Vector3(-0.15f, 0.0f, 1.0f);
+			animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		}
 		else if (rigid.velocity.x < -0.01f)
 		{
 			faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
 			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-			animT.localPosition = new Vector3(0.15f, 0.0f, 1.0f);
+			animT.localPosition = new Vector3(0.15f, 0.04f, 1.0f);
 		}
 
 		//animation
@@ -102,7 +102,6 @@ public class Player : MonoBehaviour
 		
 		ator.SetBool("dashing", dashing);
 
-		//Debug.Log("onground " + ator.GetBool("onGround"));
 		ator.SetBool("onGround", onGround);
 		ator.SetBool("gliding", gliding);
 
@@ -123,9 +122,22 @@ public class Player : MonoBehaviour
 			gliding = false;
 			glideAllowDeFace = true;
 		}
-		//Debug.Log("asdadfg " + ator.GetBool("gliding"));
 		
-		
+		//oneway
+		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
+		GameObject[] plats = GameObject.FindGameObjectsWithTag("One Way");
+		for (int i = 0; i < plats.Length; i++)
+		{
+			Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
+			if (poos.y < plats[i].transform.position.y + thick.y)
+			{
+				plats[i].layer = 11; //one way
+			}
+			else
+			{
+				plats[i].layer = 8; //terraincollision
+			}
+		}
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
@@ -514,5 +526,13 @@ public class Player : MonoBehaviour
                     rigid.velocity = Vector3.zero;
                 }
         }
+		
     }
+	/*void OnTriggerEnter2D(Collider2D c)
+	{
+		if (c.gameObject.name == "One Way")
+		{
+			Debug.Log("aaaaaaa");
+		}
+	}*/
 }
