@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 76d3ec4daab4a9f45b9ca670b35ec894
+guid: f085cdaf35ba280439ac0f3274fae13d
 TextureImporter:
   serializedVersion: 2
   mipmaps:
@@ -45,7 +45,7 @@ TextureImporter:
     compressionQuality: 50
   spriteSheet:
     sprites:
-    - name: SpiderAnimation_0
+    - name: Spider Animation v2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -54,7 +54,7 @@ TextureImporter:
         height: 1024
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: SpiderAnimation_1
+    - name: Spider Animation v2_1
       rect:
         serializedVersion: 2
         x: 1024
@@ -63,7 +63,7 @@ TextureImporter:
         height: 1024
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: SpiderAnimation_2
+    - name: Spider Animation v2_2
       rect:
         serializedVersion: 2
         x: 2048
@@ -72,7 +72,7 @@ TextureImporter:
         height: 1024
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: SpiderAnimation_3
+    - name: Spider Animation v2_3
       rect:
         serializedVersion: 2
         x: 3072

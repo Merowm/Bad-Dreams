@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RetryLevel : MonoBehaviour
+public class RetryLevelButton : MonoBehaviour
 {
     private void OnClick()
     {
