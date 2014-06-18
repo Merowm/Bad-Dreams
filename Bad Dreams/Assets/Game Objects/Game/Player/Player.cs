@@ -10,13 +10,13 @@ public class Player : MonoBehaviour
 		glideMinSpeed, glideZeroAcc, glideDeFaceThreshold, glideGravityResistance, boostStrength,
 		jumpStrength, moveAccel, moveDecel, glideHitWallTimer, glideHitWallPenalty, airFriction;
 
+	public float idleTimer;
+
 	Rigidbody2D rigid;
 	Vector2 padInput;
 	Animator ator;
 	Transform animT;
 	Stamina stamina;
-
-	public Animation animIdle, animRun;
 
 	void Start ()
 	{
@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
 		lastPos = Vector3.zero;
 		padInput = Vector2.zero;
 		onGround = false;
-
+		idleTimer = 0.0f;
 
 		//basic
 		moveAccel = 35.0f; //movement accel. and decel.
@@ -101,10 +101,19 @@ public class Player : MonoBehaviour
 		}
 		
 		ator.SetBool("dashing", dashing);
-
 		ator.SetBool("onGround", onGround);
 		ator.SetBool("gliding", gliding);
 
+		//idle alternating
+		if (idleTimer <= 0.0f)
+		{
+			ator.SetTrigger("altIdle");
+			idleTimer = Random.value * 1.65f + 1.8f;
+		}
+		else
+		{
+			idleTimer -= Time.deltaTime;
+		}
 
 		//glide
 		if (Input.GetButton("Glide"))
