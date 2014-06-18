@@ -21,4 +21,9 @@ public static class GameplayStateManager
     {
         GameplayStateSystem = GameObject.FindObjectOfType<GameplayStateSystem>();
     }
+
+    public static GameplayState CurrentState
+    {
+        get { return GameplayStateSystem.CurrentState; }
+    }
 }

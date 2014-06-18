@@ -520,9 +520,9 @@ public class Player : MonoBehaviour
 
                 if (col.gameObject.GetComponent<DogAI>().Alerted || col.gameObject.GetComponent<DogAI>().ReturnIfPlayerInsideEnemyFOV())
                 {
-                    Debug.Log("Player is killed in a horrible dogfighting accident");
-                    Vector3 spawn = GameObject.Find("Player Start").transform.position;
-                    transform.position = spawn;
+                    //Debug.Log("Player is killed in a horrible dogfighting accident");
+                    //Vector3 spawn = GameObject.Find("Player Start").transform.position;
+                    //transform.position = spawn;
                     rigid.velocity = Vector3.zero;
                 }
         }
