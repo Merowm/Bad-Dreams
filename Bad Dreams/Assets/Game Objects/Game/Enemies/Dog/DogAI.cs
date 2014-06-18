@@ -72,8 +72,6 @@ public class DogAI : MonoBehaviour
     {
         thisBounds = new Bounds(transform.position, thisCollider2D.size);
 
-        velocity = 0;
-        //dogmovement
         GroundCheck();
 
         if (!visionAllowedToReset)
@@ -115,7 +113,6 @@ public class DogAI : MonoBehaviour
             }
         }
 
-        //vision
         lastVisionCheckTimer += Time.deltaTime;
 
         if (lastVisionCheckTimer >= VISION_UPDATE_INTERVAL)
@@ -194,7 +191,7 @@ public class DogAI : MonoBehaviour
         currentDir = new Vector3(dir, 0, 0);
     }
 
-    void ChangePlayerLayer()
+    void ChangePlayerSortingLayer()
     {
         if (playerSpriteRend.sortingLayerName == "Player Background")
         {
@@ -359,7 +356,7 @@ public class DogAI : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            ChangePlayerLayer();
+            ChangePlayerSortingLayer();
         }
 
         if (Input.GetKeyDown(KeyCode.C))

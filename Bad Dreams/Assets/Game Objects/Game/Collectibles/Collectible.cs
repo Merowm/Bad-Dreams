@@ -70,7 +70,8 @@ public class Collectible : MonoBehaviour
 
     void AddTime()
     {
-        Debug.Log("+N SECONDS (AKA I guess we need a timer somewhere, maybe in global?)");
+        Debug.Log("+20 SECONDS");
+        GameObject.Find("Timer").GetComponent<Timer>().TimeBonus();
         Destroy(this.gameObject);
     }
 
