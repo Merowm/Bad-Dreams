@@ -48,6 +48,8 @@ public class DogAI : MonoBehaviour
     int alertness;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed;
 
+    bool belowPlayer;
+
     Transform eyePos;
 
     #endregion
@@ -56,8 +58,8 @@ public class DogAI : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(ENEMY_LAYER, ENEMY_LAYER); //ignores collisions between enemies in the same layer
         thisCollider2D = GetComponent<BoxCollider2D>();
-        viewLength = 6.0f;
-        viewAngle = 35.0f;
+        viewLength = 6.0f; //every 1.0f equals to 64 pixels
+        viewAngle = 30.0f; //the full view angle is double this, vision cone sprite should be aimed to the right
         player = GameObject.Find("Player");
         playerSpriteRend = player.transform.Find("Animator").GetComponent<SpriteRenderer>();
         thisSpriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
@@ -129,6 +131,7 @@ public class DogAI : MonoBehaviour
             ResetVisionTime();
             PlayerVisibilityCheck();
             CalculateVisionAngle();
+            StopIfPlayerIsAbove();
             UpdateAlertness();
             DEBUG_UPDATECOLOR();
         }
@@ -428,28 +431,42 @@ public class DogAI : MonoBehaviour
 
     void FlipToFacePlayer()
     {
-        if (player.transform.position.x <= transform.position.x)
+        if (!belowPlayer)
         {
-            thisSpriteRend.transform.localScale = new Vector3(-0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+            if (player.transform.position.x <= transform.position.x)
+            {
+                thisSpriteRend.transform.localScale = new Vector3(-0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
-            currentDir = new Vector3(-1, 0, 0);
+                currentDir = new Vector3(-1, 0, 0);
+            }
+            else
+            {
+                thisSpriteRend.transform.localScale = new Vector3(0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+
+                currentDir = new Vector3(1, 0, 0);
+            }
+            eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
         }
         else
         {
-            thisSpriteRend.transform.localScale = new Vector3(0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
-
-            currentDir = new Vector3(1, 0, 0);
+            velocity = 0;
         }
-        eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
     }
 
     void AimEyesAtPlayer()
     {
-        currentDir = Vector3.Normalize(player.transform.position - eyePos.position);
+        if (!belowPlayer)
+        {
+            currentDir = Vector3.Normalize(player.transform.position - eyePos.position);
 
-        thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+            thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
-        eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
+            eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
+        }
+        else
+        {
+            velocity = 0;
+        }
     }
 
     void ResetVision()
@@ -556,5 +573,23 @@ public class DogAI : MonoBehaviour
         float angle = Mathf.Atan2(currentDir.y, currentDir.x) * Mathf.Rad2Deg;
         Debug.Log(angle);
         eyePos.rotation = Quaternion.Euler(0, 0, angle);
+    }
+
+    void StopIfPlayerIsAbove()
+    {
+        if (playerVisible)
+        {
+            float tempAngle = Mathf.Atan2(player.transform.position.y - transform.position.y, player.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
+            if (tempAngle >= 60.0f && tempAngle <= 120.0f)
+            {
+                Debug.Log("hap");
+                belowPlayer = true;
+            }
+            else belowPlayer = false;
+        }
+        else
+        {
+            belowPlayer = false;
+        }
     }
 }
