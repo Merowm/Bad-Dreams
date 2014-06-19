@@ -170,6 +170,7 @@ public class Player : MonoBehaviour
 		{
 			if (onGround) //normal jump
 			{
+				ator.SetTrigger("jump");
 				Jump();
 			}
 			else if (allowBoost &&/*!gliding &&*/ !dashing && !onGround)
@@ -459,7 +460,7 @@ public class Player : MonoBehaviour
 		{
 			rigid.velocity = new Vector2(rigid.velocity.x, boostStrength);
 			allowBoost = false;
-			Debug.Log("boost");
+			//Debug.Log("boost");
 		}
 	}
 
@@ -469,7 +470,7 @@ public class Player : MonoBehaviour
 		{
 			rigid.velocity += new Vector2(0.0f, boostStrength * 0.8f);
 			allowBoost = false;
-			Debug.Log("boost weak");
+			//Debug.Log("boost weak");
 		}
 	}
 
@@ -523,7 +524,7 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log(LayerMask.NameToLayer("Enemy"));
+        //Debug.Log(LayerMask.NameToLayer("Enemy"));
         if (col.gameObject.name == "Dog")
         {
 
