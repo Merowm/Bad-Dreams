@@ -7,7 +7,7 @@ public class BatAI : MonoBehaviour
     GameObject bat;
     float x1, x2, y1, y2, finalA, finalB, finalC;
     float currentLocalX;
-    bool flip;
+    bool flip, swooping;
 
     void Start()
     {
@@ -23,23 +23,24 @@ public class BatAI : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("Fingers crossed, final A " + finalA);
-        Debug.Log("Fingers crossed, final B " + finalB);
-
-        if (flip)
-            currentLocalX -= Time.deltaTime * 5.0f;
-        else
-            currentLocalX += Time.deltaTime * 5.0f;
-
-        bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinate(currentLocalX), 0);
-
-        if (currentLocalX >= x2)
+        if (swooping)
         {
-            flip = true;
-        }
-        else if (currentLocalX <= x1)
-        {
-            flip = false;
+            if (flip)
+                currentLocalX -= Time.deltaTime * 5.0f;
+            else
+                currentLocalX += Time.deltaTime * 5.0f;
+            bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinate(currentLocalX), 0);
+
+            if (currentLocalX >= x2)
+            {
+                Flip();
+                swooping = false;
+            }
+            else if (currentLocalX <= x1)
+            {
+                Flip();
+                swooping = false;
+            }
         }
     }
 
@@ -60,8 +61,14 @@ public class BatAI : MonoBehaviour
         finalB = (y1 / x1) - finalA * x1;
     }
 
-    void ToggleFlip()
+    void Flip()
     {
         flip = !flip;
+        transform.Find("Batboy").GetComponent<SpriteRenderer>().transform.localScale = new Vector3(-transform.Find("Batboy").GetComponent<SpriteRenderer>().transform.localScale.x,1,1);
+    }
+
+    public void Swoop()
+    {
+        swooping = true;
     }
 }

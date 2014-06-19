@@ -571,7 +571,6 @@ public class DogAI : MonoBehaviour
     void CalculateVisionAngle()
     {
         float angle = Mathf.Atan2(currentDir.y, currentDir.x) * Mathf.Rad2Deg;
-        Debug.Log(angle);
         eyePos.rotation = Quaternion.Euler(0, 0, angle);
     }
 
