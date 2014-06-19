@@ -71,7 +71,7 @@ public class SpiderAI : MonoBehaviour
 
     private void OnSwitchToIdle()
     {
-        Invoke("StartMoving", Random.Range(1.0F, 3.0F));
+        Invoke("StartMoving", Random.Range(4.0F, 8.0F));
     }
 
     private void UpdateIdle()
