@@ -113,7 +113,8 @@ public class SpiderAI : MonoBehaviour
 
     private void MovingUpdatePosition()
     {
-        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * regularSpeed);
+        float step = regularSpeed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
     }
 
     private float isNearThreshold = 0.2F;
@@ -143,7 +144,8 @@ public class SpiderAI : MonoBehaviour
 
     private void AttackingUpdatePosition()
     {
-        transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * attackSpeed);
+        float step = attackSpeed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
     }
 
     private void AttackPlayer()
