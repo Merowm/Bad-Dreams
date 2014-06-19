@@ -369,10 +369,10 @@ public class DogAI : MonoBehaviour
             FlipAround();
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
+        /*if (Input.GetKeyDown(KeyCode.F))
         {
             ChangePlayerSortingLayer();
-        }
+        }*/
 
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -411,7 +411,7 @@ public class DogAI : MonoBehaviour
         Debug.DrawRay(eyePos.position, currentDir, Color.green);
     }
 
-    void OnCollisionEnter2D(Collision2D col)
+    void OnCollisionStay2D(Collision2D col)
     {
         Debug.Log(col.gameObject.name + " hits the enemy collider");
         if (col.gameObject.name == "Player")
