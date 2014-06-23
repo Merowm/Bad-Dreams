@@ -36,6 +36,7 @@ public class MainMenuStateSystem : MonoBehaviour
         MainObjects = new List<GameObject>();
 
         MainObjects.Add(GameObject.Find("Main UI"));
+        SetGameObjectsActive(MainObjects, false);
     }
 
     private void GetGameSelectionObjects()
@@ -129,8 +130,8 @@ public class MainMenuStateSystem : MonoBehaviour
 
     private void SwitchToOptions()
     {
-        SetGameObjectsActive(OptionsObjects, true);
         SetGameObjectsActive(MainObjects, false);
+        SetGameObjectsActive(OptionsObjects, true);
     }
 
     private void SwitchToCredits()
