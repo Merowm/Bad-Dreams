@@ -7,10 +7,10 @@ public class BackgroundScroller : MonoBehaviour
 	GameObject player;
 	void Start ()
 	{
-		player = GameObject.Find("Player");
+		player = GameObject.Find("Main Camera");
 		if (player == null)
 		{
-			Debug.Log("player not found");
+			Debug.Log("Main Camera not found");
 		}
 	}
 	
@@ -18,8 +18,12 @@ public class BackgroundScroller : MonoBehaviour
 	{
 		if (player == null)
 		{
-			player = GameObject.Find("Player");
+			player = GameObject.Find("Main Camera");
 		}
+	}
+
+	void LateUpdate()
+	{
 		if (player != null)
 		{
 			transform.position = new Vector3(player.transform.position.x * depthX, player.transform.position.y * depthY);

@@ -9,7 +9,7 @@ public class FlowerCharges : MonoBehaviour
 
     private void Start()
     {
-        flowerSkill = transform.root.GetComponent<FlowerSkill>();
+        flowerSkill = GameObject.Find("Player").GetComponent<FlowerSkill>();
         charges = new List<GameObject>();
         foreach (Transform child in transform)
             charges.Add(child.gameObject);

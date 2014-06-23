@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
 	Animator ator;
 	Transform animT;
 	Stamina stamina;
+	GameObject cameraObj;
 
 	void Start ()
 	{
@@ -73,6 +74,13 @@ public class Player : MonoBehaviour
 		padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
+
+		//camra
+		if (cameraObj == null)
+		{
+			cameraObj = GameObject.Find("Main Camera");
+		}
+		
 
 		//facing direction
 		if (rigid.velocity.x > 0.01f)
@@ -221,6 +229,15 @@ public class Player : MonoBehaviour
 
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
+
+		
+	}
+	void LateUpdate()
+	{
+		/*if (cameraObj != null)
+		{
+			cameraObj.transform.position = transform.position + new Vector3(0.0f, 0.0f, -10.0f);
+		}*/
 	}
 
 	void CheckIllegalPosition()
