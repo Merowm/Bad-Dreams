@@ -12,6 +12,7 @@ public class FlowerSkill : MonoBehaviour
     private GameObject flower;
     private Player player;
     private HidingSkill hidingSkill;
+    private BoxCollider2D flowerCollider;
     private bool skillUsable;
     private int _Charges;
 
@@ -22,6 +23,7 @@ public class FlowerSkill : MonoBehaviour
         flower.SetActive(false);
         player = GetComponent<Player>();
         hidingSkill = GetComponent<HidingSkill>();
+        flowerCollider = GetComponent<BoxCollider2D>();
         skillUsable = true;
         Charges = 3;
     }
@@ -29,6 +31,9 @@ public class FlowerSkill : MonoBehaviour
     private void Update()
     {
         HandleInput();
+
+        if (flower.activeSelf)
+            EndSkillIfNotBehindFlower();
     }
 
     private void HandleInput()
@@ -87,6 +92,14 @@ public class FlowerSkill : MonoBehaviour
         set
         {
             _Charges = Mathf.Clamp(value, 0, 3);
+        }
+    }
+
+    private void EndSkillIfNotBehindFlower()
+    {
+        if (Vector2.Distance(transform.position, flower.transform.position) > flowerCollider.size.x)
+        {
+            StopSkill();
         }
     }
 }
