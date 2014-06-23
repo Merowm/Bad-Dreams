@@ -538,11 +538,12 @@ public class Player : MonoBehaviour
         }
 		
     }
-	/*void OnTriggerEnter2D(Collider2D c)
+	void OnTriggerEnter2D(Collider2D c)
 	{
-		if (c.gameObject.name == "One Way")
+		if (c.gameObject.name == "Finish Line")
 		{
-			Debug.Log("aaaaaaa");
+			GameplayStateManager.SwitchTo(GameplayState.LevelFinished);
+			Debug.Log("finiis");
 		}
-	}*/
+	}
 }
