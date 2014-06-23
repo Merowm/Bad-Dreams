@@ -5,20 +5,30 @@ public class BatAI : MonoBehaviour
 {
     Transform point1, point2;
     GameObject bat;
+    public float batSpeed;
     float x1, x2, y1, y2, finalA, finalB, finalC;
     float currentLocalX;
     bool flip, swooping;
+
+    public bool debugging;
 
     void Start()
     {
         point1 = transform.Find("Point 1");
         point2 = transform.Find("Point 2");
+
+        if (!debugging)
+        {
+            Destroy(point1.gameObject.GetComponent<SpriteRenderer>());
+            Destroy(point2.gameObject.GetComponent<SpriteRenderer>());
+        }
+
         bat = transform.Find("Batboy").gameObject;
 
         bat.transform.localPosition = point1.localPosition;
         currentLocalX = bat.transform.localPosition.x;
 
-        CreateParabole();
+        CreateFlightParabole();
     }
 
     void Update()
@@ -26,18 +36,20 @@ public class BatAI : MonoBehaviour
         if (swooping)
         {
             if (flip)
-                currentLocalX -= Time.deltaTime * 5.0f;
+                currentLocalX -= Time.deltaTime * batSpeed;
             else
-                currentLocalX += Time.deltaTime * 5.0f;
+                currentLocalX += Time.deltaTime * batSpeed;
             bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinate(currentLocalX), 0);
 
             if (currentLocalX >= x2)
             {
+                bat.transform.position = point2.position;
                 Flip();
                 swooping = false;
             }
             else if (currentLocalX <= x1)
             {
+                bat.transform.position = point1.position;
                 Flip();
                 swooping = false;
             }
@@ -50,7 +62,7 @@ public class BatAI : MonoBehaviour
         return yd;
     }
 
-    void CreateParabole()
+    void CreateFlightParabole()
     {
         x1 = point1.localPosition.x;
         x2 = point2.localPosition.x;
