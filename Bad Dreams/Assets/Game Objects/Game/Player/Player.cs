@@ -175,6 +175,7 @@ public class Player : MonoBehaviour
 			}
 			else if (allowBoost &&/*!gliding &&*/ !dashing && !onGround)
 			{
+				ator.SetTrigger("doubleJump");
 				if (rigid.velocity.y > 0.0f) //boost jump
 				{
 					JumpBoost();
