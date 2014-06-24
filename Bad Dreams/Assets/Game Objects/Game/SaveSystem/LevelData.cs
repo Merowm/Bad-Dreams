@@ -4,7 +4,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-namespace Saving
+namespace SaveSystem
 {
     [Serializable]
     public class LevelData

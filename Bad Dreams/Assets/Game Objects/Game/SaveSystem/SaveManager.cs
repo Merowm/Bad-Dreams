@@ -4,7 +4,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-namespace Saving
+namespace SaveSystem
 {
     public static class SaveManager
     {
@@ -14,7 +14,7 @@ namespace Saving
 
         static SaveManager()
         {
-            NumberOfLevels = 1;
+            NumberOfLevels = 3;
         }
 
         public static void LoadGame()
@@ -23,7 +23,9 @@ namespace Saving
 
         public static void NewGame()
         {
+            PlayerPrefs.DeleteAll();
             CurrentSave = new Save();
+            PlayerPrefs.Save();
         }
 
         public static Save CurrentSave
@@ -46,6 +48,7 @@ namespace Saving
                 MemoryStream memoryStream = new MemoryStream();
                 binaryFormatter.Serialize(memoryStream, value);
                 PlayerPrefs.SetString("Save", Convert.ToBase64String(memoryStream.GetBuffer()));
+                PlayerPrefs.Save();
             }
         }
     }
