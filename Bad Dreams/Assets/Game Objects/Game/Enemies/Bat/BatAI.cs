@@ -3,14 +3,28 @@ using System.Collections;
 
 public class BatAI : MonoBehaviour 
 {
+    public bool debugging;
+
     Transform point1, point2;
     GameObject bat;
+    Animator batAnim;
     public float batSpeed;
     float x1, x2, y1, y2, finalA, finalB, finalC;
     float currentLocalX;
     bool flip, swooping;
 
-    public bool debugging;
+    bool Swooping
+    {
+        get { return swooping; }
+        set 
+        {
+            swooping = value;
+            if (swooping)
+                batAnim.SetBool("swooping", true);
+            else
+                batAnim.SetBool("swooping", false);
+        }
+    }
 
     void Start()
     {
@@ -24,6 +38,7 @@ public class BatAI : MonoBehaviour
         }
 
         bat = transform.Find("Batboy").gameObject;
+        batAnim = bat.GetComponent<Animator>();
 
         bat.transform.localPosition = point1.localPosition;
         currentLocalX = bat.transform.localPosition.x;
@@ -43,15 +58,15 @@ public class BatAI : MonoBehaviour
 
             if (currentLocalX >= x2)
             {
-                bat.transform.position = point2.position;
                 Flip();
-                swooping = false;
+                bat.transform.position = point2.position;
+                Swooping = false;
             }
             else if (currentLocalX <= x1)
             {
-                bat.transform.position = point1.position;
                 Flip();
-                swooping = false;
+                bat.transform.position = point1.position;
+                Swooping = false;
             }
         }
     }
@@ -81,6 +96,6 @@ public class BatAI : MonoBehaviour
 
     public void Swoop()
     {
-        swooping = true;
+        Swooping = true;
     }
 }
