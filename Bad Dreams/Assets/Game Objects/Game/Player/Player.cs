@@ -230,14 +230,27 @@ public class Player : MonoBehaviour
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
 
-		
+		//camera following and limiting
+		if (cameraObj != null) //tama
+		{
+			cameraObj.transform.position = transform.position; //tama
+
+			Transform camMinT = GameObject.Find("Camera Limit Min").transform;
+			Transform camMaxT = GameObject.Find("Camera Limit Max").transform;
+
+			Vector3 min = camMinT.position;
+			Vector3 max = camMaxT.position;
+
+
+			Vector3 pos = cameraObj.transform.position;
+			Vector3 newPos = new Vector3(Mathf.Clamp(pos.x, min.x, max.x), Mathf.Clamp(pos.y, min.y, max.y), -10.0f);
+
+			cameraObj.transform.position = newPos;
+		}
 	}
 	void LateUpdate()
 	{
-		/*if (cameraObj != null)
-		{
-			cameraObj.transform.position = transform.position + new Vector3(0.0f, 0.0f, -10.0f);
-		}*/
+		
 	}
 
 	void CheckIllegalPosition()

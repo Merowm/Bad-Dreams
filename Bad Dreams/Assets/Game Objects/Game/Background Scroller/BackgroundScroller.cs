@@ -20,6 +20,7 @@ public class BackgroundScroller : MonoBehaviour
 		{
 			player = GameObject.Find("Main Camera");
 		}
+		
 	}
 
 	void LateUpdate()

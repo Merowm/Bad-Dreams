@@ -15,25 +15,13 @@ public class BackgroundParticleGenerator : MonoBehaviour
 		topLeft = GameObject.Find("Top Left").transform;
 		bottomRight = GameObject.Find("Bottom Right").transform;
 
-		particles = new GameObject[4];// { new GameObject(), new GameObject() };
+		particles = new GameObject[4];
 
-		//Debug.Log("koko " + particles.Length);
-
-		//int i = 0;
 		for (int i = 0; i < particles.Length; i++)
 		{
 			particles[i] = new GameObject();
 			particles[i] = Resources.Load<GameObject>("Particles/Background Particles/BGParticle" + i);
 		}
-		/*i++;
-
-		particles[i] = new GameObject();
-		particles[i] = Resources.Load<GameObject>("Particles/Background Particles/BGParticle" + i);
-		i++;
-
-		particles[i] = new GameObject();
-		particles[i] = Resources.Load<GameObject>("Particles/Background Particles/BGParticle" + i);
-		i++;*/
 	}
 	
 	void Update ()
@@ -46,6 +34,7 @@ public class BackgroundParticleGenerator : MonoBehaviour
 			{
 				int i = Random.Range(0, particles.Length);
 				//Debug.Log("rand " + i);
+
 				if (particles[i] != null)
 				{
 					float x1 = topLeft.transform.position.x;
@@ -55,11 +44,11 @@ public class BackgroundParticleGenerator : MonoBehaviour
 
 					float width = x2 - x1;
 					float height = y1 - y2;
-
-					//Debug.Log("w" + width + "   h" + height);
-
+					
 					float posX = x1 + width * Random.value;
 					float posY = y2 + height * Random.value;
+
+					//Debug.Log("w" + width + "   h" + height);
 
 					Vector3 position = new Vector3(posX, posY);
 					GameObject temp = Instantiate(particles[i], position, Quaternion.identity) as GameObject;
