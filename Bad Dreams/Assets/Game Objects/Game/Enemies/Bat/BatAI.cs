@@ -13,6 +13,8 @@ public class BatAI : MonoBehaviour
     float currentLocalX;
     bool flip, swooping;
 
+    BatTrigger batTrigger;
+
     bool Swooping
     {
         get { return swooping; }
@@ -40,6 +42,8 @@ public class BatAI : MonoBehaviour
         bat = transform.Find("Batboy").gameObject;
         batAnim = bat.GetComponent<Animator>();
 
+        batTrigger = transform.Find("KEEP POINTS ABOVE THIS LINE").GetComponent<BatTrigger>();
+
         bat.transform.localPosition = point1.localPosition;
         currentLocalX = bat.transform.localPosition.x;
 
@@ -48,7 +52,7 @@ public class BatAI : MonoBehaviour
 
     void Update()
     {
-        if (swooping)
+        if (Swooping)
         {
             if (flip)
                 currentLocalX -= Time.deltaTime * batSpeed;
@@ -56,17 +60,19 @@ public class BatAI : MonoBehaviour
                 currentLocalX += Time.deltaTime * batSpeed;
             bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinate(currentLocalX), 0);
 
-            if (currentLocalX >= x2)
+            if (!flip && currentLocalX > x2)
             {
                 Flip();
                 bat.transform.position = point2.position;
                 Swooping = false;
+                batTrigger.ableToSwoop = true;
             }
-            else if (currentLocalX <= x1)
+            else if (flip && currentLocalX < x1)
             {
                 Flip();
                 bat.transform.position = point1.position;
                 Swooping = false;
+                batTrigger.ableToSwoop = true;
             }
         }
     }
@@ -91,7 +97,7 @@ public class BatAI : MonoBehaviour
     void Flip()
     {
         flip = !flip;
-        transform.Find("Batboy").GetComponent<SpriteRenderer>().transform.localScale = new Vector3(-transform.Find("Batboy").GetComponent<SpriteRenderer>().transform.localScale.x,1,1);
+        bat.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(-bat.GetComponent<SpriteRenderer>().transform.localScale.x, 1, 1);
     }
 
     public void Swoop()

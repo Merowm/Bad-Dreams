@@ -3,11 +3,12 @@ using System.Collections;
 
 public class BatTrigger : MonoBehaviour 
 {
-
+    public bool ableToSwoop;
     BatAI batAI;
 
 	void Start () 
     {
+        ableToSwoop = true;
         batAI = transform.parent.gameObject.GetComponent<BatAI>();
 
         if (!batAI.debugging)
@@ -20,7 +21,11 @@ public class BatTrigger : MonoBehaviour
     {
         if (col.gameObject.name == "Player")
         {
-            batAI.Swoop();
+            if (ableToSwoop)
+            {
+                batAI.Swoop();
+                ableToSwoop = false;
+            }
         }
     }
 }
