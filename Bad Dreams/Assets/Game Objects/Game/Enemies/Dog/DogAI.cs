@@ -34,10 +34,11 @@ public class DogAI : MonoBehaviour
 
     #region Private Variables
 
-    SpriteRenderer thisSpriteRend;
+    SpriteRenderer thisSpriteRend, thisVisionCone;
     Animator thisAnimator;
     BoxCollider2D thisCollider2D;
     Bounds thisBounds;
+    Transform thisEyePos;
 
     GameObject player;
     SpriteRenderer playerSpriteRend;
@@ -46,11 +47,7 @@ public class DogAI : MonoBehaviour
 
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     int alertness;
-    bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed;
-
-    bool belowPlayer;
-
-    Transform eyePos;
+    bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer;
 
     #endregion
 
@@ -75,8 +72,8 @@ public class DogAI : MonoBehaviour
         visionResetTimer = 0.0f;
         visionAllowedToReset = true;
         velocity = 0.0f;
-
-        eyePos = transform.FindChild("Eye Position");
+        thisEyePos = transform.FindChild("Eye Position");
+        thisVisionCone = thisEyePos.FindChild("Vision Cone").gameObject.GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -133,7 +130,7 @@ public class DogAI : MonoBehaviour
             CalculateVisionAngle();
             StopIfPlayerIsAbove();
             UpdateAlertness();
-            DEBUG_UPDATECOLOR();
+            UpdateVisionConeColor();
         }
 
         if (stopped)
@@ -197,7 +194,7 @@ public class DogAI : MonoBehaviour
     {
         thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
         currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
-        eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
+        thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
     }
 
     void ChangePlayerSortingLayer()
@@ -339,7 +336,7 @@ public class DogAI : MonoBehaviour
         //layermask just for testing
         int layerMask = 1 << 8;
         layerMask |= 1 << 10;
-        RaycastHit2D rayCastResult = Physics2D.Raycast(eyePos.position, target.transform.position - eyePos.position, Vector3.Distance(target.transform.position, eyePos.position), layerMask);
+        RaycastHit2D rayCastResult = Physics2D.Raycast(thisEyePos.position, target.transform.position - thisEyePos.position, Vector3.Distance(target.transform.position, thisEyePos.position), layerMask);
         if (rayCastResult.collider == target.collider2D)
             return true;
         else return false;
@@ -369,10 +366,10 @@ public class DogAI : MonoBehaviour
             FlipAround();
         }
 
-        /*if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            ChangePlayerSortingLayer();
-        }*/
+            thisVisionCone.color = new Color(255, 0, 0, 0);
+        }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -382,38 +379,37 @@ public class DogAI : MonoBehaviour
         }
     }
 
-    void DEBUG_UPDATECOLOR()
+    void UpdateVisionConeColor()
     {
         if (alerted)
         {
-            thisSpriteRend.color = new Color(255, 0, 0);
+            thisVisionCone.color = new Color(1, 0, 0, 0.3f);
         }
         else
         {
             if (playerVisible)
             {
-                thisSpriteRend.color = new Color(255, 255, 0);
+                thisVisionCone.color = new Color(1, 1, 0, 0.3f);
             }
             else
             {
-                thisSpriteRend.color = new Color(255, 255, 255);
+                thisVisionCone.color = new Color(1, 1, 1, 0.3f);
             }
         }
     }
 
     void DEBUG_DRAWVISIONLINETOPLAYER(Color color)
     {
-        Debug.DrawRay(eyePos.position, player.transform.position - eyePos.position, color);
+        Debug.DrawRay(thisEyePos.position, player.transform.position - thisEyePos.position, color);
     }
 
     void DEBUG_DRAWCURRENTDIR()
     {
-        Debug.DrawRay(eyePos.position, currentDir, Color.green);
+        Debug.DrawRay(thisEyePos.position, currentDir, Color.green);
     }
 
     void OnCollisionStay2D(Collision2D col)
     {
-        Debug.Log(col.gameObject.name + " hits the enemy collider");
         if (col.gameObject.name == "Player")
         {
             alertness += 20;
@@ -445,7 +441,7 @@ public class DogAI : MonoBehaviour
 
                 currentDir = new Vector3(1, 0, 0);
             }
-            eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
+            thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
         }
         else
         {
@@ -457,11 +453,11 @@ public class DogAI : MonoBehaviour
     {
         if (!belowPlayer)
         {
-            currentDir = Vector3.Normalize(player.transform.position - eyePos.position);
+            currentDir = Vector3.Normalize(player.transform.position - thisEyePos.position);
 
             thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
-            eyePos.localPosition = new Vector3(Mathf.Abs(eyePos.localPosition.x) * Mathf.Sign(currentDir.x), eyePos.localPosition.y, eyePos.localPosition.z);
+            thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
         }
         else
         {
@@ -527,7 +523,6 @@ public class DogAI : MonoBehaviour
             stoppedTimer = 0.0f;
             stopped = true;
             flipAllowed = false;
-            Debug.Log("Enemy is stopped");
         }
 
         if (flipAllowed)
@@ -571,7 +566,7 @@ public class DogAI : MonoBehaviour
     void CalculateVisionAngle()
     {
         float angle = Mathf.Atan2(currentDir.y, currentDir.x) * Mathf.Rad2Deg;
-        eyePos.rotation = Quaternion.Euler(0, 0, angle);
+        thisEyePos.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     void StopIfPlayerIsAbove()
@@ -581,7 +576,6 @@ public class DogAI : MonoBehaviour
             float tempAngle = Mathf.Atan2(player.transform.position.y - transform.position.y, player.transform.position.x - transform.position.x) * Mathf.Rad2Deg;
             if (tempAngle >= 60.0f && tempAngle <= 120.0f)
             {
-                Debug.Log("hap");
                 belowPlayer = true;
             }
             else belowPlayer = false;
