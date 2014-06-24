@@ -97,7 +97,7 @@ public class FlowerSkill : MonoBehaviour
 
     private void EndSkillIfNotBehindFlower()
     {
-        if (Vector2.Distance(transform.position, flower.transform.position) > flowerCollider.size.x)
+        if (Vector2.Distance(transform.position, flower.transform.position) > flowerCollider.size.x * 2)
         {
             StopSkill();
         }
