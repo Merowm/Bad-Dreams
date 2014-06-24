@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using SaveSystem;
 
 public class Collectible : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class Collectible : MonoBehaviour
     // "AddTime"
     // "AddSeed"
     // "AddPoints"
+    // "Treasure"
 
     #region Constants
 
@@ -85,6 +87,11 @@ public class Collectible : MonoBehaviour
     void AddPoints()
     {
         Debug.Log("5 POINTS TO GRYFFINDOR (AKA We need a point system)");
+        Destroy(this.gameObject);
+    }
+
+    void AddTreasure()
+    {
         Destroy(this.gameObject);
     }
 }
