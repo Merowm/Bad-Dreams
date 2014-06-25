@@ -3,15 +3,16 @@ using System.Collections;
 
 public class BackgroundParticleGenerator : MonoBehaviour
 {
-	public float rate;
-	public int count; //how many particles do we spawn before destroying (0 = infinite)
-	public float timeToLive; //how long do we live before destroying (0 = infinite)
+	public float rate;				//generation rate
+	public int count;				//how many particles do we spawn before destroying (0 = infinite)
+	public float timeToLive;		//how long do we live before destroying (0 = infinite)
+	public GameObject[] particles;	//specify the count of particles, no need to specify the gameobjects themselves
+	public string resourcePath;		//path + prefix, where the script tries to locate particles (ex. "Particles/Particle" seeks prefabs named Particle0, Particle1, ...)
+
+
 	float timer;
 	Transform topLeft, bottomRight;
-	public GameObject[] particles; //specify the count of particles, no need to specify the gameobjects themselves
-	public string resourcePath; //path + prefix, where the script tries to locate particles
-
-	GameObject backgroungParticlesObj;
+	GameObject backgroundParticlesObj;
 
 	void Start ()
 	{
@@ -19,14 +20,11 @@ public class BackgroundParticleGenerator : MonoBehaviour
 		
 		bottomRight = GameObject.Find(name + "/Top Left").transform;
 		topLeft = GameObject.Find(name + "/Bottom Right").transform;
-		backgroungParticlesObj = GameObject.Find("_BackgroungParticles");
-
-		//particles = new GameObject[4];
+		backgroundParticlesObj = GameObject.Find("Generated Particles");
 
 		for (int i = 0; i < particles.Length; i++)
 		{
-			//particles[i] = new GameObject();
-			particles[i] = Resources.Load<GameObject>(resourcePath + i); //"Particles/Background Particles/BGParticle"
+			particles[i] = Resources.Load<GameObject>(resourcePath + i);
 		}
 	}
 	
@@ -72,7 +70,7 @@ public class BackgroundParticleGenerator : MonoBehaviour
 
 					Vector3 position = new Vector3(posX, posY);
 					GameObject temp = Instantiate(particles[i], position, Quaternion.identity) as GameObject;
-					temp.transform.parent = backgroungParticlesObj.transform;
+					temp.transform.parent = backgroundParticlesObj.transform;
 					temp.GetComponent<BackgroundParticle>().dir = Random.value * 360.0f;
 
 					if (count > 0)
