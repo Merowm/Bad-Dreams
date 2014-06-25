@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BackgroundParticleGenerator : MonoBehaviour
+public class ParticleGenerator : MonoBehaviour
 {
 	public float rate;				//generation rate
 	public int count;				//how many particles do we spawn before destroying (0 = infinite)
@@ -71,7 +71,7 @@ public class BackgroundParticleGenerator : MonoBehaviour
 					Vector3 position = new Vector3(posX, posY);
 					GameObject temp = Instantiate(particles[i], position, Quaternion.identity) as GameObject;
 					temp.transform.parent = backgroundParticlesObj.transform;
-					temp.GetComponent<BackgroundParticle>().dir = Random.value * 360.0f;
+					temp.GetComponent<Particle>().dir = Random.value * 360.0f;
 
 					if (count > 0)
 					{
