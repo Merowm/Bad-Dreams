@@ -40,12 +40,8 @@ public class HidingSkill : MonoBehaviour
         HidingPossible = false;
         SwapLayerTo("Player Background");
         Physics2D.IgnoreLayerCollision(9, 10, true);
-        transform.position = new Vector3(
-            cover.transform.position.x,
-            transform.position.y,
-            transform.position.z);
-
         CoverObject = cover;
+
         // Play animation?
         // Play sound?
         // Play particle effect?

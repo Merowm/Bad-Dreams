@@ -20,9 +20,6 @@ public class StealthUsableArea : MonoBehaviour
     {
         if (other.name == targetObject)
         {
-            if (player.IsHiding)
-                player.Unhide();
-
             player.CoverObject = gameObject;
             player.HidingPossible = true;
         }

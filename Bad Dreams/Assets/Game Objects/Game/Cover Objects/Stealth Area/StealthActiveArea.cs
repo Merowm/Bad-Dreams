@@ -17,10 +17,13 @@ public class StealthActiveArea : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.name == targetObject)
+        if (other.name == targetObject && Input.GetButton("Hide"))
         {
+            player.Hide(player.CoverObject);
             player.HidingPossible = false;
-
+        }
+        else if (other.name == targetObject)
+        {
             if (!player.IsHiding)
                 player.OverCoverObject = true;
         }
