@@ -12,6 +12,8 @@ public class BackgroundParticle : MonoBehaviour
 	public Gradient colorIn;
 	public AnimationCurve addDirMultiplyCurve;
 
+	public Vector3 velocity, addVelocity;
+
 	SpriteRenderer spr;
 
 	void Start ()
@@ -44,6 +46,8 @@ public class BackgroundParticle : MonoBehaviour
 		float yy = Mathf.Sin(rad);
 		direction = new Vector3(xx, yy);
 		transform.position += direction * speed * Time.deltaTime;
+		transform.position += velocity * Time.deltaTime;
+		velocity += addVelocity * Time.deltaTime;
 	}
 
 	float DegToRad(float deg)

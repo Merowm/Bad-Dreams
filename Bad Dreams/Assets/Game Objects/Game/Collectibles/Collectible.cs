@@ -17,7 +17,7 @@ public class Collectible : MonoBehaviour
 
     #region Public Variables
 
-    public string type;
+    public string type, pickupParticleResource;
 
     #endregion
 
@@ -26,6 +26,7 @@ public class Collectible : MonoBehaviour
     bool goingUp;
     float min, max, speed, directionTimer, timerInterval;
     Vector3 origPos;
+	GameObject pickupParticle;
 
     #endregion
 
@@ -37,6 +38,8 @@ public class Collectible : MonoBehaviour
         timerInterval = Random.Range(TIMER_MIN, TIMER_MAX);
         speed = 1.0f / timerInterval;
         origPos = transform.position;
+
+		pickupParticle = Resources.Load<GameObject>(pickupParticleResource);
     }
 
     void Update()
@@ -85,6 +88,7 @@ public class Collectible : MonoBehaviour
     void AddPoints()
     {
         Debug.Log("5 POINTS TO GRYFFINDOR (AKA We need a point system)");
+		Instantiate(pickupParticle, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
     }
 }
