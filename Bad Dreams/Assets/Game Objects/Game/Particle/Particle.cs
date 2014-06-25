@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BackgroundParticle : MonoBehaviour
+public class Particle : MonoBehaviour
 {
 	public float speed, dir, addDir, ttl;
 

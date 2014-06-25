@@ -48,7 +48,7 @@ public class PlayerCollision : MonoBehaviour
         if (other.gameObject.name == "Dog")
             GameplayStateManager.SwitchTo(GameplayState.GameOver);
 
-        if (other.gameObject.tag == "Moving Environment" && player.onGround)
+		if ((other.gameObject.tag == "Moving Environment" || other.gameObject.tag == "Moving and One Way") && player.onGround)
             transform.parent = other.gameObject.transform;
     }
 }
