@@ -1,22 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BatAI : MonoBehaviour 
+public class BatAI : MonoBehaviour
 {
+    #region Constants
+
+    const float BAT_Y_VARIATION = 0.2f;
+    const float BAT_HIT_AREA = 0.3f;
+
+    #endregion
+
+    #region Public Variables
+
     public bool debugging;
+    public float batSpeed;
+
+    #endregion
+
+    #region Private Variables
 
     Transform point1, point2;
     GameObject bat;
     Animator batAnim;
-    public float batSpeed;
-    float x1, x2, y1, y2, finalA, finalB, finalC;
-    float currentLocalX;
+    float x1, x2, y1, y2, finalA, finalB, currentLocalX;
     bool flip, swooping;
 
     bool Swooping
     {
         get { return swooping; }
-        set 
+        set
         {
             swooping = value;
             if (swooping)
@@ -26,16 +38,27 @@ public class BatAI : MonoBehaviour
         }
     }
 
+    GameObject player;
+
+    
+
+    #endregion
+
     void Start()
     {
+        player = GameObject.Find("Player");
+
         point1 = transform.Find("Point 1");
         point2 = transform.Find("Point 2");
+
+        CreateFlightParabola();
 
         if (!debugging)
         {
             Destroy(point1.gameObject.GetComponent<SpriteRenderer>());
             Destroy(point2.gameObject.GetComponent<SpriteRenderer>());
         }
+        Destroy(transform.Find("KEEP POINTS ABOVE THIS LINE").gameObject);
 
         bat = transform.Find("Batboy").gameObject;
         batAnim = bat.GetComponent<Animator>();
@@ -43,41 +66,60 @@ public class BatAI : MonoBehaviour
         bat.transform.localPosition = point1.localPosition;
         currentLocalX = bat.transform.localPosition.x;
 
-        CreateFlightParabole();
     }
 
     void Update()
     {
-        if (swooping)
-        {
-            if (flip)
-                currentLocalX -= Time.deltaTime * batSpeed;
-            else
-                currentLocalX += Time.deltaTime * batSpeed;
-            bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinate(currentLocalX), 0);
+        CheckIfPlayerCrossesOverFlightPath();
 
-            if (currentLocalX >= x2)
-            {
-                Flip();
-                bat.transform.position = point2.position;
-                Swooping = false;
-            }
-            else if (currentLocalX <= x1)
-            {
-                Flip();
-                bat.transform.position = point1.position;
-                Swooping = false;
-            }
+        if (Swooping)
+        {
+            UpdateBatPosition();
+            CheckIfPlayerIsWithinAttackReach();
+            FlightEndActions();
         }
     }
 
-    float ReturnYCoordinate(float xd)
+    void UpdateBatPosition()
+    {
+        if (flip)
+            currentLocalX -= Time.deltaTime * batSpeed;
+        else
+            currentLocalX += Time.deltaTime * batSpeed;
+        bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinateOnParabola(currentLocalX), 0);
+    }
+
+    void CheckIfPlayerIsWithinAttackReach()
+    {
+        if (Vector3.Distance(bat.transform.position, player.transform.position) < BAT_HIT_AREA)
+        {
+            GameplayStateManager.SwitchTo(GameplayState.GameOver);
+        }
+    }
+
+    void FlightEndActions()
+    {
+        if (!flip && currentLocalX > x2)
+        {
+            Flip();
+            bat.transform.position = point2.position;
+            Swooping = false;
+        }
+        else if (flip && currentLocalX < x1)
+        {
+            Flip();
+            bat.transform.position = point1.position;
+            Swooping = false;
+        }
+    }
+
+    float ReturnYCoordinateOnParabola(float xd)
     {
         float yd = (finalA * Mathf.Pow(xd, 2)) + (finalB * xd);
         return yd;
     }
 
-    void CreateFlightParabole()
+    void CreateFlightParabola()
     {
         x1 = point1.localPosition.x;
         x2 = point2.localPosition.x;
@@ -91,11 +133,18 @@ public class BatAI : MonoBehaviour
     void Flip()
     {
         flip = !flip;
-        transform.Find("Batboy").GetComponent<SpriteRenderer>().transform.localScale = new Vector3(-transform.Find("Batboy").GetComponent<SpriteRenderer>().transform.localScale.x,1,1);
+        bat.GetComponent<SpriteRenderer>().transform.localScale = new Vector3(-bat.GetComponent<SpriteRenderer>().transform.localScale.x, 1, 1);
     }
 
-    public void Swoop()
+    void CheckIfPlayerCrossesOverFlightPath()
     {
-        Swooping = true;
+        Vector2 playerPos = new Vector2(player.transform.position.x - transform.position.x, player.transform.position.y - transform.position.y);
+        if (playerPos.x >= x1 && playerPos.x <= x2)
+        {
+            if (Mathf.Abs(playerPos.y - ReturnYCoordinateOnParabola(playerPos.x)) <= BAT_Y_VARIATION)
+            {
+                Swooping = true;
+            }
+        }
     }
 }
