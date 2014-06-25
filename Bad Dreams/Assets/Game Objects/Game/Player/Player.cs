@@ -141,7 +141,9 @@ public class Player : MonoBehaviour
 		}
 		
 		//oneway
-		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
+
+		//eka
+		/*Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
 		GameObject[] plats = GameObject.FindGameObjectsWithTag("One Way");
 		for (int i = 0; i < plats.Length; i++)
 		{
@@ -154,7 +156,34 @@ public class Player : MonoBehaviour
 			{
 				plats[i].layer = 8; //terraincollision
 			}
+		}*/
+
+
+
+		//uus
+		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
+
+		string theTag = "One Way";
+		for (int tag = 0; tag < 2; tag++)
+		{
+
+			GameObject[] plats = GameObject.FindGameObjectsWithTag(theTag);
+			for (int i = 0; i < plats.Length; i++)
+			{
+				Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
+				if (poos.y < plats[i].transform.position.y + thick.y)
+				{
+					plats[i].layer = 11; //one way
+				}
+				else
+				{
+					plats[i].layer = 8; //terraincollision
+				}
+			}
+			theTag = "Moving and One Way";
 		}
+		
+
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
