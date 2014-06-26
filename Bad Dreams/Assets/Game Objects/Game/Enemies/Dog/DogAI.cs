@@ -48,6 +48,7 @@ public class DogAI : MonoBehaviour
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     int alertness;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer;
+    bool recentlyCollidedWithPlayer;
 
     #endregion
 
@@ -133,7 +134,7 @@ public class DogAI : MonoBehaviour
             UpdateVisionConeColor();
         }
 
-        if (stopped)
+        if (stopped || recentlyCollidedWithPlayer)
         {
             velocity = 0;
         }
@@ -195,6 +196,9 @@ public class DogAI : MonoBehaviour
         thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
         currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
         thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
+        
+        if (playerVisible)
+        recentlyCollidedWithPlayer = false;
     }
 
     void ChangePlayerSortingLayer()
@@ -293,7 +297,7 @@ public class DogAI : MonoBehaviour
             {
                 DEBUG_DRAWVISIONLINETOPLAYER(Color.red);
                 alertTimer = TIME_ALERT_TIMER_MAX;
-                if (alerted == false)
+                if (!alerted)
                 {
                     ToggleAlerted(true);
                     thisAnimator.SetBool("running", true);
@@ -308,6 +312,14 @@ public class DogAI : MonoBehaviour
         }
         else
         {
+            if (alertness >= VISION_BECOME_ALERTED_THRESHOLD)
+            {
+                if (!alerted)
+                {
+                    alerted = true;
+                }
+            }
+
             if (alerted)
             {
                 if (alertTimer <= 0.0f)
@@ -408,21 +420,50 @@ public class DogAI : MonoBehaviour
         Debug.DrawRay(thisEyePos.position, currentDir, Color.green);
     }
 
-    void OnCollisionStay2D(Collision2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.name == "Player")
         {
-            alertness += 20;
-            if (alertness < 100)
+            if (!playerVisible)
             {
-                alertness = 100;
+                if (!alerted)
+                {
+                    if (!recentlyCollidedWithPlayer)
+                    {
+                        alertness += 300;
+                        GameObject.Find("Collision Against Dog Sound").GetComponent<AudioSource>().Play();
+                        Invoke("AimEyesAtPlayer", 0.8f);
+                        Invoke("ResetCollisionWithPlayer", 2.0f);
+                    }
+                    recentlyCollidedWithPlayer = true;
+                }
+                else
+                {
+                    if (!recentlyCollidedWithPlayer)
+                    {
+                        GameObject.Find("Collision Against Dog Sound").GetComponent<AudioSource>().Play();
+                        Invoke("AimEyesAtPlayer", 0.4f);
+                        Invoke("ResetCollisionWithPlayer", 0.6f);
+                    }
+                    recentlyCollidedWithPlayer = true;
+                }
             }
             else
             {
-                FlipToFacePlayer();
-                AimEyesAtPlayer();
+                GameplayStateManager.SwitchTo(GameplayState.GameOver);
             }
         }
+    }
+
+    void OnCollisionStay2D(Collision2D col)
+    {
+        //if (col.gameObject.name == "Player")
+        //GameplayStateManager.SwitchTo(GameplayState.GameOver);
+    }
+
+    void ResetCollisionWithPlayer()
+    {
+        recentlyCollidedWithPlayer = false;
     }
 
     void FlipToFacePlayer()
@@ -463,6 +504,9 @@ public class DogAI : MonoBehaviour
         {
             velocity = 0;
         }
+
+        if (playerVisible)
+            recentlyCollidedWithPlayer = false;
     }
 
     void ResetVision()
