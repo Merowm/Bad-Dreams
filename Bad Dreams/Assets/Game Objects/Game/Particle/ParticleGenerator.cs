@@ -21,7 +21,7 @@ public class ParticleGenerator : MonoBehaviour
 		bottomRight = GameObject.Find(name + "/Top Left").transform;
 		topLeft = GameObject.Find(name + "/Bottom Right").transform;
 		backgroundParticlesObj = GameObject.Find("Generated Particles");
-
+		
 		for (int i = 0; i < particles.Length; i++)
 		{
 			particles[i] = Resources.Load<GameObject>(resourcePath + i);
@@ -41,19 +41,13 @@ public class ParticleGenerator : MonoBehaviour
 				{
 					i = Random.Range(0, particles.Length);
 				}
-				//Debug.Log("rand " + i);
-
 				if (particles[i] != null)
 				{
 					if (!topLeft || !bottomRight)
 					{
+						//try reacquire if not found
 						bottomRight = GameObject.Find(name + "/Top Left").transform;
 						topLeft = GameObject.Find(name + "/Bottom Right").transform;
-						/*Debug.Log("AFAGHNEDGS");
-						Debug.Log("c: " + count);
-						Debug.Log("ttl: " + timeToLive);
-						Debug.Log("t: " + timer);
-						return;*/
 					}
 					float x1 = topLeft.transform.position.x;
 					float y1 = topLeft.transform.position.y;
@@ -66,12 +60,10 @@ public class ParticleGenerator : MonoBehaviour
 					float posX = x1 + width * Random.value;
 					float posY = y2 + height * Random.value;
 
-					//Debug.Log("w" + width + "   h" + height);
-
 					Vector3 position = new Vector3(posX, posY);
 					GameObject temp = Instantiate(particles[i], position, Quaternion.identity) as GameObject;
 					temp.transform.parent = backgroundParticlesObj.transform;
-					temp.GetComponent<Particle>().dir = Random.value * 360.0f;
+					temp.GetComponent<Particle>().dir = Random.value * 360.0f; //Todo: move this to background particle start
 
 					if (count > 0)
 					{
@@ -85,8 +77,6 @@ public class ParticleGenerator : MonoBehaviour
 				}
 			}
 		}
-
-		
 
 		if (timeToLive > 0.0f)
 		{

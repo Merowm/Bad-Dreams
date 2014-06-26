@@ -2,35 +2,34 @@
 using System.Collections;
 
 public class Player : MonoBehaviour
-{
-	//Vector3 velocity = Vector3.zero;
-	public Vector3 lastPos, faceDirection, glideVelocity, glideFall, glideDefaceDirection;
+{	
 	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost;
-	public float moveSpeed, dashTimer, dashLength, dashSpeed, glideControl, glideSteepness,
-		glideMinSpeed, glideZeroAcc, glideDeFaceThreshold, glideGravityResistance, boostStrength,
-		jumpStrength, moveAccel, moveDecel, glideHitWallTimer, glideHitWallPenalty, airFriction;
-
-	public float idleTimer;
-
+	public float moveSpeed, moveAccel, moveDecel, jumpStrength, boostStrength, airFriction, deadZone;
+	public float dashLength, dashSpeed, glideControl, glideSteepness, glideDeFaceThreshold, glideGravityResistance, glideHitWallPenalty;
+	
+	float dashTimer, glideMinSpeed, glideZeroAcc, glideHitWallTimer, idleTimer;
+	Vector3 faceDirection, glideDefaceDirection;
 	Rigidbody2D rigid;
 	Vector2 padInput;
 	Animator ator;
 	Transform animT;
 	Stamina stamina;
-	GameObject cameraObj;
+	CameraFollowing camFollow;
 
 	void Start ()
 	{
 		rigid = transform.rigidbody2D;
 		animT = transform.FindChild("Animator");
-		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		ator = animT.GetComponent<Animator>();
 		stamina = GetComponent<Stamina>();
+		camFollow = GetComponent<CameraFollowing>();
 
-		lastPos = Vector3.zero;
+
+		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
 		onGround = false;
 		idleTimer = 0.0f;
+
 
 		//basic
 		moveAccel = 35.0f; //movement accel. and decel.
@@ -38,18 +37,19 @@ public class Player : MonoBehaviour
 		moveSpeed = 4.0f; //max move speed
 		jumpStrength = 5.8f;
 		airFriction = 9.0f; //velocity.x slow down in air
+		deadZone = 0.3f;
 
 
 		//while gliding
 		gliding = false; //gliding state
 		glideDefaceDirection = Vector3.zero;
-		glideDeFaceThreshold = 3.0f; //direction can't be changed when (-glideDeFaceThreshold < velocity.x < glideDeFaceThreshold)
-		glideAllowDeFace = true; //allow changing direction
-		glideSteepness = 0.25f; //how much the player descends while gliding
-		glideControl = 8.0f; //how much the gliding speed can be affected by input
-		glideMinSpeed = 2.0f; //minimum gliding speed (unused?)
-		glideZeroAcc = 6.0f; //acceleration from zero velocity
-		glideGravityResistance = 15.0f; //how much gravity resistance when starting to glide while falling
+		glideDeFaceThreshold = 3.0f;		//direction can't be changed when (-glideDeFaceThreshold < velocity.x < glideDeFaceThreshold)
+		glideAllowDeFace = true;			//allow changing direction
+		glideSteepness = 0.25f;				//how much the player descends while gliding
+		glideControl = 8.0f;				//how much the gliding speed can be affected by input
+		glideMinSpeed = 2.0f;				//minimum gliding speed (unused?)
+		glideZeroAcc = 6.0f;				//acceleration from zero velocity
+		glideGravityResistance = 15.0f;		//how much gravity resistance when starting to glide while falling
 		glideHitWallTimer = 0.0f;
 		glideHitWallPenalty = 0.6f;
 
@@ -65,63 +65,18 @@ public class Player : MonoBehaviour
 		//boost
 		allowBoost = true; //clears after boosting, sets when touching ground or ?
 		boostStrength = 5.5f;
-
-		
 	}
 
 	void Update()
 	{
 		padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "pad:\n    x: " + padInput.x + "\n    y: " + padInput.y;
+
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
 
-		//camra
-		if (cameraObj == null)
-		{
-			cameraObj = GameObject.Find("Main Camera");
-		}
-		
-
-		//facing direction
-		if (rigid.velocity.x > 0.01f)
-		{
-			faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
-			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-			animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
-		}
-		else if (rigid.velocity.x < -0.01f)
-		{
-			faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
-			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-			animT.localPosition = new Vector3(0.15f, 0.04f, 1.0f);
-		}
-
 		//animation
-		if (padInput.x < 0.1f && padInput.x > -0.1f)
-		{
-			//idle
-			ator.SetBool("running", false);
-		}
-		else if (!dashing)
-		{
-			//run
-			ator.SetBool("running", true);
-		}
-		
-		ator.SetBool("dashing", dashing);
-		ator.SetBool("onGround", onGround);
-		ator.SetBool("gliding", gliding);
-
-		//idle alternating
-		if (idleTimer <= 0.0f)
-		{
-			ator.SetTrigger("altIdle");
-			idleTimer = Random.value * 1.65f + 1.8f;
-		}
-		else
-		{
-			idleTimer -= Time.deltaTime;
-		}
+		Animation();
 
 		//glide
 		if (Input.GetButton("Glide"))
@@ -141,49 +96,7 @@ public class Player : MonoBehaviour
 		}
 		
 		//oneway
-
-		//eka
-		/*Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
-		GameObject[] plats = GameObject.FindGameObjectsWithTag("One Way");
-		for (int i = 0; i < plats.Length; i++)
-		{
-			Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
-			if (poos.y < plats[i].transform.position.y + thick.y)
-			{
-				plats[i].layer = 11; //one way
-			}
-			else
-			{
-				plats[i].layer = 8; //terraincollision
-			}
-		}*/
-
-
-
-		//uus
-		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
-
-		string theTag = "One Way";
-		for (int tag = 0; tag < 2; tag++)
-		{
-
-			GameObject[] plats = GameObject.FindGameObjectsWithTag(theTag);
-			for (int i = 0; i < plats.Length; i++)
-			{
-				Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
-				if (poos.y < plats[i].transform.position.y + thick.y)
-				{
-					plats[i].layer = 11; //one way
-				}
-				else
-				{
-					plats[i].layer = 8; //terraincollision
-				}
-			}
-			theTag = "Moving and One Way";
-		}
-		
-
+		OneWayPlatformCollision(colliderWidth, colliderHeight);
 
 		//stop gliding if we slow down or hit a wall
 		GlideWallInteract(colliderWidth, colliderHeight);
@@ -260,26 +173,73 @@ public class Player : MonoBehaviour
 		CheckIllegalPosition();
 
 		//camera following and limiting
-		if (cameraObj != null) //tama
+		camFollow.UpdateCameraPosition();
+	}
+
+	void OneWayPlatformCollision(float colliderWidth, float colliderHeight)
+	{
+		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
+		string theTag = "One Way";
+		for (int tag = 0; tag < 2; tag++)
 		{
-			cameraObj.transform.position = transform.position; //tama
-
-			Transform camMinT = GameObject.Find("Camera Limit Min").transform;
-			Transform camMaxT = GameObject.Find("Camera Limit Max").transform;
-
-			Vector3 min = camMinT.position;
-			Vector3 max = camMaxT.position;
-
-
-			Vector3 pos = cameraObj.transform.position;
-			Vector3 newPos = new Vector3(Mathf.Clamp(pos.x, min.x, max.x), Mathf.Clamp(pos.y, min.y, max.y), -10.0f);
-
-			cameraObj.transform.position = newPos;
+			GameObject[] plats = GameObject.FindGameObjectsWithTag(theTag);
+			for (int i = 0; i < plats.Length; i++)
+			{
+				Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
+				if (poos.y < plats[i].transform.position.y + thick.y)
+				{
+					plats[i].layer = 11; //one way
+				}
+				else
+				{
+					plats[i].layer = 8; //terraincollision
+				}
+			}
+			theTag = "Moving and One Way";
 		}
 	}
-	void LateUpdate()
+
+	void Animation()
 	{
-		
+		if (padInput.x <= deadZone && padInput.x >= -deadZone)
+		{
+			//idle
+			ator.SetBool("running", false);
+		}
+		else if (!dashing)
+		{
+			//run
+			ator.SetBool("running", true);
+
+			//facing direction
+			if (rigid.velocity.x > deadZone)
+			{
+				faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
+				animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+				animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
+			}
+			else if (rigid.velocity.x < -deadZone)
+			{
+				faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
+				animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+				animT.localPosition = new Vector3(0.15f, 0.04f, 1.0f);
+			}
+		}
+
+		ator.SetBool("dashing", dashing);
+		ator.SetBool("onGround", onGround);
+		ator.SetBool("gliding", gliding);
+
+		//idle alternating
+		if (idleTimer <= 0.0f)
+		{
+			ator.SetTrigger("altIdle");
+			idleTimer = Random.value * 1.65f + 1.8f;
+		}
+		else
+		{
+			idleTimer -= Time.deltaTime;
+		}
 	}
 
 	void CheckIllegalPosition()
@@ -304,12 +264,12 @@ public class Player : MonoBehaviour
 
 	void MovementNormal()
 	{
-		if (padInput.x < -0.5f)
+		if (padInput.x < -deadZone)
 		{
 			//rigid.velocity = new Vector2(-speed, rigid.velocity.y);
 			rigid.velocity -= new Vector2(moveAccel * Time.deltaTime, 0.0f); //alt
 		}
-		else if (padInput.x > 0.5f)
+		else if (padInput.x > deadZone)
 		{
 			//rigid.velocity = new Vector2(speed, rigid.velocity.y);
 			rigid.velocity += new Vector2(moveAccel * Time.deltaTime, 0.0f); //alt
