@@ -89,6 +89,7 @@ public class Collectible : MonoBehaviour
 
     void AddPoints()
     {
+        GameObject.Find("Pick Up Droplets").GetComponent<AudioSource>().Play();
         Debug.Log("5 POINTS TO GRYFFINDOR (AKA We need a point system)");
 		Instantiate(pickupParticle, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
@@ -96,6 +97,7 @@ public class Collectible : MonoBehaviour
 
     void AddTreasure()
     {
+        GameObject.Find("Pick Up Treasure").GetComponent<AudioSource>().Play();
         Destroy(this.gameObject);
     }
 }

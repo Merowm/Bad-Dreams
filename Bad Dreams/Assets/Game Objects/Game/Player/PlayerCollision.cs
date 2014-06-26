@@ -43,11 +43,6 @@ public class PlayerCollision : MonoBehaviour
 				Debug.Log("player null");
 		}
 
-
-
-        if (other.gameObject.name == "Dog")
-            GameplayStateManager.SwitchTo(GameplayState.GameOver);
-
 		if ((other.gameObject.tag == "Moving Environment" || other.gameObject.tag == "Moving and One Way") && player.onGround)
             transform.parent = other.gameObject.transform;
     }

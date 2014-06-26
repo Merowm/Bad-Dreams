@@ -7,7 +7,7 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetButtonDown("Pause"))
         {
-            if (GameplayStateManager.CurrentState == GameplayState.Playing)
+            if (GameplayStateManager.CurrentState == GameplayState.Playing || GameplayStateManager.CurrentState == GameplayState.Options)
                 GameplayStateManager.SwitchTo(GameplayState.Paused);
             else if (GameplayStateManager.CurrentState == GameplayState.Paused)
                 GameplayStateManager.SwitchTo(GameplayState.Playing);

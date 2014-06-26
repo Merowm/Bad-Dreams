@@ -6,5 +6,6 @@ public enum GameplayState
     Playing,
     LevelFinished,
     Paused,
-    GameOver
+    GameOver,
+    Options
 }

@@ -8,6 +8,7 @@ public class GameplayStateSystem : MonoBehaviour
 
     private List<GameObject> PauseObjects { get; set; }
     private List<GameObject> GameOverObjects { get; set; }
+    private List<GameObject> OptionsObjects { get; set; }
 
     #region Find objects for each state
 
@@ -16,6 +17,7 @@ public class GameplayStateSystem : MonoBehaviour
         GameplayStateManager.UpdateReferences();
         GetPauseObjects();
         GetGameOverObjects();
+        GetOptionsObjects();
 
         SwitchTo(GameplayState.Playing);
     }
@@ -34,6 +36,14 @@ public class GameplayStateSystem : MonoBehaviour
 
         GameOverObjects.Add(GameObject.Find("Game Over"));
         SetGameObjectsActive(GameOverObjects, false);
+    }
+
+    private void GetOptionsObjects()
+    {
+        OptionsObjects = new List<GameObject>();
+
+        OptionsObjects.Add(GameObject.Find("Options UI"));
+        SetGameObjectsActive(OptionsObjects, false);
     }
 
     #endregion Find objects for each state
@@ -59,6 +69,10 @@ public class GameplayStateSystem : MonoBehaviour
             case GameplayState.Playing:
                 SwitchToPlaying();
                 break;
+
+            case GameplayState.Options:
+                SwitchToOptions();
+                break;
         }
     }
 
@@ -73,6 +87,7 @@ public class GameplayStateSystem : MonoBehaviour
     private void SwitchToPaused()
     {
         Time.timeScale = 0.0F;
+        SetGameObjectsActive(OptionsObjects, false);
         SetGameObjectsActive(PauseObjects, true);
     }
 
@@ -80,6 +95,12 @@ public class GameplayStateSystem : MonoBehaviour
     {
         Time.timeScale = 1.0F;
         SetGameObjectsActive(PauseObjects, false);
+    }
+
+    private void SwitchToOptions()
+    {
+        SetGameObjectsActive(PauseObjects, false);
+        SetGameObjectsActive(OptionsObjects, true);
     }
 
     #endregion Perform actions when switching to a state
