@@ -4,9 +4,11 @@ using System.Collections;
 public class Timer : MonoBehaviour
 {
 	public float time;
+	float timer;
 	UILabel timerLabel;
 	void Start ()
 	{
+		timer = time;
 	}
 	
 	void Update ()
@@ -17,8 +19,8 @@ public class Timer : MonoBehaviour
 		}
 		else
 		{
-			int mins = (int)(time / 60);
-			int secs = (int)(time % 60);
+			int mins = (int)(timer / 60);
+			int secs = (int)(timer % 60);
 
 			if (secs < 10)
 			{
@@ -28,17 +30,22 @@ public class Timer : MonoBehaviour
 			{
 				timerLabel.text = mins + ":" + secs;
 			}
-			time -= Time.deltaTime;
+			timer -= Time.deltaTime;
 
-			if (time <= 0.0f)
+			if (timer <= 0.0f)
 			{
 				GameplayStateManager.SwitchTo(GameplayState.GameOver);
 			}
 		}
 	}
 
+	public void Reset()
+	{
+		timer = time;
+	}
+
     public void TimeBonus()
     {
-        time += 20;
+        timer += 20;
     }
 }

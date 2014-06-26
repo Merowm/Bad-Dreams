@@ -40,34 +40,38 @@ public class GameplayStateSystem : MonoBehaviour
 
     public void SwitchTo(GameplayState state)
     {
-        CurrentState = state;
         OnSwitch(state);
     }
 
     private void OnSwitch(GameplayState state)
     {
-        switch (state)
-        {
-            case GameplayState.GameOver:
-                SwitchToGameOver();
-                break;
+		if (CurrentState != state)
+		{
+			CurrentState = state;
+			switch (state)
+			{
+				case GameplayState.GameOver:
+					SwitchToGameOver();
+					break;
 
-            case GameplayState.Paused:
-                SwitchToPaused();
-                break;
+				case GameplayState.Paused:
+					SwitchToPaused();
+					break;
 
-            case GameplayState.Playing:
-                SwitchToPlaying();
-                break;
-        }
+				case GameplayState.Playing:
+					SwitchToPlaying();
+					break;
+			}
+		}
     }
 
     #region Perform actions when switching to a state
 
     private void SwitchToGameOver()
     {
+		Debug.Log("SwitchToGameOver");
         SetGameObjectsActive(GameOverObjects, true);
-        Invoke("LoadLastCheckpoint", 1.5F);
+        Invoke("LoadLastCheckpoint", 2.5F);
     }
 
     private void SwitchToPaused()
@@ -92,6 +96,17 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void LoadLastCheckpoint()
     {
-        Application.LoadLevel("leveltest");
+        //Application.LoadLevel("leveltest");
+		GameObject player = GameObject.Find("Player");
+		if (player)
+		{
+			player.GetComponent<Player>().GotoLastCheckpoint();
+			SwitchTo(GameplayState.Playing);
+
+			GameObject.Find("Timer").GetComponent<Timer>().Reset();
+			//GameObject.Find("Game Over").GetComponent<TweenAlpha>().enabled = true;
+			//GameObject.Find("Game Over").GetComponent<TweenAlpha>().ResetToBeginning();
+			//GameObject.Find("Game Over").GetComponent<TweenAlpha>().enabled = false;
+		}
     }
 }

@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
 	Transform animT;
 	Stamina stamina;
 	CameraFollowing camFollow;
+	GameObject lastCheckpoint;
 
 	void Start ()
 	{
@@ -74,6 +75,15 @@ public class Player : MonoBehaviour
 
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
+
+		if (onGround)
+		{
+			rigid.gravityScale = 0.0f;
+		}
+		else
+		{
+			rigid.gravityScale = 1.0f;
+		}
 
 		//animation
 		Animation();
@@ -176,6 +186,27 @@ public class Player : MonoBehaviour
 		camFollow.UpdateCameraPosition();
 	}
 
+	public void GotoLastCheckpoint()
+	{
+		if (lastCheckpoint)
+		{
+			transform.position = lastCheckpoint.transform.position;
+			rigid.velocity = Vector3.zero;
+		}
+		else
+		{
+			GotoPlayerStart();
+		}
+	}
+
+	public void SetCurrentCheckpoint(GameObject obj)
+	{
+		if (obj)
+		{
+			lastCheckpoint = obj;
+		}
+	}
+
 	void OneWayPlatformCollision(float colliderWidth, float colliderHeight)
 	{
 		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
@@ -247,19 +278,24 @@ public class Player : MonoBehaviour
 		float x = transform.position.x;
 		float y = transform.position.y;
 		if (y < -15.0f)
-		{ 
-			GameObject start = GameObject.Find("Player Start");
-
-			if (start != null)
-			{
-				transform.position = start.transform.position;
-			}
-			else
-			{
-				transform.position = Vector3.zero;
-			}
-			rigid.velocity = Vector3.zero;
+		{
+			GotoPlayerStart();
 		}
+	}
+
+	void GotoPlayerStart()
+	{
+		GameObject start = GameObject.Find("Player Start");
+
+		if (start != null)
+		{
+			transform.position = start.transform.position;
+		}
+		else
+		{
+			transform.position = Vector3.zero;
+		}
+		rigid.velocity = Vector3.zero;
 	}
 
 	void MovementNormal()
@@ -280,13 +316,13 @@ public class Player : MonoBehaviour
 
 			if (onGround)
 			{
-				if (rigid.velocity.x > 0.0f) //alt
+				if (rigid.velocity.x > 0.0f)
 				{
 					rigid.velocity -= new Vector2(moveDecel * Time.deltaTime, 0.0f);
 
 					rigid.velocity = new Vector2(Mathf.Max(0.0f, rigid.velocity.x), rigid.velocity.y);
 				}
-				else if (rigid.velocity.x < 0.0f) //alt
+				else if (rigid.velocity.x < 0.0f)
 				{
 					rigid.velocity += new Vector2(moveDecel * Time.deltaTime, 0.0f);
 
@@ -445,7 +481,7 @@ public class Player : MonoBehaviour
 				tp.transform.parent = this.transform;
 			}*/
 
-			if (Raycast(pos, faceDirection, 0.03f))
+			if (Raycast(pos, faceDirection, 0.03f) != -1)
 			{
 				if (gliding)
 				{
@@ -510,36 +546,41 @@ public class Player : MonoBehaviour
 		for (float offset = -gap; offset <= gap; offset += gap)
 		{
 			//Debug.Log("offset " + offset);
-			if (Raycast(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f), 0.03f))
+			int result = Raycast(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f), 0.03f);
+			if (result != -1)
 			{
 				//touching ground
 				onGround = true;
 				gliding = false;
 				allowBoost = true;
 				glideHitWallTimer = 0.0f;
-				
+
+
+				/*if (result == 12)
+				{
+					
+				}*/
 			}
-			/*else
-			{
-				
-			}*/
 		}
 		//Debug.Log("landcheck end");
 	}
 
-	bool Raycast(Vector3 pos, Vector3 direction, float length) //terrain
+	int Raycast(Vector3 pos, Vector3 direction, float length) //returns collider's layer if collision occurs, -1 when no collision occurs
 	{
-		//user layer 8 on terraincollision
-		RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, 1 << 8);
+		//user layer 8  is terraincollision
+		//user layer 12 is slope
+		int layer = (1 << 8) | (1 << 12);
+
+		RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, layer);
 
 		if (hit != null)
 		{
 			if (hit.collider != null)
 			{
-				return true;
+				return hit.collider.gameObject.layer;
 			}
 		}
-		return false;
+		return -1;
 	}
 
     void OnCollisionEnter2D(Collision2D col)
@@ -558,6 +599,7 @@ public class Player : MonoBehaviour
         }
 		
     }
+
 	void OnTriggerEnter2D(Collider2D c)
 	{
 		if (c.gameObject.name == "Finish Line")
