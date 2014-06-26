@@ -9,7 +9,6 @@ public class OnTreasureCollision : MonoBehaviour
     private void Start()
     {
         levelInfo = GameObject.Find("LevelInfo").GetComponent<LevelInfo>();
-        Debug.Log("SAVE " + SaveManager.CurrentSave.Levels[0].Collectibles.Count);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

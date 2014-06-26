@@ -50,7 +50,7 @@ public class HidingSkill : MonoBehaviour
     public void Unhide()
     {
         IsHiding = false;
-        HidingPossible = true;
+        HidingPossible = false;
         SwapLayerTo("Player Foreground");
         Physics2D.IgnoreLayerCollision(9, 10, false);
     }

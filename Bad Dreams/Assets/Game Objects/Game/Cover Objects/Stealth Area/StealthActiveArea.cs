@@ -44,8 +44,8 @@ public class StealthActiveArea : MonoBehaviour
                 player.Unhide();
             }
 
-            player.HidingPossible = true;
             player.OverCoverObject = false;
+            player.HidingPossible = false;
         }
     }
 }
