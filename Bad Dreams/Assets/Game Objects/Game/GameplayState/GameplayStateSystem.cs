@@ -55,10 +55,8 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void OnSwitch(GameplayState state)
     {
-<<<<<<< HEAD
 		if (CurrentState != state)
 		{
-			CurrentState = state;
 			switch (state)
 			{
 				case GameplayState.GameOver:
@@ -72,28 +70,12 @@ public class GameplayStateSystem : MonoBehaviour
 				case GameplayState.Playing:
 					SwitchToPlaying();
 					break;
+
+				case GameplayState.Options:
+					SwitchToOptions();
+					break;
 			}
 		}
-=======
-        switch (state)
-        {
-            case GameplayState.GameOver:
-                SwitchToGameOver();
-                break;
-
-            case GameplayState.Paused:
-                SwitchToPaused();
-                break;
-
-            case GameplayState.Playing:
-                SwitchToPlaying();
-                break;
-
-            case GameplayState.Options:
-                SwitchToOptions();
-                break;
-        }
->>>>>>> 51bdb0cc95d802fd2712dda6e25a130c30f7e964
     }
 
     #region Perform actions when switching to a state
