@@ -29,7 +29,7 @@ public class StealthUsableArea : MonoBehaviour
     {
         if (other.name == targetObject)
         {
-            if (player.CoverObject.name != "Flower(Clone)" ||
+            if (player.CoverObject.tag != "Flower Cover Skill" ||
                 !player.IsHiding)
             {
                 if (!player.OverCoverObject)

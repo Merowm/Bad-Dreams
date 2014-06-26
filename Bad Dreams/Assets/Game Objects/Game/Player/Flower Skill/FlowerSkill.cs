@@ -31,9 +31,6 @@ public class FlowerSkill : MonoBehaviour
     private void Update()
     {
         HandleInput();
-
-        if (flower.activeSelf)
-            EndSkillIfNotBehindFlower();
     }
 
     private void HandleInput()
@@ -72,7 +69,7 @@ public class FlowerSkill : MonoBehaviour
     public void StopSkill()
     {
         if (hidingSkill.IsHiding &&
-            hidingSkill.CoverObject.name == "Flower(Clone)")
+            hidingSkill.CoverObject.tag == "Flower Skill Cover")
         {
             hidingSkill.Unhide();
             hidingSkill.HidingPossible = false;
@@ -92,14 +89,6 @@ public class FlowerSkill : MonoBehaviour
         set
         {
             _Charges = Mathf.Clamp(value, 0, 3);
-        }
-    }
-
-    private void EndSkillIfNotBehindFlower()
-    {
-        if (Vector2.Distance(transform.position, flower.transform.position) > flowerCollider.size.x * 2)
-        {
-            StopSkill();
         }
     }
 }
