@@ -73,8 +73,9 @@ public class FlowerSkill : MonoBehaviour
         {
             hidingSkill.Unhide();
             hidingSkill.HidingPossible = false;
+			
         }
-
+		hidingSkill.OverCoverObject = false;
         flower.SetActive(false);
     }
 

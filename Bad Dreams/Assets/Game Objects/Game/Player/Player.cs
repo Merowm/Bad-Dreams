@@ -76,6 +76,7 @@ public class Player : MonoBehaviour
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
 
+		//fix slope sliding
 		if (onGround)
 		{
 			rigid.gravityScale = 0.0f;
