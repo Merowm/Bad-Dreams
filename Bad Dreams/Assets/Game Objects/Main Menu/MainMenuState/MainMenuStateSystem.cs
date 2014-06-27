@@ -28,6 +28,7 @@ public class MainMenuStateSystem : MonoBehaviour
         GetOptionsObjects();
         GetCreditsObjects();
 
+        Time.timeScale = 1.0F;
         SwitchTo(MainMenuState.Main);
     }
 

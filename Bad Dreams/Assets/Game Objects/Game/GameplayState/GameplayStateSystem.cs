@@ -19,6 +19,7 @@ public class GameplayStateSystem : MonoBehaviour
         GetGameOverObjects();
         GetOptionsObjects();
 
+        Time.timeScale = 1.0F;
         SwitchTo(GameplayState.Playing);
     }
 
