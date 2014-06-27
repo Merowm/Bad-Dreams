@@ -14,6 +14,9 @@ public class LevelButton : MonoBehaviour
     private UILabel loadedLevelLabel;
     private UILabel levelIndexLabel;
 
+    private Color32 collectibleFoundColor;
+    private Color32 collectibleNotFoundColor;
+
     private void Start()
     {
         button = GetComponent<UIButton>();
@@ -23,6 +26,8 @@ public class LevelButton : MonoBehaviour
         collectibleThree = transform.FindChild("Collectible 3").GetComponent<UISprite>();
         loadedLevelLabel = transform.FindChild("Level Name").GetComponent<UILabel>();
         levelIndexLabel = transform.FindChild("Level Index").GetComponent<UILabel>();
+        collectibleNotFoundColor = new Color32(255, 255, 255, 50);
+        collectibleFoundColor = new Color32(255, 255, 255, 255);
 
         UpdateLabel();
     }
@@ -52,11 +57,19 @@ public class LevelButton : MonoBehaviour
             }
 
             if (!SaveManager.CurrentSave.Levels[index].Collectibles[0])
-                collectibleOne.enabled = false;
+                collectibleOne.color = collectibleNotFoundColor;
+            else
+                collectibleOne.color = collectibleFoundColor;
+
             if (!SaveManager.CurrentSave.Levels[index].Collectibles[1])
-                collectibleTwo.enabled = false;
+                collectibleTwo.color = collectibleNotFoundColor;
+            else
+                collectibleTwo.color = collectibleFoundColor;
+
             if (!SaveManager.CurrentSave.Levels[index].Collectibles[2])
-                collectibleThree.enabled = false;
+                collectibleThree.color = collectibleNotFoundColor;
+            else
+                collectibleThree.color = collectibleFoundColor;
         }
     }
 
