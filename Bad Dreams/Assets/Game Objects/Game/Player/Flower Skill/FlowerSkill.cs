@@ -44,7 +44,6 @@ public class FlowerSkill : MonoBehaviour
         {
             ActivateSkill();
             Invoke("StopSkill", skillDuration);    
-            Invoke("CooldownFinished", skillDuration);
         }
     }
 
@@ -80,13 +79,10 @@ public class FlowerSkill : MonoBehaviour
         {
             hidingSkill.Unhide();
         }
+
 		hidingSkill.OverCoverObject = false;
 		hidingSkill.HidingPossible = false;
         flower.SetActive(false);
-    }
-
-    private void CooldownFinished()
-    {
         skillUsable = true;
     }
 

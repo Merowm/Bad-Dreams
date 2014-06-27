@@ -8,7 +8,6 @@ using System.Collections;
 public class HidingSkill : MonoBehaviour
 {
     public bool IsHiding { get; set; }
-    public bool HidingPossible { get; set; }
     public bool OverCoverObject { get; set; }
     public GameObject CoverObject { get; set; }
 
@@ -19,25 +18,9 @@ public class HidingSkill : MonoBehaviour
         spriteRenderer = transform.FindChild("Animator").GetComponent<SpriteRenderer>();
     }
 
-    private void Update()
-    {
-        HandleInput();
-    }
-
-    private void HandleInput()
-    {
-        if (Input.GetButtonDown("Hide") &&
-            HidingPossible &&
-            !IsHiding)
-        {
-            Hide(CoverObject);
-        }
-    }
-
     public void Hide(GameObject cover)
     {
         IsHiding = true;
-        HidingPossible = false;
         SwapLayerTo("Player Background");
         Physics2D.IgnoreLayerCollision(9, 10, true);
         CoverObject = cover;
@@ -50,7 +33,6 @@ public class HidingSkill : MonoBehaviour
     public void Unhide()
     {
         IsHiding = false;
-        HidingPossible = false;
         SwapLayerTo("Player Foreground");
         Physics2D.IgnoreLayerCollision(9, 10, false);
     }
