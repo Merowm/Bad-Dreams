@@ -19,8 +19,7 @@ public class StealthActiveArea : MonoBehaviour
     {
         if (other.name == targetObject && Input.GetButton("Hide"))
         {
-            player.Hide(player.CoverObject);
-            player.HidingPossible = false;
+            player.Hide(gameObject);
         }
         else if (other.name == targetObject)
         {
@@ -32,7 +31,10 @@ public class StealthActiveArea : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.name == targetObject)
-            player.HidingPossible = false;
+        {
+            if (!player.IsHiding)
+                player.OverCoverObject = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -45,7 +47,6 @@ public class StealthActiveArea : MonoBehaviour
             }
 
             player.OverCoverObject = false;
-            player.HidingPossible = false;
         }
     }
 }
