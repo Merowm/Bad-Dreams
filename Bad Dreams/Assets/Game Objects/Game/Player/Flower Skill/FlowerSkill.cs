@@ -60,10 +60,17 @@ public class FlowerSkill : MonoBehaviour
 
         hidingSkill.Hide(flower);
 
-        if (player.transform.parent != null)
-            flower.transform.parent = player.transform.parent;
-        else
-            flower.transform.parent = null;
+		if (player.parentObject != null)
+		{
+			flower.GetComponent<Flower>().parentObject = player.parentObject;
+			flower.GetComponent<Flower>().offsetFromPlatform = transform.position - player.parentObject.transform.position;
+			//flower.transform.parent = player.transform.parent;
+		}
+		else
+		{
+			flower.GetComponent<Flower>().parentObject = null;
+			//flower.transform.parent = null;
+		}
     }
 
     public void StopSkill()
@@ -72,10 +79,9 @@ public class FlowerSkill : MonoBehaviour
             hidingSkill.CoverObject.tag == "Flower Skill Cover")
         {
             hidingSkill.Unhide();
-            hidingSkill.HidingPossible = false;
-			
         }
 		hidingSkill.OverCoverObject = false;
+		hidingSkill.HidingPossible = false;
         flower.SetActive(false);
     }
 
