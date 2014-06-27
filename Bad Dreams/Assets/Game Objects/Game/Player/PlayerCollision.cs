@@ -4,25 +4,27 @@ using System.Collections;
 public class PlayerCollision : MonoBehaviour
 {
     private Player player;
+	//Vector3 offsetFromPlatform;
 
     private void Start()
     {
         player = GetComponent<Player>();
-		if (player == null)
-		{
-			Debug.Log("player null start");
-		}
     }
 
     private void Update()
     {
-        if (!player.onGround)
-            transform.parent = null;
-
-		if (player == null)
+		if (!player.onGround)
 		{
-			Debug.Log("player null update");
+			player.parentObject = null;
+			//transform.parent = null;
 		}
+		/*else
+		{
+			if (player.parentObject)
+			{
+				transform.position = player.parentObject.transform.position + player.offsetFromPlatform;
+			}
+		}*/
     }
 
     // Change to use tags such as "Enemy" & "Moving Platform"
@@ -43,7 +45,13 @@ public class PlayerCollision : MonoBehaviour
 				Debug.Log("player null");
 		}
 
+		//move to player terrain collision?
 		if ((other.gameObject.tag == "Moving Environment" || other.gameObject.tag == "Moving and One Way") && player.onGround)
-            transform.parent = other.gameObject.transform;
+		{
+			player.parentObject = other.gameObject;
+			player.offsetFromPlatform = transform.position - player.parentObject.transform.position + new Vector3(0.0f,-0.005f,0.0f);
+			Debug.Log("offset " + player.offsetFromPlatform);
+			//transform.parent = other.gameObject.transform;
+		}
     }
 }

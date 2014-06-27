@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
 	Stamina stamina;
 	CameraFollowing camFollow;
 	GameObject lastCheckpoint;
+	public GameObject parentObject;
+	public Vector3 offsetFromPlatform;
 
 	void Start ()
 	{
@@ -24,7 +26,7 @@ public class Player : MonoBehaviour
 		ator = animT.GetComponent<Animator>();
 		stamina = GetComponent<Stamina>();
 		camFollow = GetComponent<CameraFollowing>();
-
+		
 
 		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
@@ -75,6 +77,11 @@ public class Player : MonoBehaviour
 
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
+
+		if (parentObject)
+		{
+			transform.position = parentObject.transform.position + offsetFromPlatform;
+		}
 
 		//fix slope sliding
 		if (onGround)
@@ -555,7 +562,7 @@ public class Player : MonoBehaviour
 				gliding = false;
 				allowBoost = true;
 				glideHitWallTimer = 0.0f;
-
+				
 
 				/*if (result == 12)
 				{
@@ -563,6 +570,12 @@ public class Player : MonoBehaviour
 				}*/
 			}
 		}
+
+		/*if (!onGround)
+		{
+			Debug.Log("parent nullify");
+			parentObject = null;
+		}*/
 		//Debug.Log("landcheck end");
 	}
 
@@ -578,6 +591,19 @@ public class Player : MonoBehaviour
 		{
 			if (hit.collider != null)
 			{
+				//
+
+				/*
+				if ((hit.collider.gameObject.tag == "Moving Environment" || hit.collider.gameObject.tag == "Moving and One Way"))
+				{
+					parentObject = hit.collider.gameObject;
+					offsetFromPlatform = transform.position - parentObject.transform.position;
+					Debug.Log("offset " + offsetFromPlatform);
+					//transform.parent = other.gameObject.transform;
+				}
+				*/
+
+				//
 				return hit.collider.gameObject.layer;
 			}
 		}
