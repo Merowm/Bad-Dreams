@@ -57,6 +57,8 @@ public class GameplayStateSystem : MonoBehaviour
     {
 		if (CurrentState != state)
 		{
+            CurrentState = state;
+
 			switch (state)
 			{
 				case GameplayState.GameOver:
@@ -97,6 +99,7 @@ public class GameplayStateSystem : MonoBehaviour
     private void SwitchToPlaying()
     {
         Time.timeScale = 1.0F;
+        SetGameObjectsActive(GameOverObjects, false);
         SetGameObjectsActive(PauseObjects, false);
     }
 
