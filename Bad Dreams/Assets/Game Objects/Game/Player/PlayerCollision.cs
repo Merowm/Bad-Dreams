@@ -15,8 +15,8 @@ public class PlayerCollision : MonoBehaviour
     {
 		if (!player.onGround)
 		{
-			player.parentObject = null;
-			//transform.parent = null;
+			//player.parentObject = null;
+			transform.parent = null;
 		}
 		/*else
 		{
@@ -48,10 +48,10 @@ public class PlayerCollision : MonoBehaviour
 		//move to player terrain collision?
 		if ((other.gameObject.tag == "Moving Environment" || other.gameObject.tag == "Moving and One Way") && player.onGround)
 		{
-			player.parentObject = other.gameObject;
-			player.offsetFromPlatform = transform.position - player.parentObject.transform.position + new Vector3(0.0f,-0.005f,0.0f);
-			Debug.Log("offset " + player.offsetFromPlatform);
-			//transform.parent = other.gameObject.transform;
+			//player.parentObject = other.gameObject;
+			//player.offsetFromPlatform = transform.position - player.parentObject.transform.position + new Vector3(0.0f,-0.005f,0.0f);
+			//Debug.Log("offset " + player.offsetFromPlatform);
+			transform.parent = other.gameObject.transform;
 		}
     }
 }

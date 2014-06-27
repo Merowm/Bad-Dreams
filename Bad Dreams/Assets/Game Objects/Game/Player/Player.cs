@@ -16,8 +16,9 @@ public class Player : MonoBehaviour
 	Stamina stamina;
 	CameraFollowing camFollow;
 	GameObject lastCheckpoint;
-	public GameObject parentObject;
-	public Vector3 offsetFromPlatform;
+	//public GameObject parentObject;
+	//public Vector3 offsetFromPlatform;
+	//GameObject playerFlowerCollider;
 
 	void Start ()
 	{
@@ -77,11 +78,18 @@ public class Player : MonoBehaviour
 
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
-
-		if (parentObject)
+		/*if (!playerFlowerCollider)
+		{
+			playerFlowerCollider = GameObject.Find("Player Flower Collider");
+		}
+		if (playerFlowerCollider)
+		{
+			playerFlowerCollider.transform.position = transform.position;
+		}*/
+		/*if (parentObject)
 		{
 			transform.position = parentObject.transform.position + offsetFromPlatform;
-		}
+		}*/
 
 		//fix slope sliding
 		if (onGround)
