@@ -23,7 +23,7 @@ namespace SaveSystem
 
         public static void NewGame()
         {
-            PlayerPrefs.DeleteAll();
+            PlayerPrefs.DeleteKey("Save");
             CurrentSave = new Save();
             PlayerPrefs.Save();
         }
