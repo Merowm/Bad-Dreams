@@ -6,7 +6,6 @@ public class Collectible : MonoBehaviour
 {
     //Types
     // "AddTime"
-    // "AddSeed"
     // "AddPoints"
     // "Treasure"
 
@@ -77,13 +76,6 @@ public class Collectible : MonoBehaviour
     {
         Debug.Log("+20 SECONDS");
         GameObject.Find("Timer").GetComponent<Timer>().TimeBonus();
-        Destroy(this.gameObject);
-    }
-
-    void AddSeed()
-    {
-        Debug.Log("SEEEEEEEEEEEEEEEDS");
-        GameObject.Find("Player").GetComponent<FlowerSkill>().Charges++;
         Destroy(this.gameObject);
     }
 
