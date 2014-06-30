@@ -5,6 +5,14 @@ public class Transition : MonoBehaviour
 {
     private TweenScale tweenScale;
 
+    public void Awake()
+    {
+        Transition[] gameObjects = GameObject.FindObjectsOfType<Transition>();
+
+        if (gameObjects.Length > 1)
+            DestroyImmediate(this);
+    }
+
     public void Start()
     {
         tweenScale = GetComponent<TweenScale>();

@@ -79,7 +79,7 @@ public class LevelButton : MonoBehaviour
         {
             Transition transition = GameObject.Find("Transition").GetComponent<Transition>();
             transition.PlayForward();
-            Invoke("LoadLevel", transition.GetComponent<TweenScale>().duration);
+            transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLevel"));
         }
     }
 
