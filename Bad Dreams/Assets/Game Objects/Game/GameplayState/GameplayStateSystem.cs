@@ -9,6 +9,7 @@ public class GameplayStateSystem : MonoBehaviour
     private List<GameObject> PauseObjects { get; set; }
     private List<GameObject> GameOverObjects { get; set; }
     private List<GameObject> OptionsObjects { get; set; }
+    private List<GameObject> TutorialObjects { get; set; }
 
     #region Find objects for each state
 
@@ -18,6 +19,7 @@ public class GameplayStateSystem : MonoBehaviour
         GetPauseObjects();
         GetGameOverObjects();
         GetOptionsObjects();
+        GetTutorialObjects();
 
         Time.timeScale = 1.0F;
         SwitchTo(GameplayState.Playing);
@@ -45,6 +47,14 @@ public class GameplayStateSystem : MonoBehaviour
 
         OptionsObjects.Add(GameObject.Find("Options UI"));
         SetGameObjectsActive(OptionsObjects, false);
+    }
+
+    private void GetTutorialObjects()
+    {
+        TutorialObjects = new List<GameObject>();
+
+        TutorialObjects.Add(GameObject.Find("Tutorial Popup"));
+        SetGameObjectsActive(TutorialObjects, false);
     }
 
     #endregion Find objects for each state
@@ -77,6 +87,10 @@ public class GameplayStateSystem : MonoBehaviour
 				case GameplayState.Options:
 					SwitchToOptions();
 					break;
+
+                case GameplayState.Tutorial:
+                    SwitchToTutorial();
+                    break;
 			}
 		}
     }
@@ -95,6 +109,7 @@ public class GameplayStateSystem : MonoBehaviour
         Time.timeScale = 0.0F;
         SetGameObjectsActive(OptionsObjects, false);
         SetGameObjectsActive(PauseObjects, true);
+        SetGameObjectsActive(TutorialObjects, false);
     }
 
     private void SwitchToPlaying()
@@ -102,12 +117,20 @@ public class GameplayStateSystem : MonoBehaviour
         Time.timeScale = 1.0F;
         SetGameObjectsActive(GameOverObjects, false);
         SetGameObjectsActive(PauseObjects, false);
+        SetGameObjectsActive(TutorialObjects, false);
     }
 
     private void SwitchToOptions()
     {
         SetGameObjectsActive(PauseObjects, false);
         SetGameObjectsActive(OptionsObjects, true);
+    }
+
+    private void SwitchToTutorial()
+    {
+        Debug.Log("hap");
+        Time.timeScale = 0.0f;
+        SetGameObjectsActive(TutorialObjects, true);
     }
 
     #endregion Perform actions when switching to a state
