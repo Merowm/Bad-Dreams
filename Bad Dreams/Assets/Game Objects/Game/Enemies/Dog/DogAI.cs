@@ -12,7 +12,7 @@ public class DogAI : MonoBehaviour
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 2;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 4;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
-    const int VISION_BECOME_ALERTED_THRESHOLD = 200;
+    const int VISION_BECOME_ALERTED_THRESHOLD = 5;
     const int ENEMY_LAYER = 9;
     const int SPEED_WALK = 1;
     const int SPEED_RUN = 2;
@@ -24,7 +24,7 @@ public class DogAI : MonoBehaviour
 
     public bool Alerted
     {
-        get 
+        get
         {
             return alerted;
         }
@@ -46,7 +46,7 @@ public class DogAI : MonoBehaviour
     Vector3 currentDir;
 
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
-    int alertness;
+    float alertness;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer;
     bool recentlyCollidedWithPlayer;
 
@@ -196,9 +196,9 @@ public class DogAI : MonoBehaviour
         thisSpriteRend.transform.localScale = new Vector3(-thisSpriteRend.transform.localScale.x, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
         currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
         thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
-        
+
         if (playerVisible)
-        recentlyCollidedWithPlayer = false;
+            recentlyCollidedWithPlayer = false;
     }
 
     void ChangePlayerSortingLayer()
@@ -307,7 +307,7 @@ public class DogAI : MonoBehaviour
             else
             {
                 DEBUG_DRAWVISIONLINETOPLAYER(Color.yellow);
-                alertness += VISION_ALERTNESS_ADDITION_ON_SIGHT;
+                alertness += VISION_ALERTNESS_ADDITION_ON_SIGHT * Time.deltaTime;
             }
         }
         else
@@ -324,10 +324,11 @@ public class DogAI : MonoBehaviour
             {
                 if (alertTimer <= 0.0f)
                 {
-                    alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT;
+                    alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT * Time.deltaTime;
 
                     if (alertness <= 0)
                     {
+                        alertness = 0;
                         ToggleAlerted(false);
                         thisAnimator.SetBool("running", false);
                     }
@@ -337,7 +338,7 @@ public class DogAI : MonoBehaviour
             {
                 if (alertness > 0)
                 {
-                    alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT;
+                    alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT * Time.deltaTime;
                 }
             }
         }
@@ -442,7 +443,7 @@ public class DogAI : MonoBehaviour
                     if (!recentlyCollidedWithPlayer)
                     {
                         GameObject.Find("Collision Against Dog Sound").GetComponent<AudioSource>().Play();
-                        Invoke("AimEyesAtPlayer", 0.4f);
+                        Invoke("AimEyesAtPlayer", 0.2f);
                         Invoke("ResetCollisionWithPlayer", 0.6f);
                     }
                     recentlyCollidedWithPlayer = true;
@@ -457,8 +458,8 @@ public class DogAI : MonoBehaviour
 
     void OnCollisionStay2D(Collision2D col)
     {
-        //if (col.gameObject.name == "Player")
-        //GameplayStateManager.SwitchTo(GameplayState.GameOver);
+        if (col.gameObject.name == "Player")
+            GameplayStateManager.SwitchTo(GameplayState.GameOver);
     }
 
     void ResetCollisionWithPlayer()
@@ -588,12 +589,9 @@ public class DogAI : MonoBehaviour
         //LAYER 9 = ENEMY
         RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, 1 << 8);
 
-        if (hit != null)
+        if (hit.collider != null)
         {
-            if (hit.collider != null)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
