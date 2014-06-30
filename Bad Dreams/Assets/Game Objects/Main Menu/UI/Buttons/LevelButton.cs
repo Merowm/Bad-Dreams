@@ -76,6 +76,15 @@ public class LevelButton : MonoBehaviour
     private void OnClick()
     {
         if (!locked)
-            Application.LoadLevel(loadedLevelLabel.text);
+        {
+            Transition transition = GameObject.Find("Transition").GetComponent<Transition>();
+            transition.PlayForward();
+            transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLevel"));
+        }
+    }
+
+    private void LoadLevel()
+    {
+        Application.LoadLevel(loadedLevelLabel.text);
     }
 }

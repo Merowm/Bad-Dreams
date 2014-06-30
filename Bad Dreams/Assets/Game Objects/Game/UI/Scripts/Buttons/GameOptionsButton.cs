@@ -5,7 +5,6 @@ public class GameOptionsButton : MonoBehaviour
 {
     private void OnClick()
     {
-        Debug.Log("test");
         GameplayStateManager.SwitchTo(GameplayState.Options);
     }
 }
