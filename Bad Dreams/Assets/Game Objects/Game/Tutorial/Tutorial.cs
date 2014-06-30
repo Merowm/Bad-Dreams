@@ -3,12 +3,17 @@ using System.Collections;
 
 public class Tutorial : MonoBehaviour 
 {
+    GameObject tutorialTextBoxGameObject;
     UILabel tutorialTextBox;
     public string tutorialText;
 
 	void Start () 
     {
-        tutorialTextBox = GameObject.Find("Tutorial Text").GetComponent<UILabel>();
+        tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
+        if (tutorialTextBoxGameObject != null)
+        {
+            tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+        }
 	}
 	
 	void Update () 
@@ -22,8 +27,16 @@ public class Tutorial : MonoBehaviour
         {
             if (Input.GetButtonDown("Hide"))
             {
-                tutorialTextBox.text = tutorialText;
                 GameplayStateManager.SwitchTo(GameplayState.Tutorial);
+
+                if (tutorialTextBoxGameObject == null)
+                {
+                    tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
+                    tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+                    tutorialTextBox.text = tutorialText;
+                }
+                else
+                tutorialTextBox.text = tutorialText;
             }
         }
     }

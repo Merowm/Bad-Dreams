@@ -25,6 +25,10 @@ public class ParticleGenerator : MonoBehaviour
 		for (int i = 0; i < particles.Length; i++)
 		{
 			particles[i] = Resources.Load<GameObject>(resourcePath + i);
+			if (!particles[i])
+			{
+				Debug.Log("null particle");
+			}
 		}
 	}
 	

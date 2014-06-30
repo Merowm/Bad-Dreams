@@ -5,6 +5,7 @@ public class Particle : MonoBehaviour
 {
 	public float speed, dir, addDir, ttl;
 
+
 	float rad; //degrees in radians
 	float ttlBegin; //time to live value for referencing color phases
 	Vector3 direction;
@@ -13,13 +14,25 @@ public class Particle : MonoBehaviour
 	public AnimationCurve addDirMultiplyCurve;
 
 	public Vector3 velocity, addVelocity;
+	
+	public bool randomAddVelocityEnabled;
 
+	public float randomAddVelocityMultiplier;
+
+	Vector3 randomAddVelocity;
 	SpriteRenderer spr;
 
 	void Start ()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		ttlBegin = ttl;
+
+		if (randomAddVelocityEnabled)
+		{
+			addVelocity = new Vector3(Random.value * 2.0f - 1.0f,Random.value * 2.0f - 1.0f,0.0f);
+			addVelocity.Normalize();
+			addVelocity *= randomAddVelocityMultiplier;
+		}
 	}
 	
 	void Update()
@@ -48,6 +61,7 @@ public class Particle : MonoBehaviour
 		transform.position += direction * speed * Time.deltaTime;
 		transform.position += velocity * Time.deltaTime;
 		velocity += addVelocity * Time.deltaTime;
+		velocity += randomAddVelocity * Time.deltaTime;
 	}
 
 	float DegToRad(float deg)
