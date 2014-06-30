@@ -9,6 +9,7 @@ public class ParticleGenerator : MonoBehaviour
 	public GameObject[] particles;	//specify the count of particles, no need to specify the gameobjects themselves
 	public string resourcePath;		//path + prefix, where the script tries to locate particles (ex. "Particles/Particle" seeks prefabs named Particle0, Particle1, ...)
 
+	public string parentName;
 
 	float timer;
 	Transform topLeft, bottomRight;
@@ -20,7 +21,7 @@ public class ParticleGenerator : MonoBehaviour
 		
 		bottomRight = GameObject.Find(name + "/Top Left").transform;
 		topLeft = GameObject.Find(name + "/Bottom Right").transform;
-		backgroundParticlesObj = GameObject.Find("Generated Particles");
+		backgroundParticlesObj = GameObject.Find(parentName);
 		
 		for (int i = 0; i < particles.Length; i++)
 		{

@@ -14,7 +14,7 @@ public class Particle : MonoBehaviour
 	public AnimationCurve addDirMultiplyCurve;
 
 	public Vector3 velocity, addVelocity;
-	
+
 	public bool randomAddVelocityEnabled;
 
 	public float randomAddVelocityMultiplier;
@@ -33,6 +33,8 @@ public class Particle : MonoBehaviour
 			addVelocity.Normalize();
 			addVelocity *= randomAddVelocityMultiplier;
 		}
+
+
 	}
 	
 	void Update()
