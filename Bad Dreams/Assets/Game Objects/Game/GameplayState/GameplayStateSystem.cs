@@ -128,7 +128,6 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToTutorial()
     {
-        Debug.Log("hap");
         Time.timeScale = 0.0f;
         SetGameObjectsActive(TutorialObjects, true);
     }
