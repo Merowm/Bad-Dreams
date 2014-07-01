@@ -21,13 +21,8 @@ public class Transition : MonoBehaviour
 
     public void Update()
     {
-        if (!Application.isLoadingLevel && !tweenScale.enabled)
-            PlayReverse();
-
-        if (Input.GetKey(KeyCode.Return))
-            PlayForward();
-        if (Input.GetKey(KeyCode.Space))
-            PlayReverse();
+        //if (!Application.isLoadingLevel && !tweenScale.enabled)
+        //    PlayReverse();
     }
 
     public void PlayForward()

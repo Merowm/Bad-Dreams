@@ -10,6 +10,9 @@ public class GameplayStateSystem : MonoBehaviour
     private List<GameObject> GameOverObjects { get; set; }
     private List<GameObject> OptionsObjects { get; set; }
     private List<GameObject> TutorialObjects { get; set; }
+    private List<GameObject> LevelFinishedObjects { get; set; }
+
+    private Transition transition;
 
     #region Find objects for each state
 
@@ -20,8 +23,11 @@ public class GameplayStateSystem : MonoBehaviour
         GetGameOverObjects();
         GetOptionsObjects();
         GetTutorialObjects();
+        GetLevelFinishedObjects();
 
         Time.timeScale = 1.0F;
+        transition = GameObject.Find("Transition").GetComponent<Transition>();
+
         SwitchTo(GameplayState.Playing);
     }
 
@@ -55,6 +61,14 @@ public class GameplayStateSystem : MonoBehaviour
 
         TutorialObjects.Add(GameObject.Find("Tutorial Popup"));
         SetGameObjectsActive(TutorialObjects, false);
+    }
+
+    private void GetLevelFinishedObjects()
+    {
+        LevelFinishedObjects = new List<GameObject>();
+
+        LevelFinishedObjects.Add(GameObject.Find("Level Finished"));
+        SetGameObjectsActive(LevelFinishedObjects, false);
     }
 
     #endregion Find objects for each state
@@ -91,6 +105,10 @@ public class GameplayStateSystem : MonoBehaviour
                 case GameplayState.Tutorial:
                     SwitchToTutorial();
                     break;
+
+                case GameplayState.LevelFinished:
+                    SwitchToLevelFinished();
+                    break;
 			}
 		}
     }
@@ -99,9 +117,8 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToGameOver()
     {
-		Debug.Log("SwitchToGameOver");
-        SetGameObjectsActive(GameOverObjects, true);
-        Invoke("LoadLastCheckpoint", 2.5F);
+        transition.PlayForward();
+        transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLastCheckpoint"));
     }
 
     private void SwitchToPaused()
@@ -128,8 +145,15 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToTutorial()
     {
-        Time.timeScale = 0.0f;
+        Time.timeScale = 0.0F;
         SetGameObjectsActive(TutorialObjects, true);
+    }
+
+    private void SwitchToLevelFinished()
+    {
+        Time.timeScale = 0.0F;
+        transition.PlayForward();
+        transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "ActivateLevelFinishScreen"));
     }
 
     #endregion Perform actions when switching to a state
@@ -142,17 +166,20 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void LoadLastCheckpoint()
     {
-        //Application.LoadLevel("leveltest");
 		GameObject player = GameObject.Find("Player");
 		if (player)
 		{
+            transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "LoadLastCheckpoint"));
 			player.GetComponent<Player>().GotoLastCheckpoint();
 			SwitchTo(GameplayState.Playing);
-
-			GameObject.Find("Timer").GetComponent<Timer>().Reset();
-			//GameObject.Find("Game Over").GetComponent<TweenAlpha>().enabled = true;
-			//GameObject.Find("Game Over").GetComponent<TweenAlpha>().ResetToBeginning();
-			//GameObject.Find("Game Over").GetComponent<TweenAlpha>().enabled = false;
+            transition.PlayReverse();
 		}
+    }
+
+    private void ActivateLevelFinishScreen()
+    {
+        transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "ActivateLevelFinishScreen"));
+        SetGameObjectsActive(LevelFinishedObjects, true);
+        transition.PlayReverse();
     }
 }
