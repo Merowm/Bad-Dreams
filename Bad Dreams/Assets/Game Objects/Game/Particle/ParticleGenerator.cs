@@ -8,9 +8,10 @@ public class ParticleGenerator : MonoBehaviour
 	public float timeToLive;		//how long do we live before destroying (0 = infinite)
 	public GameObject[] particles;	//specify the count of particles, no need to specify the gameobjects themselves
 	public string resourcePath;		//path + prefix, where the script tries to locate particles (ex. "Particles/Particle" seeks prefabs named Particle0, Particle1, ...)
+	public string parentName;		//all particles are created inside this gameobject
+	public bool dontDestroy;		//don't destroy, when count == 0 || ttl == 0
 
-	public string parentName;
-
+	int startingCount;
 	float timer;
 	Transform topLeft, bottomRight;
 	GameObject backgroundParticlesObj;
@@ -18,7 +19,8 @@ public class ParticleGenerator : MonoBehaviour
 	void Start ()
 	{
 		timer = 0.0f;
-		
+		startingCount = count;
+
 		bottomRight = GameObject.Find(name + "/Top Left").transform;
 		topLeft = GameObject.Find(name + "/Bottom Right").transform;
 		backgroundParticlesObj = GameObject.Find(parentName);
@@ -32,13 +34,26 @@ public class ParticleGenerator : MonoBehaviour
 			}
 		}
 	}
+
+	public void Trigger()
+	{
+		//Debug.Log(name + " Trigger()");
+		count = startingCount;
+		timer = 0.0f;
+	}
 	
 	void Update ()
 	{
-		timer -= Time.deltaTime;
-		if (timer <= 0.0f)
+		if (timer > 0.0f)
 		{
-			timer += rate;
+			timer -= Time.deltaTime;
+			if (timer < 0.0f)
+				timer = 0.0f;
+		}
+
+		if (timer <= 0.0f && (count > 0 || startingCount == 0)) //if there are particles left to generate
+		{
+			timer = rate;
 			if (particles != null)
 			{
 				int i = 0;
@@ -73,7 +88,7 @@ public class ParticleGenerator : MonoBehaviour
 					if (count > 0)
 					{
 						count--;
-						if (count <= 0)
+						if (count <= 0 && !dontDestroy)
 						{
 							DestroyImmediate(this.gameObject);
 							return;
@@ -86,7 +101,7 @@ public class ParticleGenerator : MonoBehaviour
 		if (timeToLive > 0.0f)
 		{
 			timeToLive -= Time.deltaTime;
-			if (timeToLive <= 0.0f)
+			if (timeToLive <= 0.0f && !dontDestroy)
 			{
 				DestroyImmediate(this.gameObject);
 				return;
