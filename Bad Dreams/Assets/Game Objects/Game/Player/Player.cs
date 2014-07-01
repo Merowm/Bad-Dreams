@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 	CameraFollowing camFollow;
 	GameObject lastCheckpoint;
 
-	ParticleGenerator doubleJumpParticleGen;
+	ParticleGenerator doubleJumpParticleGen, dustParticleGen;
 	//public GameObject parentObject;
 	//public Vector3 offsetFromPlatform;
 	//GameObject playerFlowerCollider;
@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
 		stamina = GetComponent<Stamina>();
 		camFollow = GetComponent<CameraFollowing>();
 		doubleJumpParticleGen = GameObject.Find("Double Jump Particle Generator").GetComponent<ParticleGenerator>();
+		dustParticleGen = GameObject.Find("Dust Particle Generator").GetComponent<ParticleGenerator>();
 
 		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
@@ -563,6 +564,9 @@ public class Player : MonoBehaviour
 		Vector3 bottomPoint = transform.position + new Vector3(0.0f, -colliderHeight / 2.0f - 0.005f);
 		float gap = colliderWidth / 2.0f;
 
+		bool onGroundBefore = onGround;
+
+
 		//Debug.Log("landcheck");
 		onGround = false;
 		for (float offset = -gap; offset <= gap; offset += gap)
@@ -585,6 +589,10 @@ public class Player : MonoBehaviour
 			}
 		}
 
+		if (onGroundBefore == false && onGround == true)
+		{
+			dustParticleGen.Trigger();
+		}
 		/*if (!onGround)
 		{
 			Debug.Log("parent nullify");

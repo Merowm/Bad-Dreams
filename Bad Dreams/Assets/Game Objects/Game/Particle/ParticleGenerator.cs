@@ -37,7 +37,7 @@ public class ParticleGenerator : MonoBehaviour
 
 	public void Trigger()
 	{
-		//Debug.Log(name + " Trigger()");
+		Debug.Log(name + " Trigger()");
 		count = startingCount;
 		timer = 0.0f;
 	}
