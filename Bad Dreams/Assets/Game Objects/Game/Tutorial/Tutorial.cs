@@ -32,6 +32,11 @@ public class Tutorial : MonoBehaviour
             tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
         }
 	}
+
+    void FixedUpdate()
+    {
+        InsideTutorialCollider = false;
+    }
 	
 	void Update () 
     {
