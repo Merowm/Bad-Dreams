@@ -17,6 +17,8 @@ public class LevelButton : MonoBehaviour
     private Color32 collectibleFoundColor;
     private Color32 collectibleNotFoundColor;
 
+    private Transition transition;
+
     private void Start()
     {
         button = GetComponent<UIButton>();
@@ -28,6 +30,8 @@ public class LevelButton : MonoBehaviour
         levelIndexLabel = transform.FindChild("Level Index").GetComponent<UILabel>();
         collectibleNotFoundColor = new Color32(255, 255, 255, 50);
         collectibleFoundColor = new Color32(255, 255, 255, 255);
+
+        transition = GameObject.Find("Transition").GetComponent<Transition>();
 
         UpdateLabel();
     }
@@ -77,7 +81,6 @@ public class LevelButton : MonoBehaviour
     {
         if (!locked)
         {
-            Transition transition = GameObject.Find("Transition").GetComponent<Transition>();
             transition.PlayForward();
             transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLevel"));
         }
@@ -85,6 +88,8 @@ public class LevelButton : MonoBehaviour
 
     private void LoadLevel()
     {
+        transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "LoadLevel"));
         Application.LoadLevel(loadedLevelLabel.text);
+        transition.PlayReverse();
     }
 }
