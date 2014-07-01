@@ -34,7 +34,7 @@ public class Timer : MonoBehaviour
 
 			if (timer <= 0.0f)
 			{
-				GameplayStateManager.SwitchTo(GameplayState.GameOver);
+				GameplayStateManager.SwitchTo(GameplayState.LevelFailed);
 			}
 		}
 	}
