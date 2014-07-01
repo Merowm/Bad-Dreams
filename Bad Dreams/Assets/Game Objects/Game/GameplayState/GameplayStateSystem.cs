@@ -188,6 +188,7 @@ public class GameplayStateSystem : MonoBehaviour
 		{
             transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "LoadLastCheckpoint"));
 			player.GetComponent<Player>().GotoLastCheckpoint();
+            player.GetComponent<HidingSkill>().Unhide();
 			SwitchTo(GameplayState.Playing);
             transition.PlayReverse();
 		}

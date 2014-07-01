@@ -76,6 +76,14 @@ public class Collectible : MonoBehaviour
     {
         Debug.Log("+20 SECONDS");
         GameObject.Find("Timer").GetComponent<Timer>().TimeBonus();
+        ParticleSystem particleSystem = GameObject.Find("Clock Particle Effect").GetComponent<ParticleSystem>();
+        if (particleSystem != null)
+        {
+            particleSystem.transform.position = this.transform.position;
+            particleSystem.renderer.sortingLayerName = "Pickups";
+            particleSystem.Play();
+        }
+
         Destroy(this.gameObject);
     }
 
