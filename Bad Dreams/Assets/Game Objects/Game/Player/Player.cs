@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
 	Stamina stamina;
 	CameraFollowing camFollow;
 	GameObject lastCheckpoint;
+
+	ParticleGenerator doubleJumpParticleGen;
 	//public GameObject parentObject;
 	//public Vector3 offsetFromPlatform;
 	//GameObject playerFlowerCollider;
@@ -27,7 +29,7 @@ public class Player : MonoBehaviour
 		ator = animT.GetComponent<Animator>();
 		stamina = GetComponent<Stamina>();
 		camFollow = GetComponent<CameraFollowing>();
-		
+		doubleJumpParticleGen = GameObject.Find("Double Jump Particle Generator").GetComponent<ParticleGenerator>();
 
 		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
@@ -151,14 +153,18 @@ public class Player : MonoBehaviour
 			}
 			else if (allowBoost &&/*!gliding &&*/ !dashing && !onGround)
 			{
-				ator.SetTrigger("doubleJump");
-				if (rigid.velocity.y > 0.0f) //boost jump
+				if (stamina.Use())
 				{
-					JumpBoost();
-				}
-				else //weaker boost
-				{
-					JumpBoostWeak();
+					ator.SetTrigger("doubleJump");
+					doubleJumpParticleGen.Trigger();
+					if (rigid.velocity.y > 0.0f) //boost jump
+					{
+						JumpBoost();
+					}
+					else //weaker boost
+					{
+						JumpBoostWeak();
+					}
 				}
 			}
 		}
@@ -528,22 +534,22 @@ public class Player : MonoBehaviour
 
 	void JumpBoost()
 	{
-		if (stamina.Use())
-		{
+		//if (stamina.Use())
+		//{
 			rigid.velocity = new Vector2(rigid.velocity.x, boostStrength);
 			allowBoost = false;
 			//Debug.Log("boost");
-		}
+		//}
 	}
 
 	void JumpBoostWeak()
 	{
-		if (stamina.Use())
-		{
+		//if (stamina.Use())
+		//{
 			rigid.velocity += new Vector2(0.0f, boostStrength * 0.8f);
 			allowBoost = false;
 			//Debug.Log("boost weak");
-		}
+		//}
 	}
 
 	void Jump()
