@@ -7,9 +7,25 @@ public class Tutorial : MonoBehaviour
     UILabel tutorialTextBox;
     public string tutorialText;
     bool insideTutorialCollider;
+    Animator anim;
+
+    bool InsideTutorialCollider
+    {
+        get { return insideTutorialCollider; }
+        set 
+        {
+            if (value != insideTutorialCollider)
+            {
+                insideTutorialCollider = value;
+                anim.SetBool("over", value);
+            }
+        }
+    }
 
 	void Start () 
     {
+        anim = GetComponent<Animator>();
+
         tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
         if (tutorialTextBoxGameObject != null)
         {
@@ -46,7 +62,8 @@ public class Tutorial : MonoBehaviour
     {
         if (col.gameObject.name == "Player")
         {
-            insideTutorialCollider = true;
+            InsideTutorialCollider = true;
+
         }
     }
 
@@ -54,7 +71,7 @@ public class Tutorial : MonoBehaviour
     {
         if (col.gameObject.name == "Player")
         {
-            insideTutorialCollider = false;
+            InsideTutorialCollider = false;
         }
     }
 }
