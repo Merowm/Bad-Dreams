@@ -17,6 +17,7 @@ public class DogAI : MonoBehaviour
     const int SPEED_WALK = 1;
     const int SPEED_RUN = 2;
     const int SPEED_CHARGE = 5;
+    const int BUMP_ALERTNESS_ADDITION = 6;
 
     #endregion
 
@@ -431,7 +432,7 @@ public class DogAI : MonoBehaviour
                 {
                     if (!recentlyCollidedWithPlayer)
                     {
-                        alertness += 300;
+                        alertness += BUMP_ALERTNESS_ADDITION;
                         GameObject.Find("Collision Against Dog Sound").GetComponent<AudioSource>().Play();
                         Invoke("AimEyesAtPlayer", 0.8f);
                         Invoke("ResetCollisionWithPlayer", 2.0f);
@@ -459,7 +460,10 @@ public class DogAI : MonoBehaviour
     void OnCollisionStay2D(Collision2D col)
     {
         if (col.gameObject.name == "Player")
+        {
+            if (playerVisible)
             GameplayStateManager.SwitchTo(GameplayState.GameOver);
+        }
     }
 
     void ResetCollisionWithPlayer()
