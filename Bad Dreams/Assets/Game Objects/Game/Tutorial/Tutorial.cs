@@ -6,6 +6,7 @@ public class Tutorial : MonoBehaviour
     GameObject tutorialTextBoxGameObject;
     UILabel tutorialTextBox;
     public string tutorialText;
+    bool insideTutorialCollider;
 
 	void Start () 
     {
@@ -18,26 +19,42 @@ public class Tutorial : MonoBehaviour
 	
 	void Update () 
     {
-
-	}
-
-    void OnTriggerStay2D(Collider2D col)
-    {
-        if (col.gameObject.name == "Player")
+        if (insideTutorialCollider)
         {
             if (Input.GetButtonDown("Hide"))
             {
-                GameplayStateManager.SwitchTo(GameplayState.Tutorial);
-
-                if (tutorialTextBoxGameObject == null)
+                if (GameplayStateManager.CurrentState == GameplayState.Playing)
                 {
-                    tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
-                    tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+                    GameplayStateManager.SwitchTo(GameplayState.Tutorial);
+
+                    if (tutorialTextBoxGameObject == null)
+                    {
+                        tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
+                        tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+                    }
                     tutorialTextBox.text = tutorialText;
                 }
-                else
-                tutorialTextBox.text = tutorialText;
+                else if (GameplayStateManager.CurrentState == GameplayState.Tutorial)
+                {
+                    GameplayStateManager.SwitchTo(GameplayState.Playing);
+                }
             }
+        }
+	}
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.name == "Player")
+        {
+            insideTutorialCollider = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if (col.gameObject.name == "Player")
+        {
+            insideTutorialCollider = false;
         }
     }
 }
