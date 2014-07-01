@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 	CameraFollowing camFollow;
 	GameObject lastCheckpoint;
 
-	ParticleGenerator doubleJumpParticleGen, dustParticleGen;
+	ParticleGenerator doubleJumpParticleGen, dustParticleGen, dashParticleGen;
 	//public GameObject parentObject;
 	//public Vector3 offsetFromPlatform;
 	//GameObject playerFlowerCollider;
@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
 		camFollow = GetComponent<CameraFollowing>();
 		doubleJumpParticleGen = GameObject.Find("Double Jump Particle Generator").GetComponent<ParticleGenerator>();
 		dustParticleGen = GameObject.Find("Dust Particle Generator").GetComponent<ParticleGenerator>();
+		dashParticleGen = GameObject.Find("Dash Particle Generator").GetComponent<ParticleGenerator>();
 
 		animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
@@ -192,6 +193,7 @@ public class Player : MonoBehaviour
 		{
 			if (onGround && !dashing && stamina.Use())
 			{
+				dashParticleGen.Trigger();
 				dashing = true;
 				dashTimer = dashLength;
 			}
