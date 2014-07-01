@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
 		doubleJumpParticleGen = GameObject.Find("Double Jump Particle Generator").GetComponent<ParticleGenerator>();
 		dustParticleGen = GameObject.Find("Dust Particle Generator").GetComponent<ParticleGenerator>();
 
-		animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
+		animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
 		onGround = false;
 		idleTimer = 0.0f;
@@ -270,13 +270,13 @@ public class Player : MonoBehaviour
 			{
 				faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
 				animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-				animT.localPosition = new Vector3(-0.15f, 0.04f, 1.0f);
+				animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
 			}
 			else if (rigid.velocity.x < -deadZone)
 			{
 				faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
 				animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-				animT.localPosition = new Vector3(0.15f, 0.04f, 1.0f);
+				animT.localPosition = new Vector3(0.18f, 0.04f, 1.0f);
 			}
 		}
 
