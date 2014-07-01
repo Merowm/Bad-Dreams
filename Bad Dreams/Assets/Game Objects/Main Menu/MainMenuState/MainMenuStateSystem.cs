@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -29,7 +30,18 @@ public class MainMenuStateSystem : MonoBehaviour
         GetCreditsObjects();
 
         Time.timeScale = 1.0F;
-        SwitchTo(MainMenuState.Main);
+
+        if (PlayerPrefs.HasKey("TargetState"))
+        {
+            SwitchTo((MainMenuState)Enum.Parse(typeof(MainMenuState), PlayerPrefs.GetString("TargetState")));
+            PlayerPrefs.DeleteKey("TargetState");
+        }
+        else
+        {
+            SwitchTo(MainMenuState.Main);
+        }
+        
+        
     }
 
     private void GetMainObjects()
