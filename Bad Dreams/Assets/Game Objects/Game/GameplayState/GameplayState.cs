@@ -8,5 +8,6 @@ public enum GameplayState
     Paused,
     GameOver,
     Options,
-    Tutorial
+    Tutorial,
+    LevelFailed
 }
