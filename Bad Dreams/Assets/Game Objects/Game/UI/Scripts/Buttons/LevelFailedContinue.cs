@@ -19,6 +19,7 @@ public class LevelFailedContinue : MonoBehaviour
     private void SwitchToLevelSelect()
     {
         transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "SwitchToLevelSelect"));
+        PlayerPrefs.SetString("TargetState", "LevelSelection");
         Application.LoadLevel("MainMenu");
         transition.PlayReverse();
     }
