@@ -653,10 +653,10 @@ public class Player : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D c)
 	{
-		if (c.gameObject.name == "Finish Line")
-		{
-			GameplayStateManager.SwitchTo(GameplayState.LevelFinished);
-			Debug.Log("finiis");
-		}
+        //if (c.gameObject.name == "Finish Line")
+        //{
+        //    GameplayStateManager.SwitchTo(GameplayState.LevelFinished);
+        //    Debug.Log("finiis");
+        //}
 	}
 }

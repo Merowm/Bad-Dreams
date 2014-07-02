@@ -15,6 +15,14 @@ public class OnTreasureCollision : MonoBehaviour
     {
         if (other.name == "Player")
         {
+            ParticleSystem particleSystem = GameObject.Find("Bear Particle Effect").GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                particleSystem.transform.position = this.transform.position;
+                particleSystem.renderer.sortingLayerName = "Pickups";
+                particleSystem.Play();
+            }
+
             Save save = SaveManager.CurrentSave;
 
             if (gameObject.name == "Treasure 1")
