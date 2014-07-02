@@ -9,7 +9,13 @@ public class TutorialToggle : MonoBehaviour
 	// Use this for initialization
 	void Start () 
     {
+		
         tutToggle = GameObject.Find("Toggle Tutorial").GetComponent<UIToggle>();
+		
+		if (tutToggle)
+			Debug.Log("go found");
+
+		
         tutToggle.value = IntToBool(PlayerPrefs.GetInt("toggletutorial", 1));
 	}
 	
@@ -20,7 +26,8 @@ public class TutorialToggle : MonoBehaviour
 
     public void UpdateTutorialToggle()
     {
-        PlayerPrefs.SetInt("toggletutorial", BoolToInt(tutToggle.value));
+		if (tutToggle)
+			PlayerPrefs.SetInt("toggletutorial", BoolToInt(tutToggle.value));
     }
 
     int BoolToInt(bool value)
