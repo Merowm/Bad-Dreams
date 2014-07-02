@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Tutorial : MonoBehaviour 
+public class Tutorial : MonoBehaviour
 {
     GameObject tutorialTextBoxGameObject;
     UILabel tutorialTextBox;
     public string tutorialText;
-    bool insideTutorialCollider, triggered;
+    bool insideTutorialCollider, tutorialsDisabled;
     Animator anim;
 
     bool InsideTutorialCollider
     {
         get { return insideTutorialCollider; }
-        set 
+        set
         {
             if (value != insideTutorialCollider)
             {
@@ -22,14 +22,15 @@ public class Tutorial : MonoBehaviour
         }
     }
 
-	void Start () 
+    void Start()
     {
-        triggered = false;
-        if (PlayerPrefs.GetInt("toggletutorial", 0) == 0) 
+        if (PlayerPrefs.GetInt("toggletutorial", 0) == 0)
         {
-            triggered = true; //don't have tutorial signs pop up automatically
+            tutorialsDisabled = true; //don't have tutorial signs pop up automatically
         }
-        
+        else
+            tutorialsDisabled = false;
+
         anim = GetComponent<Animator>();
 
         tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
@@ -37,38 +38,7 @@ public class Tutorial : MonoBehaviour
         {
             tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
         }
-	}
-
-    void FixedUpdate()
-    {
-        InsideTutorialCollider = false;
     }
-	
-	void Update () 
-    {
-        if (insideTutorialCollider)
-        {
-            if (!triggered)
-            {
-                triggered = true;
-                GameplayStateManager.SwitchTo(GameplayState.Tutorial);
-                ChangeTutorialText(tutorialText);
-            }
-
-            if (Input.GetButtonDown("Hide"))
-            {
-                if (GameplayStateManager.CurrentState == GameplayState.Playing)
-                {
-                    GameplayStateManager.SwitchTo(GameplayState.Tutorial);
-                    ChangeTutorialText(tutorialText);
-                }
-                else if (GameplayStateManager.CurrentState == GameplayState.Tutorial)
-                {
-                    GameplayStateManager.SwitchTo(GameplayState.Playing);
-                }
-            }
-        }
-	}
 
     void ChangeTutorialText(string text)
     {
@@ -84,8 +54,15 @@ public class Tutorial : MonoBehaviour
     {
         if (col.gameObject.name == "Player")
         {
+            if (!tutorialsDisabled)
+            {
+                if (GameplayStateManager.CurrentState == GameplayState.Playing)
+                {
+                    GameplayStateManager.SwitchTo(GameplayState.Tutorial);
+                    ChangeTutorialText(tutorialText);
+                }
+            }
             InsideTutorialCollider = true;
-
         }
     }
 
@@ -93,6 +70,13 @@ public class Tutorial : MonoBehaviour
     {
         if (col.gameObject.name == "Player")
         {
+            if (insideTutorialCollider)
+            {
+                if (GameplayStateManager.CurrentState == GameplayState.Tutorial)
+                {
+                    GameplayStateManager.SwitchTo(GameplayState.Playing);
+                }
+            }
             InsideTutorialCollider = false;
         }
     }
