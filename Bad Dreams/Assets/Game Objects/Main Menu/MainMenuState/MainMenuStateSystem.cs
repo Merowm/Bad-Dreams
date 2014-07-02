@@ -16,6 +16,7 @@ public class MainMenuStateSystem : MonoBehaviour
     private List<GameObject> LevelSelectionObjects { get; set; }
     private List<GameObject> OptionsObjects { get; set; }
     private List<GameObject> CreditsObjects { get; set; }
+    private List<GameObject> NewGameWarningObjects { get; set; }
 
     #region Find objects for each state
 
@@ -28,6 +29,7 @@ public class MainMenuStateSystem : MonoBehaviour
         GetLevelSelectionObjects();
         GetOptionsObjects();
         GetCreditsObjects();
+        GetNewGameWarningObjects();
 
         Time.timeScale = 1.0F;
 
@@ -40,8 +42,6 @@ public class MainMenuStateSystem : MonoBehaviour
         {
             SwitchTo(MainMenuState.Main);
         }
-        
-        
     }
 
     private void GetMainObjects()
@@ -84,6 +84,14 @@ public class MainMenuStateSystem : MonoBehaviour
         SetGameObjectsActive(CreditsObjects, false);
     }
 
+    private void GetNewGameWarningObjects()
+    {
+        NewGameWarningObjects = new List<GameObject>();
+
+        NewGameWarningObjects.Add(GameObject.Find("Warning UI"));
+        SetGameObjectsActive(NewGameWarningObjects, false);
+    }
+
     #endregion Find objects for each state
 
     public void SwitchTo(MainMenuState state)
@@ -115,6 +123,10 @@ public class MainMenuStateSystem : MonoBehaviour
             case MainMenuState.Credits:
                 SwitchToCredits();
                 break;
+
+            case MainMenuState.NewGameWarning:
+                SwitchToNewGameWarning();
+                break;
         }
     }
 
@@ -132,11 +144,13 @@ public class MainMenuStateSystem : MonoBehaviour
     {
         SetGameObjectsActive(MainObjects, false);
         SetGameObjectsActive(LevelSelectionObjects, false);
+        SetGameObjectsActive(NewGameWarningObjects, false);
         SetGameObjectsActive(GameSelectionObjects, true);
     }
 
     private void SwitchToLevelSelection()
     {
+        SetGameObjectsActive(NewGameWarningObjects, false);
         SetGameObjectsActive(GameSelectionObjects, false);
         SetGameObjectsActive(LevelSelectionObjects, true);
     }
@@ -151,6 +165,12 @@ public class MainMenuStateSystem : MonoBehaviour
     {
         SetGameObjectsActive(MainObjects, false);
         SetGameObjectsActive(CreditsObjects, true);
+    }
+
+    private void SwitchToNewGameWarning()
+    {
+        SetGameObjectsActive(GameSelectionObjects, false);
+        SetGameObjectsActive(NewGameWarningObjects, true);
     }
 
     #endregion Perform actions when switching to a state

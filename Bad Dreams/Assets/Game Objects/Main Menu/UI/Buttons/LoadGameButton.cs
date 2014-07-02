@@ -4,6 +4,7 @@ using System.Collections;
 public class LoadGameButton : MonoBehaviour
 {
     private UIButton button;
+    private bool statusChecked;
 
     private void Start()
     {
@@ -12,13 +13,24 @@ public class LoadGameButton : MonoBehaviour
 
     private void Update()
     {
-        if (!PlayerPrefs.HasKey("Save"))
-            button.isEnabled = false;
+        if (!statusChecked)
+        {
+            if (!PlayerPrefs.HasKey("Save"))
+                button.isEnabled = false;
+            else
+                button.isEnabled = true;
 
+            statusChecked = true;
+        }
     }
 
     private void OnClick()
     {
         MainMenuStateManager.SwitchTo(MainMenuState.LevelSelection);
+    }
+
+    private void OnEnable()
+    {
+        statusChecked = false;
     }
 }
