@@ -6,7 +6,7 @@ public class Tutorial : MonoBehaviour
     GameObject tutorialTextBoxGameObject;
     UILabel tutorialTextBox;
     public string tutorialText;
-    bool insideTutorialCollider;
+    bool insideTutorialCollider, triggered;
     Animator anim;
 
     bool InsideTutorialCollider
@@ -24,6 +24,12 @@ public class Tutorial : MonoBehaviour
 
 	void Start () 
     {
+        triggered = false;
+        if (PlayerPrefs.GetInt("toggletutorial", 0) == 0) 
+        {
+            triggered = true; //don't have tutorial signs pop up automatically
+        }
+        
         anim = GetComponent<Animator>();
 
         tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
@@ -42,18 +48,19 @@ public class Tutorial : MonoBehaviour
     {
         if (insideTutorialCollider)
         {
+            if (!triggered)
+            {
+                triggered = true;
+                GameplayStateManager.SwitchTo(GameplayState.Tutorial);
+                ChangeTutorialText(tutorialText);
+            }
+
             if (Input.GetButtonDown("Hide"))
             {
                 if (GameplayStateManager.CurrentState == GameplayState.Playing)
                 {
                     GameplayStateManager.SwitchTo(GameplayState.Tutorial);
-
-                    if (tutorialTextBoxGameObject == null)
-                    {
-                        tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
-                        tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
-                    }
-                    tutorialTextBox.text = tutorialText;
+                    ChangeTutorialText(tutorialText);
                 }
                 else if (GameplayStateManager.CurrentState == GameplayState.Tutorial)
                 {
@@ -62,6 +69,16 @@ public class Tutorial : MonoBehaviour
             }
         }
 	}
+
+    void ChangeTutorialText(string text)
+    {
+        if (tutorialTextBoxGameObject == null)
+        {
+            tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
+            tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+        }
+        tutorialTextBox.text = text;
+    }
 
     void OnTriggerEnter2D(Collider2D col)
     {
