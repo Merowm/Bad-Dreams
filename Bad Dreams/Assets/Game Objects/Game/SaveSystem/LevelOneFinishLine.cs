@@ -12,6 +12,7 @@ public class LevelOneFinishLine : MonoBehaviour
             save.Levels[1].Locked = false;
             SaveManager.CurrentSave = save;
             PlayerPrefs.Save();
+            GameplayStateManager.SwitchTo(GameplayState.LevelFinished);
         }
     }
 }
