@@ -3,12 +3,13 @@ using System.Collections;
 
 public class Butterfly : MonoBehaviour
 {
+	public float flapFreq;				//flapping frequency
+	public float turnFreq;				//how often we turn around
+
 	float flapper;				//timer
 	float flapper2;				//another timer
 
 	float flapperMul, flapperMul2;
-
-	float flapFreq;				//flapping frequency
 
 	Vector3 flapVelocity;
 	bool up;
@@ -19,28 +20,29 @@ public class Butterfly : MonoBehaviour
 	SpriteRenderer spr;
 	Particle particle;
 
-	float turnTimer, turnFreq;
+	float turnTimer;
 	bool mirror;
 
 	void Start ()
 	{
 		spr = GetComponent<SpriteRenderer>();
 		particle = GetComponent<Particle>();
-		flapper = 0.0f;
-		flapper2 = 0.0f;
-
-		flapperMul = 1.0f * (0.85f + Random.value * 0.15f);
-		flapperMul2 = 1.0f * (0.85f + Random.value * 0.15f);
-
-		flapFreq = 0.09f * (0.85f + Random.value * 0.15f);
+		flapper = flapFreq * Random.value;
+		flapper2 = Mathf.PI * 2.0f * Random.value;
+		flapperMul = 1.0f * (0.50f + Random.value * 0.5f);
+		flapperMul2 = 1.0f * (0.50f + Random.value * 0.5f);
 		up = true;
 		velocity = Vector3.zero;
-		flapVelocity = new Vector3(0.0f, 0.7f);
-
 		frame = 0;
 
+		flapFreq *= (0.75f + Random.value * 0.25f); //randomize
+		turnFreq *= (0.75f + Random.value * 0.25f);
+
+		//flapFreq = 0.09f * (0.75f + Random.value * 0.25f);
+		//turnFreq = 3.4f * (0.75f + Random.value * 0.25f);
+
+		flapVelocity = new Vector3(0.0f, 0.7f * (0.75f + Random.value * 0.25f));
 		turnTimer = 0.0f;
-		turnFreq = 3.4f * (0.85f + Random.value * 0.15f);
 		mirror = false;
 	}
 	
