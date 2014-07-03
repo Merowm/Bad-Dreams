@@ -16,7 +16,6 @@ public class BatAI : MonoBehaviour
     public float batSpeed;
     public bool alwaysSwoop;
     public float alwaysSwoopDelay;
-    float alwaysSwoopTimer;
 
     #endregion
 
@@ -25,7 +24,7 @@ public class BatAI : MonoBehaviour
     Transform point1, point2;
     GameObject bat;
     Animator batAnim;
-    float x1, x2, y1, y2, finalA, finalB, currentLocalX;
+    float x1, x2, y1, y2, finalA, finalB, currentLocalX, alwaysSwoopTimer;
     bool flip, swooping;
 
     bool Swooping

@@ -9,6 +9,7 @@ public class DogAI : MonoBehaviour
     const float TIME_VISION_RESET = 2.0f;
     const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
     const float TIME_ALERT_TIMER_MAX = 10.0f;
+    const float COLLISION_DISTANCE_FROM_PLAYER_BEFORE_CAN_MOVE_AGAIN = 1.1f;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 2;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 4;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
@@ -134,7 +135,7 @@ public class DogAI : MonoBehaviour
             UpdateVisionConeColor();
         }
 
-        if (Vector3.Distance(player.transform.position, transform.position) > 0.7f)
+        if (Vector3.Distance(player.transform.position, transform.position) > COLLISION_DISTANCE_FROM_PLAYER_BEFORE_CAN_MOVE_AGAIN)
         {
             veryCloseToPlayer = false;
         }
