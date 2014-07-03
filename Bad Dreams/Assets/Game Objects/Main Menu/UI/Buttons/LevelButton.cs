@@ -13,6 +13,7 @@ public class LevelButton : MonoBehaviour
     private UISprite collectibleThree;
     private UILabel loadedLevelLabel;
     private UILabel levelIndexLabel;
+    private UILabel bestTimeLabel;
 
     private Color32 collectibleFoundColor;
     private Color32 collectibleNotFoundColor;
@@ -28,6 +29,7 @@ public class LevelButton : MonoBehaviour
         collectibleThree = transform.FindChild("Collectible 3").GetComponent<UISprite>();
         loadedLevelLabel = transform.FindChild("Level Name").GetComponent<UILabel>();
         levelIndexLabel = transform.FindChild("Level Index").GetComponent<UILabel>();
+        bestTimeLabel = transform.FindChild("Time").GetComponent<UILabel>();
         collectibleNotFoundColor = new Color32(255, 255, 255, 50);
         collectibleFoundColor = new Color32(255, 255, 255, 255);
 
@@ -74,6 +76,11 @@ public class LevelButton : MonoBehaviour
                 collectibleThree.color = collectibleNotFoundColor;
             else
                 collectibleThree.color = collectibleFoundColor;
+
+            if (SaveManager.CurrentSave.Levels[index].BestTime != 0)
+                bestTimeLabel.text = "Best Time: " + SaveManager.CurrentSave.Levels[index].BestTime.ToString();
+            else
+                bestTimeLabel.text = "Best Time: None";
         }
     }
 

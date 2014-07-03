@@ -13,7 +13,7 @@ namespace SaveSystem
         public bool Locked { get; set; }
         public bool Completed { get; set; }
         public List<bool> Collectibles { get; set; }
-        public float BestTime { get; set; }
+        public int BestTime { get; set; }
 
         public LevelData()
         {
@@ -23,7 +23,7 @@ namespace SaveSystem
             for (int i = 0; i < 3; ++i)
                 Collectibles.Add(false);
 
-            BestTime = 0.0F;
+            BestTime = 0;
         }
     }
 }

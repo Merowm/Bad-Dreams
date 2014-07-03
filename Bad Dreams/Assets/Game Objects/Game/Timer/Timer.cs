@@ -7,7 +7,7 @@ public class Timer : MonoBehaviour
 	float timer;
 	UILabel timerLabel;
 
-    public float TimePassed { get { return time - timer; } }
+    public int TimePassed { get { return (int)(time - timer); } }
 
 	void Start ()
 	{
@@ -49,6 +49,6 @@ public class Timer : MonoBehaviour
 
     public void TimeBonus()
     {
-        timer += 20;
+        timer = Mathf.Clamp(timer + 20, 0.0F, time);
     }
 }
