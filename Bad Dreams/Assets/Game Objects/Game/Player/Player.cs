@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class Player : MonoBehaviour
-{	
-	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost, allowInput;
+{
+	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost, allowInput, allowCameraFollowing;
 	public float moveSpeed, moveAccel, moveDecel, jumpStrength, boostStrength, airFriction, deadZone;
 	public float dashLength, dashSpeed, glideControl, glideSteepness, glideDeFaceThreshold, glideGravityResistance, glideHitWallPenalty;
 	
@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
 		airFriction = 9.0f; //velocity.x slow down in air
 		deadZone = 0.3f;
 		allowInput = true;
+		allowCameraFollowing = true;
 
 
 		//while gliding
@@ -200,7 +201,8 @@ public class Player : MonoBehaviour
 		CheckIllegalPosition();
 
 		//camera following and limiting
-		camFollow.UpdateCameraPosition();
+		if (allowCameraFollowing)
+			camFollow.UpdateCameraPosition();
 	}
 
 	public void GotoLastCheckpoint()

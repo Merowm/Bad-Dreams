@@ -29,32 +29,26 @@ public class HitAnimation : MonoBehaviour
 			if (preTransitionTimer >= timeBeforeTransition)
 			{
 				StartTransition();
-				//ResetAnimation();
 			}
 		}
 	}
 
 	public void ActivateAnimation() //call this when get hit
 	{
-		Debug.Log("ActivateAnimation...");
+		//Debug.Log("ActivateAnimation...");
 		if (!active)
 		{
-			Debug.Log("ActivateAnimation success");
+			//Debug.Log("ActivateAnimation success");
 			active = true;
-			//Physics2D.IgnoreLayerCollision(9, 10, true);
 			player.Kill();
-			//rigidbody2D.isKinematic = true;
 			CreateParticles();
 		}
 	}
 
 	void StartTransition()
 	{
-		Debug.Log("start transition");
+		//Debug.Log("start transition");
 		GameplayStateManager.SwitchTo(GameplayState.GameOver);
-		//Transition transition = GameObject.Find("Transition").GetComponent<Transition>();
-		//transition.PlayForward();
-		//transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLastCheckpoint"));
 	}
 
 	public void ResetAnimation()
@@ -63,11 +57,8 @@ public class HitAnimation : MonoBehaviour
 		{
 			active = false;
 			preTransitionTimer = 0.0f;
-			//rigidbody2D.isKinematic = false;
 			player.Resurrect();
 			DeleteDeathPrefab();
-			//DisableLayerCollision(false);
-			//Physics2D.IgnoreLayerCollision(9, 10, false);
 		}
 	}
 
