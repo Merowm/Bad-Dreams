@@ -13,5 +13,7 @@ public class Music : MonoBehaviour
 
         audio.ignoreListenerVolume = true;
         gameObject.tag = "Music";
+
+        audio.Play();
 	}
 }
