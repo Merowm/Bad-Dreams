@@ -6,6 +6,9 @@ public class Timer : MonoBehaviour
 	public float time;
 	float timer;
 	UILabel timerLabel;
+
+    public float TimePassed { get { return time - timer; } }
+
 	void Start ()
 	{
 		timer = time;

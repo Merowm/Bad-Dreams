@@ -22,6 +22,10 @@ public class LevelOneFinishLine : MonoBehaviour
             int drops = GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount;
             save.Drops += drops;
 
+            float time = GameObject.Find("Timer").GetComponent<Timer>().TimePassed;
+            if (time < save.Levels[levelInfo.levelIndex].BestTime)
+                save.Levels[levelInfo.levelIndex].BestTime = time;
+
             SaveManager.CurrentSave = save;
             PlayerPrefs.Save();
             GameplayStateManager.SwitchTo(GameplayState.LevelFinished);
