@@ -452,7 +452,8 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                GameplayStateManager.SwitchTo(GameplayState.GameOver);
+				GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+                //GameplayStateManager.SwitchTo(GameplayState.GameOver);
             }
         }
     }
@@ -462,7 +463,8 @@ public class DogAI : MonoBehaviour
         if (col.gameObject.name == "Player")
         {
             if (playerVisible)
-            GameplayStateManager.SwitchTo(GameplayState.GameOver);
+				GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+            //GameplayStateManager.SwitchTo(GameplayState.GameOver);
         }
     }
 

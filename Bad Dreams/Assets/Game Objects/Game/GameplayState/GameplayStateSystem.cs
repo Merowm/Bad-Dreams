@@ -159,7 +159,6 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToTutorial()
     {
-        Time.timeScale = 0.0F;
         SetGameObjectsActive(TutorialObjects, true);
     }
 
