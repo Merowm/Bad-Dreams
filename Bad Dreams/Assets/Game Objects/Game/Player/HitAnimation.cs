@@ -22,7 +22,7 @@ public class HitAnimation : MonoBehaviour
 
 	void Update ()
 	{
-		GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "preTransitionTimer " + preTransitionTimer;
+		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "preTransitionTimer " + preTransitionTimer;
 		if (active)
 		{
 			preTransitionTimer += Time.deltaTime;
