@@ -48,8 +48,7 @@ public class DogAI : MonoBehaviour
 
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     float alertness;
-    bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer;
-    bool recentlyCollidedWithPlayer;
+    bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer, recentlyCollidedWithPlayer, veryCloseToPlayer;
 
     #endregion
 
@@ -135,7 +134,12 @@ public class DogAI : MonoBehaviour
             UpdateVisionConeColor();
         }
 
-        if (stopped || recentlyCollidedWithPlayer)
+        if (Vector3.Distance(player.transform.position, transform.position) > 0.7f)
+        {
+            veryCloseToPlayer = false;
+        }
+
+        if (stopped || recentlyCollidedWithPlayer || veryCloseToPlayer)
         {
             velocity = 0;
         }
@@ -424,6 +428,8 @@ public class DogAI : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        Debug.Log(recentlyCollidedWithPlayer);
+
         if (col.gameObject.name == "Player")
         {
             if (!playerVisible)
@@ -452,6 +458,8 @@ public class DogAI : MonoBehaviour
             }
             else
             {
+                Debug.Log("Oh" + veryCloseToPlayer);
+                veryCloseToPlayer = true;
 				GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
                 //GameplayStateManager.SwitchTo(GameplayState.GameOver);
             }
@@ -463,7 +471,10 @@ public class DogAI : MonoBehaviour
         if (col.gameObject.name == "Player")
         {
             if (playerVisible)
-				GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+            {
+                veryCloseToPlayer = true;
+                GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+            }
             //GameplayStateManager.SwitchTo(GameplayState.GameOver);
         }
     }
@@ -513,7 +524,9 @@ public class DogAI : MonoBehaviour
         }
 
         if (playerVisible)
+        {
             recentlyCollidedWithPlayer = false;
+        }
     }
 
     void ResetVision()
