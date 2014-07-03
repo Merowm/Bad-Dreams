@@ -10,9 +10,12 @@ public class HitAnimation : MonoBehaviour
 
 
 	GameObject hitAnimation;
+	GameObject hitAnimationPrefab;
+	Player player;
 
 	void Start ()
 	{
+		player = GetComponent<Player>();
 		hitAnimation = Resources.Load<GameObject>("Player/Death");
 		ResetAnimation();
 	}
@@ -26,13 +29,8 @@ public class HitAnimation : MonoBehaviour
 			if (preTransitionTimer >= timeBeforeTransition)
 			{
 				StartTransition();
-				ResetAnimation();
+				//ResetAnimation();
 			}
-		}
-
-		if (Input.GetKeyDown(KeyCode.KeypadMinus))
-		{
-			ActivateAnimation();
 		}
 	}
 
@@ -43,7 +41,9 @@ public class HitAnimation : MonoBehaviour
 		{
 			Debug.Log("ActivateAnimation success");
 			active = true;
-			Physics2D.IgnoreLayerCollision(9, 10, true);
+			//Physics2D.IgnoreLayerCollision(9, 10, true);
+			player.Kill();
+			//rigidbody2D.isKinematic = true;
 			CreateParticles();
 		}
 	}
@@ -57,12 +57,18 @@ public class HitAnimation : MonoBehaviour
 		//transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLastCheckpoint"));
 	}
 
-	void ResetAnimation()
+	public void ResetAnimation()
 	{
-		active = false;
-		preTransitionTimer = 0.0f;
-		//DisableLayerCollision(false);
-		//Physics2D.IgnoreLayerCollision(9, 10, false);
+		if (active)
+		{
+			active = false;
+			preTransitionTimer = 0.0f;
+			//rigidbody2D.isKinematic = false;
+			player.Resurrect();
+			DeleteDeathPrefab();
+			//DisableLayerCollision(false);
+			//Physics2D.IgnoreLayerCollision(9, 10, false);
+		}
 	}
 
 	void DisableLayerCollision(bool val)
@@ -72,6 +78,15 @@ public class HitAnimation : MonoBehaviour
 
 	void CreateParticles()
 	{
-		Instantiate(hitAnimation, transform.position, Quaternion.identity);
+		hitAnimationPrefab = Instantiate(hitAnimation, transform.position, Quaternion.identity) as GameObject;
+	}
+
+	public void DeleteDeathPrefab()
+	{
+		if (hitAnimationPrefab)
+		{
+			Destroy(hitAnimationPrefab);
+			hitAnimationPrefab = null;
+		}
 	}
 }

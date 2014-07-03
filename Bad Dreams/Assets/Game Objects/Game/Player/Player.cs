@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {	
-	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost;
+	public bool onGround, gliding, dashing, glideAllowDeFace, allowBoost, allowInput;
 	public float moveSpeed, moveAccel, moveDecel, jumpStrength, boostStrength, airFriction, deadZone;
 	public float dashLength, dashSpeed, glideControl, glideSteepness, glideDeFaceThreshold, glideGravityResistance, glideHitWallPenalty;
 	
@@ -46,6 +46,7 @@ public class Player : MonoBehaviour
 		jumpStrength = 5.8f;
 		airFriction = 9.0f; //velocity.x slow down in air
 		deadZone = 0.3f;
+		allowInput = true;
 
 
 		//while gliding
@@ -77,8 +78,13 @@ public class Player : MonoBehaviour
 
 	void Update()
 	{
-		padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (allowInput)
+			padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		else
+			padInput = Vector2.zero;
 		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "pad:\n    x: " + padInput.x + "\n    y: " + padInput.y;
+
+
 
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
@@ -109,7 +115,7 @@ public class Player : MonoBehaviour
 		Animation();
 
 		//glide
-		if (Input.GetButton("Glide"))
+		if (Input.GetButton("Glide") && allowInput)
 		{
 			if (!onGround && !dashing && rigid.velocity.y < 0.0f && glideHitWallTimer == 0.0f)
 			{
@@ -146,7 +152,7 @@ public class Player : MonoBehaviour
 		}
 
 		//jump and boost
-		if (Input.GetButtonDown("Jump"))
+		if (Input.GetButtonDown("Jump") && allowInput)
 		{
 			if (onGround) //normal jump
 			{
@@ -189,7 +195,7 @@ public class Player : MonoBehaviour
 		}
 
 		//dash
-		if (Input.GetButton("Dash"))
+		if (Input.GetButton("Dash") && allowInput)
 		{
 			if (onGround && !dashing && stamina.Use())
 			{
@@ -295,6 +301,33 @@ public class Player : MonoBehaviour
 		else
 		{
 			idleTimer -= Time.deltaTime;
+		}
+	}
+
+	public void Kill()
+	{
+		Debug.Log("Kill");
+		rigid.isKinematic = true;
+		allowInput = false;
+		rigid.velocity = Vector3.zero;
+
+		SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
+		Color col = spr.color;
+		col.a = 0.0f;
+		spr.color = col;
+	}
+	public void Resurrect()
+	{
+		Debug.Log("Resurrect");
+		if (!allowInput)
+		{
+			allowInput = true;
+			rigid.isKinematic = false;
+
+			SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
+			Color col = spr.color;
+			col.a = 1.0f;
+			spr.color = col;
 		}
 	}
 
