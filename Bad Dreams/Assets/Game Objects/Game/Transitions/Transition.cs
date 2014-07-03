@@ -45,6 +45,9 @@ public class Transition : MonoBehaviour
 		{
 			HitAnimation hitA = playerObj.GetComponent<HitAnimation>();
 			hitA.ResetAnimation();
+
+			FallingAnimation fallA = playerObj.GetComponent<FallingAnimation>();
+			fallA.ResetAnimation();
 		}
 		//hitA.DeleteDeathPrefab();
 		//Debug.Log("onfin");
