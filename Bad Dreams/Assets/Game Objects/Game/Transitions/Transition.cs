@@ -10,13 +10,13 @@ public class Transition : MonoBehaviour
         Transition[] gameObjects = GameObject.FindObjectsOfType<Transition>();
 
         if (gameObjects.Length > 1)
-            DestroyImmediate(this);
+            DestroyImmediate(this.gameObject);
     }
 
     public void Start()
     {
         tweenScale = GetComponent<TweenScale>();
-        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(this.gameObject);
     }
 
     public void Update()
