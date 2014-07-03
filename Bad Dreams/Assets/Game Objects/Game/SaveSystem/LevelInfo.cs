@@ -3,5 +3,6 @@ using System.Collections;
 
 public class LevelInfo : MonoBehaviour
 {
-    public int levelIndex;
+    public string levelName;
+    public int levelIndex; // first level (tutorial) is 0
 }
