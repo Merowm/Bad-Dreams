@@ -89,6 +89,7 @@ public class Collectible : MonoBehaviour
 
     void AddPoints()
     {
+        GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount++;
         GameObject.Find("Pick Up Droplets").GetComponent<AudioSource>().Play();
         Debug.Log("5 POINTS TO GRYFFINDOR (AKA We need a point system)");
 		Instantiate(pickupParticle, transform.position, Quaternion.identity);

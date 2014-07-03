@@ -300,7 +300,7 @@ public class Player : MonoBehaviour
 	public void Kill()
 	{
 		Debug.Log("Kill");
-		rigid.isKinematic = true;
+		//rigid.isKinematic = true;
 		allowInput = false;
 		rigid.velocity = Vector3.zero;
 
@@ -316,7 +316,7 @@ public class Player : MonoBehaviour
 		if (!allowInput)
 		{
 			allowInput = true;
-			rigid.isKinematic = false;
+			//rigid.isKinematic = false;
 
 			//turn player visible
 			SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();

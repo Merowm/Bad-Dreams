@@ -11,6 +11,7 @@ namespace SaveSystem
     public class Save
     {
         public List<LevelData> Levels { get; private set; }
+        public int Drops { get; set; }
         
         public Save()
         {
@@ -20,6 +21,7 @@ namespace SaveSystem
                 Levels.Add(new LevelData());
 
             Levels[0].Locked = false;
+            Drops = 0;
         }
     }
 }
