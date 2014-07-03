@@ -14,6 +14,9 @@ public class BatAI : MonoBehaviour
 
     public bool debugging;
     public float batSpeed;
+    public bool alwaysSwoop;
+    public float alwaysSwoopDelay;
+    float alwaysSwoopTimer;
 
     #endregion
 
@@ -30,11 +33,14 @@ public class BatAI : MonoBehaviour
         get { return swooping; }
         set
         {
-            swooping = value;
-            if (swooping)
-                batAnim.SetBool("swooping", true);
-            else
-                batAnim.SetBool("swooping", false);
+            if (swooping != value)
+            {
+                swooping = value;
+                if (swooping)
+                    batAnim.SetBool("swooping", true);
+                else
+                    batAnim.SetBool("swooping", false);
+            }
         }
     }
 
@@ -46,6 +52,8 @@ public class BatAI : MonoBehaviour
 
     void Start()
     {
+        alwaysSwoopTimer = 0.0f;
+
         player = GameObject.Find("Player");
 
         point1 = transform.Find("Point 1");
@@ -70,7 +78,21 @@ public class BatAI : MonoBehaviour
 
     void Update()
     {
-        CheckIfPlayerCrossesOverFlightPath();
+        if (alwaysSwoop)
+        {
+            if (!swooping)
+            {
+                alwaysSwoopTimer += Time.deltaTime;
+                if (alwaysSwoopTimer >= alwaysSwoopDelay)
+                {
+                    SwoopingDelay();
+                }
+            }
+        }
+        else
+            CheckIfPlayerCrossesOverFlightPath();
+        
+
 
         if (Swooping)
         {
@@ -146,5 +168,11 @@ public class BatAI : MonoBehaviour
                 Swooping = true;
             }
         }
+    }
+
+    void SwoopingDelay()
+    {
+        Swooping = true;
+        alwaysSwoopTimer = 0.0f;
     }
 }
