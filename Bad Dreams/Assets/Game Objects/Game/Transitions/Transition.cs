@@ -40,5 +40,13 @@ public class Transition : MonoBehaviour
     public void OnFinished()
     {
         tweenScale.enabled = false;
+		GameObject playerObj = GameObject.Find("Player");
+		if (playerObj)
+		{
+			HitAnimation hitA = playerObj.GetComponent<HitAnimation>();
+			hitA.ResetAnimation();
+		}
+		//hitA.DeleteDeathPrefab();
+		//Debug.Log("onfin");
     }
 }
