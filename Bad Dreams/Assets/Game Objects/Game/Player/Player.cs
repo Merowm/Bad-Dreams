@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
 		//while gliding
 		gliding = false; //gliding state
 		glideDefaceDirection = Vector3.zero;
-		glideDeFaceThreshold = 3.0f;		//direction can't be changed when (-glideDeFaceThreshold < velocity.x < glideDeFaceThreshold)
+		glideDeFaceThreshold = 3.99f;		//direction can't be changed when (-glideDeFaceThreshold < velocity.x < glideDeFaceThreshold)
 		glideAllowDeFace = true;			//allow changing direction
 		glideSteepness = 0.25f;				//how much the player descends while gliding
 		glideControl = 8.0f;				//how much the gliding speed can be affected by input
@@ -82,24 +82,10 @@ public class Player : MonoBehaviour
 			padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 		else
 			padInput = Vector2.zero;
-		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "pad:\n    x: " + padInput.x + "\n    y: " + padInput.y;
-
-
+		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "velocity: " + rigid.velocity + "\ndeface: " + glideAllowDeFace + "\ndefaceDir: " + glideDefaceDirection + "\nfaceDirection: " + faceDirection;
 
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
-		/*if (!playerFlowerCollider)
-		{
-			playerFlowerCollider = GameObject.Find("Player Flower Collider");
-		}
-		if (playerFlowerCollider)
-		{
-			playerFlowerCollider.transform.position = transform.position;
-		}*/
-		/*if (parentObject)
-		{
-			transform.position = parentObject.transform.position + offsetFromPlatform;
-		}*/
 
 		//fix slope sliding
 		if (onGround)
@@ -277,15 +263,22 @@ public class Player : MonoBehaviour
 			if (rigid.velocity.x > deadZone)
 			{
 				faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
-				animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-				animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
 			}
 			else if (rigid.velocity.x < -deadZone)
 			{
 				faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
-				animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-				animT.localPosition = new Vector3(0.18f, 0.04f, 1.0f);
 			}
+		}
+
+		if (faceDirection.x > 0.0f)
+		{
+			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+			animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
+		}
+		else if (faceDirection.x < 0.0f)
+		{
+			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+			animT.localPosition = new Vector3(0.18f, 0.04f, 1.0f);
 		}
 
 		ator.SetBool("dashing", dashing);
@@ -311,6 +304,7 @@ public class Player : MonoBehaviour
 		allowInput = false;
 		rigid.velocity = Vector3.zero;
 
+		//turn player invisible
 		SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
 		Color col = spr.color;
 		col.a = 0.0f;
@@ -324,6 +318,7 @@ public class Player : MonoBehaviour
 			allowInput = true;
 			rigid.isKinematic = false;
 
+			//turn player visible
 			SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
 			Color col = spr.color;
 			col.a = 1.0f;
@@ -360,18 +355,14 @@ public class Player : MonoBehaviour
 	{
 		if (padInput.x < -deadZone)
 		{
-			//rigid.velocity = new Vector2(-speed, rigid.velocity.y);
-			rigid.velocity -= new Vector2(moveAccel * Time.deltaTime, 0.0f); //alt
+			rigid.velocity -= new Vector2(moveAccel * Time.deltaTime, 0.0f);
 		}
 		else if (padInput.x > deadZone)
 		{
-			//rigid.velocity = new Vector2(speed, rigid.velocity.y);
-			rigid.velocity += new Vector2(moveAccel * Time.deltaTime, 0.0f); //alt
+			rigid.velocity += new Vector2(moveAccel * Time.deltaTime, 0.0f);
 		}
 		else
 		{
-			//rigid.velocity = new Vector2(0.0f, rigid.velocity.y);
-
 			if (onGround)
 			{
 				if (rigid.velocity.x > 0.0f)
@@ -404,7 +395,6 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		//limit movement speed //alt
 		float maxSpeed = moveSpeed;
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y, 0.0f);
 	}
@@ -427,89 +417,88 @@ public class Player : MonoBehaviour
 
 	void MovementGlide()
 	{
+		float maxSpeed = moveSpeed;
+
 		//if falling, slow down the falling
 		if (rigid.velocity.y < -glideSteepness)
 		{
-			//float aa = rigid.velocity.y / 10.0f;
 			rigid.velocity += new Vector2(0.0f, glideGravityResistance * Time.deltaTime);
 		}
 
-		else if (rigid.velocity.y < 0.0f) //0.0f > velY > -glideSteep
+		else if (rigid.velocity.y < 0.0f)
 		{
 			rigid.velocity = new Vector3(rigid.velocity.x, -glideSteepness);
 		}
 
 		if (padInput.x < -0.5f)
 		{
-			if (glideAllowDeFace)
+			if (glideAllowDeFace) //allowed to turn around
 			{
-				//faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
-				rigid.velocity += new Vector2(-glideControl * Time.deltaTime, 0.0f);
-
-				if (rigid.velocity.x < glideDeFaceThreshold)
-				{
-					glideAllowDeFace = false;
-					glideDefaceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
-				}
+				glideDefaceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
+				glideAllowDeFace = false;
 			}
 		}
 		else if (padInput.x > 0.5f)
 		{
-			if (glideAllowDeFace)
+			if (glideAllowDeFace) //allowed to turn around
 			{
-				//faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
-				rigid.velocity += new Vector2(glideControl * Time.deltaTime, 0.0f);
+				glideDefaceDirection = new Vector3(1.0f, 0.0f, 0.0f);
+				glideAllowDeFace = false;
 
-				if (rigid.velocity.x > -glideDeFaceThreshold)
-				{
-					glideAllowDeFace = false;
-					glideDefaceDirection = new Vector3(1.0f, 0.0f, 0.0f);
-				}
 			}
 		}
 		else
 		{
 			//minimum gliding speed
-			if (faceDirection.x > 0.0f)
+			if (glideAllowDeFace)
 			{
-				if (rigid.velocity.x < glideMinSpeed)
+				if (faceDirection.x > 0.0f)
 				{
-					rigid.velocity += new Vector2(glideZeroAcc * Time.deltaTime, 0.0f);
+					if (rigid.velocity.x < maxSpeed) //glideMinSpeed
+					{
+						rigid.velocity += new Vector2(glideZeroAcc * Time.deltaTime, 0.0f);
+					}
 				}
-			}
-			else
-			{
-				if (rigid.velocity.x > -glideMinSpeed)
+				else
 				{
-					rigid.velocity += new Vector2(-glideZeroAcc * Time.deltaTime, 0.0f);
+					if (rigid.velocity.x > -maxSpeed) //glideMinSpeed
+					{
+						rigid.velocity += new Vector2(-glideZeroAcc * Time.deltaTime, 0.0f);
+					}
 				}
 			}
 		}
 
 		//gliding threshold
-		if (!glideAllowDeFace)
-		{
-			if (glideDefaceDirection.x < 0.0f)
-			{
-				rigid.velocity += new Vector2(-glideControl * Time.deltaTime, 0.0f);
-			}
-			else if (glideDefaceDirection.x > 0.0f)
-			{
-				rigid.velocity += new Vector2(glideControl * Time.deltaTime, 0.0f);
-			}
-		}
 
-		if (rigid.velocity.x > -glideDeFaceThreshold && rigid.velocity.x < glideDeFaceThreshold)
+		if (!glideAllowDeFace && glideDefaceDirection.x < 0.0f)
 		{
-			//glideAllowDeFace = false;
+			rigid.velocity += new Vector2(-glideControl * Time.deltaTime, 0.0f);
+			if (rigid.velocity.x < 0.0f)
+			{
+				faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
+			}
+			if (rigid.velocity.x < -glideDeFaceThreshold)
+			{
+				glideAllowDeFace = true;
+				glideDefaceDirection = new Vector3(1.0f, 0.0f, 0.0f);
+			}
 		}
-		else
+		else if (!glideAllowDeFace && glideDefaceDirection.x > 0.0f)
 		{
-			glideAllowDeFace = true;
-		}
+			rigid.velocity += new Vector2(glideControl * Time.deltaTime, 0.0f);
+			if (rigid.velocity.x > 0.0f)
+			{
+				faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
+			}
+			if (rigid.velocity.x > glideDeFaceThreshold)
+			{
+				glideAllowDeFace = true;
+				glideDefaceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
+			}
+		}		
 
 		//limit gliding to normal speed
-		float maxSpeed = moveSpeed;
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y, 0.0f);
 	}
 
@@ -550,7 +539,6 @@ public class Player : MonoBehaviour
 		}
 
 
-
 		if (glideHitWallTimer > 0.0f)
 		{
 			glideHitWallTimer -= Time.deltaTime;
@@ -570,22 +558,15 @@ public class Player : MonoBehaviour
 
 	void JumpBoost()
 	{
-		//if (stamina.Use())
-		//{
-			rigid.velocity = new Vector2(rigid.velocity.x, boostStrength);
-			allowBoost = false;
-			//Debug.Log("boost");
-		//}
+		
+		rigid.velocity = new Vector2(rigid.velocity.x, boostStrength);
+		allowBoost = false;
 	}
 
 	void JumpBoostWeak()
 	{
-		//if (stamina.Use())
-		//{
-			rigid.velocity += new Vector2(0.0f, boostStrength * 0.8f);
-			allowBoost = false;
-			//Debug.Log("boost weak");
-		//}
+		rigid.velocity += new Vector2(0.0f, boostStrength * 0.8f);
+		allowBoost = false;
 	}
 
 	void Jump()
@@ -601,7 +582,6 @@ public class Player : MonoBehaviour
 
 		bool onGroundBefore = onGround;
 
-
 		//Debug.Log("landcheck");
 		onGround = false;
 		for (float offset = -gap; offset <= gap; offset += gap)
@@ -615,12 +595,6 @@ public class Player : MonoBehaviour
 				gliding = false;
 				allowBoost = true;
 				glideHitWallTimer = 0.0f;
-				
-
-				/*if (result == 12)
-				{
-					
-				}*/
 			}
 		}
 
@@ -628,11 +602,6 @@ public class Player : MonoBehaviour
 		{
 			dustParticleGen.Trigger();
 		}
-		/*if (!onGround)
-		{
-			Debug.Log("parent nullify");
-			parentObject = null;
-		}*/
 		//Debug.Log("landcheck end");
 	}
 
@@ -648,19 +617,6 @@ public class Player : MonoBehaviour
 		{
 			if (hit.collider != null)
 			{
-				//
-
-				/*
-				if ((hit.collider.gameObject.tag == "Moving Environment" || hit.collider.gameObject.tag == "Moving and One Way"))
-				{
-					parentObject = hit.collider.gameObject;
-					offsetFromPlatform = transform.position - parentObject.transform.position;
-					Debug.Log("offset " + offsetFromPlatform);
-					//transform.parent = other.gameObject.transform;
-				}
-				*/
-
-				//
 				return hit.collider.gameObject.layer;
 			}
 		}
@@ -669,7 +625,6 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        //Debug.Log(LayerMask.NameToLayer("Enemy"));
         if (col.gameObject.name == "Dog")
         {
 
@@ -686,10 +641,5 @@ public class Player : MonoBehaviour
 
 	void OnTriggerEnter2D(Collider2D c)
 	{
-        //if (c.gameObject.name == "Finish Line")
-        //{
-        //    GameplayStateManager.SwitchTo(GameplayState.LevelFinished);
-        //    Debug.Log("finiis");
-        //}
 	}
 }
