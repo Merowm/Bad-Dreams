@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 35e8812f2775a5c489e5adc0a8c4eb34
+guid: 6f4091689e383324f8afd80ce1e3cf39
 TextureImporter:
   serializedVersion: 2
   mipmaps:
@@ -35,7 +35,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: .5, y: .5}
-  spritePixelsToUnits: 128
+  spritePixelsToUnits: 256
   alphaIsTransparency: 1
   textureType: 8
   buildTargetSettings:
@@ -44,6 +44,15 @@ TextureImporter:
     textureFormat: -2
     compressionQuality: 50
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: snowTile_0
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 256
+        height: 284
+      alignment: 0
+      pivot: {x: .5, y: .5}
   spritePackingTag: 
   userData: 
