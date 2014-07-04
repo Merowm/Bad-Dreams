@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class HangingSpiderAggroRange : MonoBehaviour
+{
+    private HangingSpider spider;
+
+    private void Start()
+    {
+        spider = transform.root.gameObject.GetComponent<HangingSpider>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.name == "Player")
+        {
+            if (spider.State != HangingSpiderState.Retreating)
+            {
+                spider.SwitchTo(HangingSpiderState.Attacking);
+            }
+        }
+    }
+}
