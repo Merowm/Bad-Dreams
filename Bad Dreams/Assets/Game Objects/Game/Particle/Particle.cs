@@ -13,13 +13,12 @@ public class Particle : MonoBehaviour
 	public Gradient colorIn;
 	public AnimationCurve addDirMultiplyCurve;
 
-	public Vector3 velocity, addVelocity;
+	public Vector3 velocity, addVelocity, randomStartingVelocity;
 
 	public bool randomAddVelocityEnabled;
 
 	public float randomAddVelocityMultiplier;
 
-	Vector3 randomAddVelocity;
 	SpriteRenderer spr;
 
 	void Start ()
@@ -34,7 +33,9 @@ public class Particle : MonoBehaviour
 			addVelocity *= randomAddVelocityMultiplier;
 		}
 
-
+		float xx = (Random.value * 2.0f - 1.0f) * randomStartingVelocity.x;
+		float yy = (Random.value * 2.0f - 1.0f) * randomStartingVelocity.y;
+		velocity = new Vector3(xx, yy);
 	}
 	
 	void Update()
@@ -63,7 +64,6 @@ public class Particle : MonoBehaviour
 		transform.position += direction * speed * Time.deltaTime;
 		transform.position += velocity * Time.deltaTime;
 		velocity += addVelocity * Time.deltaTime;
-		velocity += randomAddVelocity * Time.deltaTime;
 	}
 
 	float DegToRad(float deg)

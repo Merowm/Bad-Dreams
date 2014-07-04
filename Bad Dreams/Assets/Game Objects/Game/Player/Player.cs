@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 	public float moveSpeed, moveAccel, moveDecel, jumpStrength, boostStrength, airFriction, deadZone;
 	public float dashLength, dashSpeed, glideControl, glideSteepness, glideDeFaceThreshold, glideGravityResistance, glideHitWallPenalty;
 	
-	float dashTimer, glideMinSpeed, glideZeroAcc, glideHitWallTimer, idleTimer;
+	float dashTimer, glideZeroAcc, glideHitWallTimer, idleTimer;
 	Vector3 faceDirection, glideDefaceDirection;
 	Rigidbody2D rigid;
 	Vector2 padInput;
@@ -57,7 +57,6 @@ public class Player : MonoBehaviour
 		glideAllowDeFace = true;			//allow changing direction
 		glideSteepness = 0.25f;				//how much the player descends while gliding
 		glideControl = 8.0f;				//how much the gliding speed can be affected by input
-		glideMinSpeed = 2.0f;				//minimum gliding speed (unused?)
 		glideZeroAcc = 6.0f;				//acceleration from zero velocity
 		glideGravityResistance = 15.0f;		//how much gravity resistance when starting to glide while falling
 		glideHitWallTimer = 0.0f;
