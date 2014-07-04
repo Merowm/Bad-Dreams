@@ -3,7 +3,12 @@ using System.Collections;
 
 public class Transition : MonoBehaviour
 {
+    public Texture defaultTransition;
+    public Texture deathTransition;
+    public Texture levelFinishTransition;
+
     private TweenScale tweenScale;
+    private GUITexture guiTexture;
 
     public void Awake()
     {
@@ -16,23 +21,20 @@ public class Transition : MonoBehaviour
     public void Start()
     {
         tweenScale = GetComponent<TweenScale>();
+        guiTexture = GetComponent<GUITexture>();
         DontDestroyOnLoad(this.gameObject);
     }
 
-    public void Update()
+    public void PlayForward(TransitionStyle transitionStyle = TransitionStyle.Default)
     {
-        //if (!Application.isLoadingLevel && !tweenScale.enabled)
-        //    PlayReverse();
-    }
-
-    public void PlayForward()
-    {
+        DetermineTransitionTexture(transitionStyle);
         tweenScale.enabled = true;
         tweenScale.PlayForward();
     }
 
-    public void PlayReverse()
+    public void PlayReverse(TransitionStyle transitionStyle = TransitionStyle.Default)
     {
+        DetermineTransitionTexture(transitionStyle);
         tweenScale.enabled = true;
         tweenScale.PlayReverse();
     }
@@ -51,5 +53,23 @@ public class Transition : MonoBehaviour
 		}
 		//hitA.DeleteDeathPrefab();
 		//Debug.Log("onfin");
+    }
+
+    public void DetermineTransitionTexture(TransitionStyle transitionStyle)
+    {
+        switch (transitionStyle)
+        {
+            case TransitionStyle.Default:
+                guiTexture.texture = defaultTransition;
+                break;
+
+            case TransitionStyle.Death:
+                guiTexture.texture = deathTransition;
+                break;
+
+            case TransitionStyle.LevelFinish:
+                guiTexture.texture = levelFinishTransition;
+                break;
+        }
     }
 }

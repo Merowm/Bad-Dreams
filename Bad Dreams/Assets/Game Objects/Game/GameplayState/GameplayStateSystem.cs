@@ -131,7 +131,7 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToGameOver()
     {
-        transition.PlayForward();
+        transition.PlayForward(TransitionStyle.Death);
         transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "LoadLastCheckpoint"));
     }
 
@@ -165,7 +165,7 @@ public class GameplayStateSystem : MonoBehaviour
     private void SwitchToLevelFinished()
     {
         Time.timeScale = 0.0F;
-        transition.PlayForward();
+        transition.PlayForward(TransitionStyle.LevelFinish);
         transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "ActivateLevelFinishScreen"));
     }
 
@@ -182,6 +182,10 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void LoadLastCheckpoint()
     {
+        DogAI[] dogs = (DogAI[])GameObject.FindObjectsOfType(typeof(DogAI));
+        foreach (DogAI dog in dogs)
+            dog.Reset();
+
 		GameObject player = GameObject.Find("Player");
 		if (player)
 		{
@@ -189,7 +193,7 @@ public class GameplayStateSystem : MonoBehaviour
 			player.GetComponent<Player>().GotoLastCheckpoint();
             player.GetComponent<HidingSkill>().Unhide();
 			SwitchTo(GameplayState.Playing);
-            transition.PlayReverse();
+            transition.PlayReverse(TransitionStyle.Death);
 		}
     }
 
@@ -201,7 +205,7 @@ public class GameplayStateSystem : MonoBehaviour
     {
         transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "ActivateLevelFinishScreen"));
         SetGameObjectsActive(LevelFinishedObjects, true);
-        transition.PlayReverse();
+        transition.PlayReverse(TransitionStyle.LevelFinish);
     }
 
     #endregion Level Finished
