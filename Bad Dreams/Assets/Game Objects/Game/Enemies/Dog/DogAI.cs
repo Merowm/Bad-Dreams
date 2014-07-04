@@ -647,4 +647,11 @@ public class DogAI : MonoBehaviour
             belowPlayer = false;
         }
     }
+
+    public void Reset()
+    {
+        alerted = false;
+        alertness = 0;
+        alertTimer = 0.0f;
+    }
 }

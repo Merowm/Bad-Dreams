@@ -182,6 +182,10 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void LoadLastCheckpoint()
     {
+        DogAI[] dogs = (DogAI[])GameObject.FindObjectsOfType(typeof(DogAI));
+        foreach (DogAI dog in dogs)
+            dog.Reset();
+
 		GameObject player = GameObject.Find("Player");
 		if (player)
 		{
