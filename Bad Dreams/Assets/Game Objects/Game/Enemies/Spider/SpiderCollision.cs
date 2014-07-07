@@ -13,7 +13,7 @@ public class SpiderCollision : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.name == "Player")
-            GameplayStateManager.SwitchTo(GameplayState.GameOver);
+            GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
 
         if (other.gameObject.name == "Spider Web")
             spider.SwitchTo(SpiderAIState.Idle);

@@ -175,4 +175,9 @@ public class SpiderAI : MonoBehaviour
         transform.rotation = Quaternion.identity;
         transform.Rotate(0.0F, 0.0F, angleDegrees);
     }
+
+    public void Reset()
+    {
+        SwitchTo(SpiderAIState.Idle);
+    }
 }

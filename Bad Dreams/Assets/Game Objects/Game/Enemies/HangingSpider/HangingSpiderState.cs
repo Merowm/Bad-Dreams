@@ -4,6 +4,7 @@ using System.Collections;
 public enum HangingSpiderState
 {
     Idle,
+    Descending,
 	Attacking,
-    Retreating
+    Ascending
 }

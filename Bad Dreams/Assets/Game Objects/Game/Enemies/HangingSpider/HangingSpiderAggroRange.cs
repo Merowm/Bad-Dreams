@@ -14,9 +14,9 @@ public class HangingSpiderAggroRange : MonoBehaviour
     {
         if (other.name == "Player")
         {
-            if (spider.State != HangingSpiderState.Retreating)
+            if (spider.State == HangingSpiderState.Idle)
             {
-                spider.SwitchTo(HangingSpiderState.Attacking);
+                spider.SwitchTo(HangingSpiderState.Descending);
             }
         }
     }
