@@ -17,6 +17,10 @@ public class Player : MonoBehaviour
 	CameraFollowing camFollow;
 	GameObject lastCheckpoint;
 
+    //audio
+    SoundHandler soundHandler;
+    bool soundDelay;
+
 	ParticleGenerator doubleJumpParticleGen, dustParticleGen, dashParticleGen;
 	//public GameObject parentObject;
 	//public Vector3 offsetFromPlatform;
@@ -32,6 +36,7 @@ public class Player : MonoBehaviour
 		doubleJumpParticleGen = GameObject.Find("Double Jump Particle Generator").GetComponent<ParticleGenerator>();
 		dustParticleGen = GameObject.Find("Dust Particle Generator").GetComponent<ParticleGenerator>();
 		dashParticleGen = GameObject.Find("Dash Particle Generator").GetComponent<ParticleGenerator>();
+        soundHandler = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
 
 		animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
 		padInput = Vector2.zero;
@@ -99,6 +104,20 @@ public class Player : MonoBehaviour
 
 		//animation
 		Animation();
+
+        //sounds
+        if (onGround)
+        {
+            if (rigid.velocity.x != 0)
+            {
+                if (!soundDelay)
+                {
+                    soundHandler.PlaySound("movement");
+                    soundDelay = true;
+                    Invoke ("ResetSoundDelay", 0.4f);
+                }
+            }
+        }
 
 		//glide
 		if (Input.GetButton("Glide") && allowInput)
@@ -575,6 +594,8 @@ public class Player : MonoBehaviour
 	{
 		rigid.velocity = new Vector2(rigid.velocity.x, jumpStrength);
 		onGround = false;
+
+        soundHandler.PlaySound("movement");
 	}
 
 	void TerrainCollision(float colliderWidth, float colliderHeight)
@@ -603,6 +624,7 @@ public class Player : MonoBehaviour
 		if (onGroundBefore == false && onGround == true)
 		{
 			dustParticleGen.Trigger();
+            soundHandler.PlaySound("movement");
 		}
 		//Debug.Log("landcheck end");
 	}
@@ -644,4 +666,9 @@ public class Player : MonoBehaviour
 	void OnTriggerEnter2D(Collider2D c)
 	{
 	}
+
+    void ResetSoundDelay()
+    {
+        soundDelay = false;
+    }
 }
