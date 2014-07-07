@@ -7,7 +7,6 @@ public class Tutorial : MonoBehaviour
     UILabel tutorialTextBox;
     public string tutorialText;
     bool insideTutorialCollider, tutorialsDisabled;
-    Animator anim;
 
     bool InsideTutorialCollider
     {
@@ -17,22 +16,12 @@ public class Tutorial : MonoBehaviour
             if (value != insideTutorialCollider)
             {
                 insideTutorialCollider = value;
-                anim.SetBool("over", value);
             }
         }
     }
 
     void Start()
     {
-        if (PlayerPrefs.GetInt("toggletutorial", 0) == 0)
-        {
-            tutorialsDisabled = true; //don't have tutorial signs pop up automatically
-        }
-        else
-            tutorialsDisabled = false;
-
-        anim = GetComponent<Animator>();
-
         tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
         if (tutorialTextBoxGameObject != null)
         {
@@ -54,13 +43,10 @@ public class Tutorial : MonoBehaviour
     {
         if (col.gameObject.name == "Player")
         {
-            if (!tutorialsDisabled)
+            if (GameplayStateManager.CurrentState == GameplayState.Playing)
             {
-                if (GameplayStateManager.CurrentState == GameplayState.Playing)
-                {
-                    GameplayStateManager.SwitchTo(GameplayState.Tutorial);
-                    ChangeTutorialText(tutorialText);
-                }
+                GameplayStateManager.SwitchTo(GameplayState.Tutorial);
+                ChangeTutorialText(tutorialText);
             }
             InsideTutorialCollider = true;
         }
