@@ -9,6 +9,7 @@ public class HangingSpider : MonoBehaviour
     public HangingSpiderState State { get; private set; }
 
     private LineRenderer web;
+    private float webOffset = 0.92F;
     private Vector3 startPosition;
     private Animator animator;
 
@@ -18,8 +19,8 @@ public class HangingSpider : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(9, 10, true);
         web = GetComponent<LineRenderer>();
-        web.SetPosition(0, startPosition);
-        web.SetPosition(1, startPosition);
+        web.SetPosition(0, new Vector3(startPosition.x, startPosition.y + webOffset));
+        web.SetPosition(1, new Vector3(startPosition.x, startPosition.y + webOffset));
         web.sortingLayerName = "Player Foreground";
         web.sortingOrder = -1;
         startPosition = transform.position;
@@ -71,7 +72,8 @@ public class HangingSpider : MonoBehaviour
 
     private void DrawWeb()
     {
-        web.SetPosition(1, new Vector3(0, Mathf.Abs((startPosition.y - transform.position.y)), 0));
+        if ((startPosition.y - transform.position.y) > webOffset)
+            web.SetPosition(1, new Vector3(0, Mathf.Abs((startPosition.y - transform.position.y)), 0));
     }
 
     private void PlayerCollision()
