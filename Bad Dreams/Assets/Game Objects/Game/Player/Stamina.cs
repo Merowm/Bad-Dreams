@@ -77,4 +77,12 @@ public class Stamina : MonoBehaviour
 		}
 		return false;
 	}
+    public void ResetStamina()
+    {
+        if (bar)
+        {
+            bar.ResetStamina();
+            stamina = staminaMax;
+        }
+    }
 }

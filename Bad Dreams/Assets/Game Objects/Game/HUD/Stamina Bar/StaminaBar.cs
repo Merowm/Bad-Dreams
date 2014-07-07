@@ -88,4 +88,13 @@ public class StaminaBar : MonoBehaviour
 		}
 		return true;
 	}
+
+    public void ResetStamina()
+    {
+        if (bars != null)
+        foreach (GameObject bar in bars)
+        {
+            bar.SetActive(true);
+        }
+    }
 }

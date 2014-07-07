@@ -429,8 +429,6 @@ public class DogAI : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log(recentlyCollidedWithPlayer);
-
         if (col.gameObject.name == "Player")
         {
             if (!playerVisible)
@@ -459,7 +457,6 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                Debug.Log("Oh" + veryCloseToPlayer);
                 veryCloseToPlayer = true;
 				GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
                 //GameplayStateManager.SwitchTo(GameplayState.GameOver);

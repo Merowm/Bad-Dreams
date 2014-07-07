@@ -316,6 +316,7 @@ public class Player : MonoBehaviour
 		Debug.Log("Resurrect");
 		if (!allowInput)
 		{
+            stamina.ResetStamina();
 			allowInput = true;
 			//rigid.isKinematic = false;
 
