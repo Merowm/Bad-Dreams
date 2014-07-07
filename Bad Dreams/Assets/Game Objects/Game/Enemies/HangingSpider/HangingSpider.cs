@@ -12,11 +12,16 @@ public class HangingSpider : MonoBehaviour
     private Vector3 startPosition;
     private Animator animator;
 
+    private HidingSkill player;
+
     private void Start()
     {
+        Physics2D.IgnoreLayerCollision(9, 10, true);
         web = GetComponent<LineRenderer>();
         web.SetPosition(0, startPosition);
         web.SetPosition(1, startPosition);
+        web.sortingLayerName = "Player Foreground";
+        web.sortingOrder = -1;
         startPosition = transform.position;
 
         animator = GetComponentInChildren<Animator>();
@@ -24,6 +29,8 @@ public class HangingSpider : MonoBehaviour
         animator.SetBool("descending", false);
         animator.SetBool("attacking", false);
         animator.SetBool("idle", true);
+
+        player = GameObject.Find("Player").GetComponent<HidingSkill>();
 
         SwitchTo(HangingSpiderState.Idle);
     }
@@ -50,6 +57,7 @@ public class HangingSpider : MonoBehaviour
         }
 
         DrawWeb();
+        PlayerCollision();
     }
 
     public void SwitchTo(HangingSpiderState state)
@@ -64,6 +72,14 @@ public class HangingSpider : MonoBehaviour
     private void DrawWeb()
     {
         web.SetPosition(1, new Vector3(0, Mathf.Abs((startPosition.y - transform.position.y)), 0));
+    }
+
+    private void PlayerCollision()
+    {
+        if (player.IsHiding)
+            Physics2D.IgnoreLayerCollision(9, 10, true);
+        else
+            Physics2D.IgnoreLayerCollision(9, 10, false);
     }
 
     private void OnCollisionEnter2D(Collision2D other)
