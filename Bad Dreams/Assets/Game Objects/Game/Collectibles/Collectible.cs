@@ -7,7 +7,7 @@ public class Collectible : MonoBehaviour
     //Types
     // "AddTime"
     // "AddPoints"
-    // "Treasure"
+    // "AddTreasure"
 
     #region Constants
 
@@ -28,11 +28,14 @@ public class Collectible : MonoBehaviour
     float min, max, speed, directionTimer, timerInterval;
     Vector3 origPos;
 	GameObject pickupParticle;
+    SoundHandler soundHandler;
 
     #endregion
 
     void Start()
     {
+        soundHandler = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
+
         min = 0.05f;
         max = -0.05f;
         directionTimer = 0.0f;
@@ -76,6 +79,7 @@ public class Collectible : MonoBehaviour
     {
         Debug.Log("+20 SECONDS");
         GameObject.Find("Timer").GetComponent<Timer>().TimeBonus();
+        soundHandler.PlaySound("time");
         ParticleSystem particleSystem = GameObject.Find("Clock Particle Effect").GetComponent<ParticleSystem>();
         if (particleSystem != null)
         {
@@ -90,7 +94,8 @@ public class Collectible : MonoBehaviour
     void AddPoints()
     {
         GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount++;
-        GameObject.Find("Pick Up Droplets").GetComponent<AudioSource>().Play();
+        soundHandler.PlaySound("droplet");
+        //GameObject.Find("Pick Up Droplets").GetComponent<AudioSource>().Play();
         Debug.Log("5 POINTS TO GRYFFINDOR (AKA We need a point system)");
 		Instantiate(pickupParticle, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
@@ -98,7 +103,8 @@ public class Collectible : MonoBehaviour
 
     void AddTreasure()
     {
-        GameObject.Find("Pick Up Treasure").GetComponent<AudioSource>().Play();
+        soundHandler.PlaySound("treasure");
+        //GameObject.Find("Pick Up Treasure").GetComponent<AudioSource>().Play();
         Destroy(this.gameObject);
     }
 }
