@@ -42,6 +42,8 @@ public class DogAI : MonoBehaviour
     Bounds thisBounds;
     Transform thisEyePos;
 
+    SoundHandler soundHandler;
+
     GameObject player;
     SpriteRenderer playerSpriteRend;
 
@@ -76,6 +78,8 @@ public class DogAI : MonoBehaviour
         velocity = 0.0f;
         thisEyePos = transform.FindChild("Eye Position");
         thisVisionCone = thisEyePos.FindChild("Vision Cone").gameObject.GetComponent<SpriteRenderer>();
+
+        soundHandler = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
     }
 
     void Update()
@@ -145,6 +149,7 @@ public class DogAI : MonoBehaviour
             velocity = 0;
         }
 
+        //animation
         if (velocity == 0)
         {
             CancelAnimations();
@@ -159,6 +164,37 @@ public class DogAI : MonoBehaviour
         {
             CancelAnimations();
             thisAnimator.SetBool("running", true);
+        }
+
+        //sound
+        if (veryCloseToPlayer)
+        {
+            soundHandler.StopSound(SoundType.DogAlert);
+            soundHandler.StopSound(SoundType.DogSeePlayer);
+        }
+        else
+        if (!alerted)
+        {
+            if (playerVisible)
+            {
+                soundHandler.PlaySound(SoundType.DogAlert);
+            }
+            else
+            {
+                soundHandler.StopSound(SoundType.DogAlert);
+                soundHandler.StopSound(SoundType.DogSeePlayer);
+            }
+        }
+        else
+        {
+            if (playerVisible)
+            {
+                soundHandler.PlaySound(SoundType.DogSeePlayer);
+            }
+            else
+            {
+                soundHandler.PlaySound(SoundType.DogAlert);
+            }
         }
 
         thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
