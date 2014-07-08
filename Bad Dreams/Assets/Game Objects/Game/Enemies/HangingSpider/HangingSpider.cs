@@ -9,7 +9,7 @@ public class HangingSpider : MonoBehaviour
     public HangingSpiderState State { get; private set; }
 
     private LineRenderer web;
-    private float webOffset = 0.92F;
+    private float webOffset = 0.68F;
     private Vector3 startPosition;
     private Animator animator;
 
@@ -97,7 +97,7 @@ public class HangingSpider : MonoBehaviour
         switch (State)
         {
             case HangingSpiderState.Idle:
-                animator.speed = 1.0F;
+                animator.speed = 0.0F;
                 animator.SetBool("attacking", false);
                 animator.SetBool("ascending", false);
                 animator.SetBool("descending", false);
@@ -134,12 +134,43 @@ public class HangingSpider : MonoBehaviour
     {
         SwitchTo(HangingSpiderState.Idle);
         transform.position = startPosition;
+        web.SetPosition(0, new Vector3(startPosition.x, startPosition.y + webOffset));
+        web.SetPosition(1, new Vector3(startPosition.x, startPosition.y + webOffset));
     }
 
     #region Idle
 
+    private bool idleAnimationSet = false;
+    private float idleAnimationTimer = 0.0F;
+    private float idleAnimationInterval = 0.0F;
+
     private void UpdateIdle()
     {
+        if (!idleAnimationSet)
+        {
+            if (animator.speed == 1.0F)
+                idleAnimationInterval = 1.0F;
+            else
+                idleAnimationInterval = Random.Range(7.5F, 15.0F);
+
+            idleAnimationSet = true;
+        }
+
+        if (idleAnimationSet)
+        {
+            idleAnimationTimer += Time.deltaTime;
+            if (idleAnimationTimer > idleAnimationInterval)
+            {
+                ToggleIdleAnimation();
+                idleAnimationSet = false;
+                idleAnimationTimer = 0.0F;
+            }
+        }
+    }
+
+    private void ToggleIdleAnimation()
+    {
+        animator.speed = (animator.speed == 1.0F) ? 0.0F : 1.0F;
     }
 
     #endregion Idle
