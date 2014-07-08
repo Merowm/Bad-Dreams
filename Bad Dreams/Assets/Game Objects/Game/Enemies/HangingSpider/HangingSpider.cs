@@ -98,26 +98,34 @@ public class HangingSpider : MonoBehaviour
         {
             case HangingSpiderState.Idle:
                 animator.speed = 1.0F;
+                animator.SetBool("attacking", false);
+                animator.SetBool("ascending", false);
                 animator.SetBool("descending", false);
                 animator.SetBool("idle", true);
                 break;
 
             case HangingSpiderState.Descending:
                 animator.speed = 0.0F;
-                animator.SetBool("idle", false);
+                animator.SetBool("attacking", false);
+                animator.SetBool("ascending", false);
                 animator.SetBool("descending", true);
+                animator.SetBool("idle", false);
                 break;
 
             case HangingSpiderState.Ascending:
                 animator.speed = 0.0F;
                 animator.SetBool("attacking", false);
                 animator.SetBool("ascending", true);
+                animator.SetBool("descending", false);
+                animator.SetBool("idle", false);
                 break;
 
             case HangingSpiderState.Attacking:
                 animator.speed = 1.0F;
-                animator.SetBool("descending", false);
                 animator.SetBool("attacking", true);
+                animator.SetBool("ascending", false);
+                animator.SetBool("descending", false);
+                animator.SetBool("idle", false);
                 break;
         }
     }
@@ -161,7 +169,7 @@ public class HangingSpider : MonoBehaviour
     {
         if (!invoked)
         {
-            Invoke("ChangeToAscending", 4.0F);
+            Invoke("ChangeToAscending", 0.5F);
             invoked = true;
         }
     }
