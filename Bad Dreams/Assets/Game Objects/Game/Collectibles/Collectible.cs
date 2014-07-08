@@ -95,8 +95,6 @@ public class Collectible : MonoBehaviour
     {
         GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount++;
         soundHandler.PlaySound(SoundType.Droplet);
-        //GameObject.Find("Pick Up Droplets").GetComponent<AudioSource>().Play();
-        Debug.Log("5 POINTS TO GRYFFINDOR (AKA We need a point system)");
 		Instantiate(pickupParticle, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
     }
@@ -104,7 +102,6 @@ public class Collectible : MonoBehaviour
     void AddTreasure()
     {
         soundHandler.PlaySound(SoundType.Treasure);
-        //GameObject.Find("Pick Up Treasure").GetComponent<AudioSource>().Play();
         Destroy(this.gameObject);
     }
 }

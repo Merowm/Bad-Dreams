@@ -53,6 +53,8 @@ public class DogAI : MonoBehaviour
     float alertness;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer, recentlyCollidedWithPlayer, veryCloseToPlayer;
 
+    AudioSource sound_DogSeePlayer, sound_DogCollision, sound_DogAlert;
+
     #endregion
 
     void Start()
@@ -80,6 +82,11 @@ public class DogAI : MonoBehaviour
         thisVisionCone = thisEyePos.FindChild("Vision Cone").gameObject.GetComponent<SpriteRenderer>();
 
         soundHandler = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
+
+        sound_DogSeePlayer = transform.Find("Dog Sounds/Dog See Player").GetComponent<AudioSource>();
+        sound_DogAlert = transform.Find("Dog Sounds/Dog Alert").GetComponent<AudioSource>();
+        sound_DogCollision = transform.Find("Dog Sounds/Dog Collision").GetComponent<AudioSource>();
+
     }
 
     void Update()
@@ -166,35 +173,32 @@ public class DogAI : MonoBehaviour
             thisAnimator.SetBool("running", true);
         }
 
-        //sound
-        if (veryCloseToPlayer)
+        //sounds
+        if (alertness > 0.1f)
         {
-            soundHandler.StopSound(SoundType.DogAlert);
-            soundHandler.StopSound(SoundType.DogSeePlayer);
-        }
-        else
-        if (!alerted)
-        {
-            if (playerVisible)
-            {
-                soundHandler.PlaySound(SoundType.DogAlert);
-            }
-            else
-            {
-                soundHandler.StopSound(SoundType.DogAlert);
-                soundHandler.StopSound(SoundType.DogSeePlayer);
-            }
+            sound_DogSeePlayer.volume = alertness / VISION_BECOME_ALERTED_THRESHOLD;
         }
         else
         {
-            if (playerVisible)
+            sound_DogSeePlayer.volume = 0;
+        }
+        if (!veryCloseToPlayer)
+        {
+            if (alerted)
             {
-                soundHandler.PlaySound(SoundType.DogSeePlayer);
+                if (sound_DogAlert.volume < 1.0f)
+                sound_DogAlert.volume += Time.deltaTime;
             }
             else
             {
-                soundHandler.PlaySound(SoundType.DogAlert);
+                if (sound_DogAlert.volume > 0.0f)
+                sound_DogAlert.volume -= Time.deltaTime;
             }
+        }
+        else
+        {
+            if (sound_DogAlert.volume > 0.0f)
+            sound_DogAlert.volume -= Time.deltaTime;
         }
 
         thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
@@ -474,7 +478,7 @@ public class DogAI : MonoBehaviour
                     if (!recentlyCollidedWithPlayer)
                     {
                         alertness += BUMP_ALERTNESS_ADDITION;
-                        GameObject.Find("Collision Against Dog Sound").GetComponent<AudioSource>().Play();
+                        sound_DogCollision.Play();
                         Invoke("AimEyesAtPlayer", 0.8f);
                         Invoke("ResetCollisionWithPlayer", 2.0f);
                     }
