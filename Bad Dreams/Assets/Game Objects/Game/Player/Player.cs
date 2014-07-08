@@ -112,7 +112,7 @@ public class Player : MonoBehaviour
             {
                 if (!soundDelay)
                 {
-                    soundHandler.PlaySound("movement");
+                    soundHandler.PlaySound(SoundType.Movement);
                     soundDelay = true;
                     Invoke ("ResetSoundDelay", 0.4f);
                 }
@@ -595,7 +595,7 @@ public class Player : MonoBehaviour
 		rigid.velocity = new Vector2(rigid.velocity.x, jumpStrength);
 		onGround = false;
 
-        soundHandler.PlaySound("movement");
+        soundHandler.PlaySound(SoundType.Movement);
 	}
 
 	void TerrainCollision(float colliderWidth, float colliderHeight)
@@ -624,7 +624,7 @@ public class Player : MonoBehaviour
 		if (onGroundBefore == false && onGround == true)
 		{
 			dustParticleGen.Trigger();
-            soundHandler.PlaySound("movement");
+            soundHandler.PlaySound(SoundType.Movement);
 		}
 		//Debug.Log("landcheck end");
 	}
