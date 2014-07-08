@@ -4,7 +4,9 @@ using System.Collections;
 public class SpiderAI : MonoBehaviour
 {
     public SpiderAIState State { get; private set; }
+    public SpiderAIState PreviousState { get; private set; }
     public float regularSpeed;
+    public float chasingSpeed;
     public float attackSpeed;
 
     private GameObject player;
@@ -13,23 +15,28 @@ public class SpiderAI : MonoBehaviour
     private CircleCollider2D webCollider;
     private float spiderWebRadius;
     private SpiderAnimation animation;
+    private Vector3 startPosition;
 
     private bool getTarget = true;
 
     private void Start()
     {
         State = SpiderAIState.Moving;
+        PreviousState = State;
         player = GameObject.Find("Player");
         spiderRigidbody = GetComponent<Rigidbody2D>();
         webCollider = transform.parent.GetComponent<CircleCollider2D>();
         spiderWebRadius = transform.parent.GetComponent<CircleCollider2D>().radius;
         animation = GetComponentInChildren<SpiderAnimation>();
+        startPosition = transform.position;
         NewRandomTarget();
         RotateTowardsTarget();
     }
 
     private void Update()
     {
+        print(State);
+
         switch (State)
         {
             case SpiderAIState.Idle:
@@ -40,6 +47,10 @@ public class SpiderAI : MonoBehaviour
                 UpdateMoving();
                 break;
 
+            case SpiderAIState.Chasing:
+                UpdateChasing();
+                break;
+
             case SpiderAIState.Attacking:
                 UpdateAttacking();
                 break;
@@ -48,6 +59,10 @@ public class SpiderAI : MonoBehaviour
 
     public void SwitchTo(SpiderAIState spiderAIState)
     {
+        if (State == spiderAIState)
+            return;
+
+        PreviousState = State;
         State = spiderAIState;
         animation.SwitchAnimationTo(spiderAIState);
 
@@ -61,6 +76,10 @@ public class SpiderAI : MonoBehaviour
                 OnSwitchToMoving();
                 break;
 
+            case SpiderAIState.Chasing:
+                OnSwitchToChasing();
+                break;
+
             case SpiderAIState.Attacking:
                 OnSwitchToAttacking();
                 break;
@@ -69,18 +88,20 @@ public class SpiderAI : MonoBehaviour
 
     #region Idle
 
+    private float idleTimer = 0.0F;
+    private float idleDuration = 0.0F;
+
     private void OnSwitchToIdle()
     {
-        Invoke("StartMoving", Random.Range(4.0F, 8.0F));
+        idleTimer = 0.0F;
+        idleDuration = Random.RandomRange(2.0F, 6.0F);
     }
 
     private void UpdateIdle()
     {
-    }
-
-    private void StartMoving()
-    {
-        SwitchTo(SpiderAIState.Moving);
+        idleTimer += Time.deltaTime;
+        if (idleTimer > idleDuration)
+            SwitchTo(SpiderAIState.Moving);
     }
 
     #endregion Idle
@@ -97,17 +118,18 @@ public class SpiderAI : MonoBehaviour
     {
         MovingUpdatePosition();
 
+        if (IsNearTarget)
+        {
+            getTarget = true;
+            SwitchTo(SpiderAIState.Idle);
+            return;
+        }
+
         if (getTarget && IsNearTarget)
         {
             NewRandomTarget();
             RotateTowardsTarget();
             getTarget = false;
-        }
-
-        if (IsNearTarget)
-        {
-            getTarget = true;
-            SwitchTo(SpiderAIState.Idle);
         }
     }
 
@@ -129,29 +151,86 @@ public class SpiderAI : MonoBehaviour
 
     #endregion Moving
 
+    #region Chasing
+
+    private void OnSwitchToChasing()
+    {
+    }
+
+    private void UpdateChasing()
+    {
+        ChasePlayer();
+        ChasingUpdatePosition();
+        AttackPlayerIfNear();
+        StopIfPlayerOutsideWeb();
+    }
+
+    private void ChasingUpdatePosition()
+    {
+        float step = chasingSpeed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+    }
+
+    private void ChasePlayer()
+    {
+        targetPosition = player.transform.position;
+        RotateTowardsTarget();
+    }
+
+    private float attackDistance = 0.7F;
+
+    private void AttackPlayerIfNear()
+    {
+        if (Vector3.Distance(transform.position, player.transform.position) < attackDistance)
+        {
+            SwitchTo(SpiderAIState.Attacking);
+        }
+    }
+
+    private float playerOutsideOffset = 0.5F;
+
+    private void StopIfPlayerOutsideWeb()
+    {
+        if (Vector3.Distance(player.transform.position, transform.parent.transform.position) > spiderWebRadius + playerOutsideOffset )
+        {
+            SwitchTo(SpiderAIState.Idle);
+        }
+    }
+
+    #endregion Chasing
+
     #region Attacking
+
+    private float attackTimer = 0.0F;
+    private float attackDuration = 2.0F;
 
     private void OnSwitchToAttacking()
     {
-        
+        attackTimer = 0.0F;
     }
 
     private void UpdateAttacking()
     {
-        AttackingUpdatePosition();
-        AttackPlayer();
-    }
+        attackTimer += Time.deltaTime;
+        if (attackTimer > attackDuration)
+        {
+            SwitchTo(SpiderAIState.Chasing);
+        }
 
-    private void AttackingUpdatePosition()
-    {
-        float step = attackSpeed * Time.deltaTime;
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
+        AttackPlayer();
+        //AttackingUpdatePosition();
     }
 
     private void AttackPlayer()
     {
         targetPosition = player.transform.position;
         RotateTowardsTarget();
+    }
+
+    private void AttackingUpdatePosition()
+    {
+        float step = attackSpeed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
     }
 
     #endregion Attacking
@@ -178,6 +257,7 @@ public class SpiderAI : MonoBehaviour
 
     public void Reset()
     {
+        transform.position = startPosition;
         SwitchTo(SpiderAIState.Idle);
     }
 }

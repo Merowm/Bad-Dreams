@@ -5,5 +5,6 @@ public enum SpiderAIState
 {
     Idle,
     Moving,
+    Chasing,
     Attacking
 }

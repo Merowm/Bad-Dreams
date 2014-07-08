@@ -11,6 +11,7 @@ public class SpiderAnimation : MonoBehaviour
         animator.SetBool("moving", true);
         animator.SetBool("attacking", false);
         animator.SetBool("idle", false);
+        animator.SetBool("chasing", false);
     }
 
     public void SwitchAnimationTo(SpiderAIState state)
@@ -20,6 +21,7 @@ public class SpiderAnimation : MonoBehaviour
             case SpiderAIState.Idle:
                 animator.SetBool("moving", false);
                 animator.SetBool("attacking", false);
+                animator.SetBool("chasing", false);
                 animator.SetBool("idle", true);
                 break;
 
@@ -27,12 +29,21 @@ public class SpiderAnimation : MonoBehaviour
                 animator.SetBool("moving", true);
                 animator.SetBool("attacking", false);
                 animator.SetBool("idle", false);
+                animator.SetBool("chasing", false);
+                break;
+
+            case SpiderAIState.Chasing:
+                animator.SetBool("chasing", true);
+                animator.SetBool("idle", false);
+                animator.SetBool("attacking", false);
+                animator.SetBool("moving", false);
                 break;
 
             case SpiderAIState.Attacking:
                 animator.SetBool("moving", false);
                 animator.SetBool("attacking", true);
                 animator.SetBool("idle", false);
+                animator.SetBool("chasing", false);
                 break;
         }
     }
