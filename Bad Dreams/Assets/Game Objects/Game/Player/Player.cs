@@ -215,6 +215,25 @@ public class Player : MonoBehaviour
 		float maxY = 10.0f;
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxX, maxX), Mathf.Clamp(rigid.velocity.y, -maxY, maxY), 0.0f);
 
+		//for debugging only
+		//free movement
+		if (Input.GetKey(KeyCode.Keypad8))
+		{
+			rigid.velocity = new Vector2(0.0f, 15.0f);
+		}
+		if (Input.GetKey(KeyCode.Keypad5) || Input.GetKey(KeyCode.Keypad2))
+		{
+			rigid.velocity = new Vector2(0.0f, -15.0f);
+		}
+		if (Input.GetKey(KeyCode.Keypad4))
+		{
+			rigid.velocity = new Vector2(-15.0f, 0.0f);
+		}
+		if (Input.GetKey(KeyCode.Keypad6))
+		{
+			rigid.velocity = new Vector2(15.0f, 0.0f);
+		}
+
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
 
