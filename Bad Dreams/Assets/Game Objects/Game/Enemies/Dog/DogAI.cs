@@ -42,8 +42,6 @@ public class DogAI : MonoBehaviour
     Bounds thisBounds;
     Transform thisEyePos;
 
-    SoundHandler soundHandler;
-
     GameObject player;
     SpriteRenderer playerSpriteRend;
 
@@ -80,8 +78,6 @@ public class DogAI : MonoBehaviour
         velocity = 0.0f;
         thisEyePos = transform.FindChild("Eye Position");
         thisVisionCone = thisEyePos.FindChild("Vision Cone").gameObject.GetComponent<SpriteRenderer>();
-
-        soundHandler = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
 
         sound_DogSeePlayer = transform.Find("Dog Sounds/Dog See Player").GetComponent<AudioSource>();
         sound_DogAlert = transform.Find("Dog Sounds/Dog Alert").GetComponent<AudioSource>();

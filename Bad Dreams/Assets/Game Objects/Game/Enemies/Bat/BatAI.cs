@@ -24,7 +24,7 @@ public class BatAI : MonoBehaviour
     Transform point1, point2;
     GameObject bat;
     Animator batAnim;
-    float x1, x2, y1, y2, finalA, finalB, currentLocalX, alwaysSwoopTimer;
+    float x1, x2, y1, y2, finalA, finalB, currentLocalX, alwaysSwoopTimer, currentBatSpeed;
     bool flip, swooping;
 
     bool Swooping
@@ -51,6 +51,7 @@ public class BatAI : MonoBehaviour
 
     void Start()
     {
+        currentBatSpeed = 0;
         alwaysSwoopTimer = 0.0f;
 
         player = GameObject.Find("Player");
@@ -77,6 +78,15 @@ public class BatAI : MonoBehaviour
 
     void Update()
     {
+        if (!swooping)
+        {
+            if (currentBatSpeed != 0)
+            {
+                currentBatSpeed = 0;
+                Flip();
+            }
+        }
+
         if (alwaysSwoop)
         {
             if (!swooping)
@@ -104,9 +114,9 @@ public class BatAI : MonoBehaviour
     void UpdateBatPosition()
     {
         if (flip)
-            currentLocalX -= Time.deltaTime * batSpeed;
+            currentLocalX -= Time.deltaTime * currentBatSpeed;
         else
-            currentLocalX += Time.deltaTime * batSpeed;
+            currentLocalX += Time.deltaTime * currentBatSpeed;
         bat.transform.localPosition = new Vector3(currentLocalX, ReturnYCoordinateOnParabola(currentLocalX), 0);
     }
 
@@ -122,15 +132,15 @@ public class BatAI : MonoBehaviour
     {
         if (!flip && currentLocalX > x2)
         {
-            Flip();
-            bat.transform.position = point2.position;
             Swooping = false;
+            //Flip();
+            bat.transform.position = point2.position;
         }
         else if (flip && currentLocalX < x1)
         {
-            Flip();
-            bat.transform.position = point1.position;
             Swooping = false;
+            //Flip();
+            bat.transform.position = point1.position;
         }
     }
 
@@ -165,6 +175,7 @@ public class BatAI : MonoBehaviour
             if (Mathf.Abs(playerPos.y - ReturnYCoordinateOnParabola(playerPos.x)) <= BAT_Y_VARIATION)
             {
                 Swooping = true;
+                currentBatSpeed = batSpeed;
             }
         }
     }
