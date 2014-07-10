@@ -14,6 +14,7 @@ public class LevelButton : MonoBehaviour
     private UILabel loadedLevelLabel;
     private UILabel levelIndexLabel;
     private UILabel bestTimeLabel;
+    private UILabel dropsFound;
 
     private Color32 collectibleFoundColor;
     private Color32 collectibleNotFoundColor;
@@ -30,6 +31,7 @@ public class LevelButton : MonoBehaviour
         loadedLevelLabel = transform.FindChild("Level Name").GetComponent<UILabel>();
         levelIndexLabel = transform.FindChild("Level Index").GetComponent<UILabel>();
         bestTimeLabel = transform.FindChild("Time").GetComponent<UILabel>();
+        dropsFound = transform.FindChild("Drops").GetComponent<UILabel>();
         collectibleNotFoundColor = new Color32(255, 255, 255, 50);
         collectibleFoundColor = new Color32(255, 255, 255, 255);
 
@@ -81,6 +83,17 @@ public class LevelButton : MonoBehaviour
                 bestTimeLabel.text = "Best Time: " + SaveManager.CurrentSave.Levels[index].BestTime.ToString();
             else
                 bestTimeLabel.text = "Best Time: None";
+
+            if (SaveManager.CurrentSave.Levels[index].TotalDrops != 0)
+            {
+                dropsFound.text = "Drops: " +
+                    SaveManager.CurrentSave.Levels[index].DropsCollected.ToString() + " / " +
+                    SaveManager.CurrentSave.Levels[index].TotalDrops.ToString();
+            }
+            else
+            {
+                dropsFound.text = "";
+            }
         }
     }
 

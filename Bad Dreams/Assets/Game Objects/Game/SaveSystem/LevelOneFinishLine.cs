@@ -17,11 +17,19 @@ public class LevelOneFinishLine : MonoBehaviour
         {
             Save save = SaveManager.CurrentSave;
 
-            // make generic based on level info?
-            save.Levels[1].Locked = false;
+            if ((levelInfo.levelIndex + 1 < save.Levels.Count))
+            {
+                save.Levels[levelInfo.levelIndex + 1].Locked = false;
+            }
 
             int drops = GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount;
             save.Drops += drops;
+            if (drops > save.Levels[levelInfo.levelIndex].DropsCollected)
+            {
+                save.Levels[levelInfo.levelIndex].DropsCollected = drops;
+            }
+            save.Levels[levelInfo.levelIndex].TotalDrops = levelInfo.numberOfDrops;
+
 
             int time = GameObject.Find("Timer").GetComponent<Timer>().TimePassed;
             if (time < save.Levels[levelInfo.levelIndex].BestTime ||

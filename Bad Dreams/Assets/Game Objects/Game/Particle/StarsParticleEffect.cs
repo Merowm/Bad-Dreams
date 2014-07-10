@@ -7,6 +7,10 @@ public class StarsParticleEffect : MonoBehaviour
     private void Start()
     {
         GetComponent<ParticleSystem>().renderer.sortingLayerName = "Platform";
-        particleSystem.emissionRate = SaveManager.CurrentSave.Drops;
+
+        for (int i = 0; i < SaveManager.CurrentSave.Levels.Count; ++i)
+        {
+            particleSystem.emissionRate += SaveManager.CurrentSave.Levels[i].DropsCollected / 3;
+        }
     }
 }

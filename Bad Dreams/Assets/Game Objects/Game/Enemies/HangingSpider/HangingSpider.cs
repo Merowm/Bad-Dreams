@@ -24,6 +24,7 @@ public class HangingSpider : MonoBehaviour
         web.sortingLayerName = "Player Foreground";
         web.sortingOrder = -1;
         startPosition = transform.position;
+        endPosition.x = transform.position.x;
 
         animator = GetComponentInChildren<Animator>();
         animator.SetBool("ascending", false);

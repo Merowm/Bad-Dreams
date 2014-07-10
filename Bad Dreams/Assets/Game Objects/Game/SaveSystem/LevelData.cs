@@ -14,6 +14,8 @@ namespace SaveSystem
         public bool Completed { get; set; }
         public List<bool> Collectibles { get; set; }
         public int BestTime { get; set; }
+        public int DropsCollected { get; set; }
+        public int TotalDrops { get; set; }
 
         public LevelData()
         {
@@ -24,6 +26,8 @@ namespace SaveSystem
                 Collectibles.Add(false);
 
             BestTime = 0;
+            DropsCollected = 0;
+            TotalDrops = 0;
         }
     }
 }
