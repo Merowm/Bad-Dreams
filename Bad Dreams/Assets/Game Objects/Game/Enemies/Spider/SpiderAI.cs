@@ -175,7 +175,7 @@ public class SpiderAI : MonoBehaviour
         RotateTowardsTarget();
     }
 
-    private float attackDistance = 0.7F;
+    private float attackDistance = 0.6F;
 
     private void AttackPlayerIfNear()
     {

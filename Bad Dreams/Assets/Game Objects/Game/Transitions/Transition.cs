@@ -98,8 +98,8 @@ public class Transition : MonoBehaviour
         }
     }
 
-    private float alphaIncrease = 0.0125F;
-    private float alphaDecrease = 0.02F;
+    private float alphaIncrease = 0.02F;
+    private float alphaDecrease = 0.025F;
 
     private void IncreaseAlpha()
     {
