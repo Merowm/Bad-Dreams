@@ -8,6 +8,7 @@ public class LevelFinishDropsCollected : MonoBehaviour
     private void OnEnable()
     {
         uiLabel = GetComponentInChildren<UILabel>();
-        uiLabel.text = GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount.ToString();
+        uiLabel.text = GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount.ToString() + " / " +
+            GameObject.Find("LevelInfo").GetComponent<LevelInfo>().numberOfDrops;
     }
 }
