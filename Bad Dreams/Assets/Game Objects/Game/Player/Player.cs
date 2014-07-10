@@ -93,14 +93,14 @@ public class Player : MonoBehaviour
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
 
 		//fix slope sliding
-		if (onGround)
+		/*if (onGround)
 		{
 			rigid.gravityScale = 0.0f;
 		}
 		else
 		{
 			rigid.gravityScale = 1.0f;
-		}
+		}*/
 
 		//animation
 		Animation();
@@ -236,6 +236,16 @@ public class Player : MonoBehaviour
 
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
+
+		if (!allowInput)
+		{
+			rigid.velocity = Vector3.zero;
+			rigid.gravityScale = 0.0f;
+		}
+		else if (rigid.gravityScale == 0.0f)
+		{
+			rigid.gravityScale = 1.0f;
+		}
 
 		//camera following and limiting
 		if (allowCameraFollowing)
