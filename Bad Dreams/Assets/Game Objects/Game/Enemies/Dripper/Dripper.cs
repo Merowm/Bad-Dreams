@@ -6,10 +6,12 @@ public class Dripper : MonoBehaviour
     public float acidDelay;
     bool acidDelayOn;
     GameObject acidBall;
+    Transform tip;
 
 	// Use this for initialization
 	void Start () 
     {
+        tip = transform.Find("Tip");
         acidBall = Resources.Load("Enemies/Acidball") as GameObject;
         acidDelayOn = false;
 	}
@@ -27,7 +29,7 @@ public class Dripper : MonoBehaviour
 
     void DropAcid()
     {
-        GameObject ball = Instantiate(acidBall, transform.position, Quaternion.identity) as GameObject;
+        GameObject ball = Instantiate(acidBall, tip.position, Quaternion.identity) as GameObject;
         ball.transform.parent = transform;
     }
 
