@@ -34,7 +34,7 @@ public class LevelButton : MonoBehaviour
         bestTimeLabel = transform.FindChild("Time").GetComponent<UILabel>();
         dropsFound = transform.FindChild("Drops").GetComponent<UILabel>();
         lockedSprite = transform.FindChild("Lock").GetComponent<UISprite>();
-        collectibleNotFoundColor = new Color32(255, 255, 255, 50);
+        collectibleNotFoundColor = new Color32(255, 255, 255, 100);
         collectibleFoundColor = new Color32(255, 255, 255, 255);
 
         transition = GameObject.Find("Transition").GetComponent<Transition>();
