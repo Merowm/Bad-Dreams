@@ -5,19 +5,25 @@ public class Weasel : MonoBehaviour
 {
 	const float MAX_SLEEP_TIME =			10.0f;	//sleep times
 	const float MIN_SLEEP_TIME =			8.0f;
-	const float HEARING_DISTANCE =			3.0f;	//how far the weasel can detect player
-	const float MOVING_SPEED =				0.6f;	//alerted/non-alerted moving speed
-	const float MIN_PLAYER_DISTANCE =		1.0f;	//how near the weasel gets before attacking
+	const float HEARING_DISTANCE =			8.0f;	//how far the weasel can detect player
+	const float MOVING_SPEED =				0.6f;	//non-alerted moving speed
+	const float RUNNING_SPEED =				1.2f;	//alerted speed
+	const float MIN_PLAYER_DISTANCE =		0.5f;	//how near the weasel gets before attacking
 	const float PLAYER_MOVEMENT_DETECT =	0.2f;	//smaller == detect easier
 	const float RANDOM_MOVE_RANGE =			4.0f;	//how far do we go when not alerted
+	const float ATTACK_SPEED =				0.1f;
+	const float ATTACK_RANGE =				1.2f;
+	const float NEAR_EDGE_THRESHOLD =		0.75f;	//minimum distance between weasel and ledge
 
 	bool alerted;				//is weasel chasing the player
-	bool hidden;				//under snow?
 	bool seePlayer;				//does the weasel see the player (or hear)
-	float alertness;			//!
-	float distLeft, distRight; //distance to ledge
+	bool attacking;				//
 
-	Transform eye;
+	float alertness;			//!
+	float distLeft, distRight;	//distance to ledge
+	float attackTimer;			//
+
+	Transform eye, head;
 	Rigidbody2D rigid;
 	Vector3 lastPlayerPos, targetPos;
 	Transform player;
@@ -30,6 +36,7 @@ public class Weasel : MonoBehaviour
 	//...
 
 	//debug
+	bool enableDebug;
 	string debugText;
 
 	void Start ()
@@ -40,17 +47,24 @@ public class Weasel : MonoBehaviour
 		lastPlayerPos = Vector3.zero;
 		seePlayer = false;
 		eye = transform.FindChild("Eye Position");
+		head = transform.FindChild("Head Position");
 		player = GameObject.Find("Player").transform;
 		SwitchToNotAlerted();
+		attackTimer = 0.0f;
+		enableDebug = false;
 	}
 	
 	void Update ()
 	{
+		
 		//debug text
-		debugText = "";
-		debugText += "alert: " + alerted;
-		debugText += "\nhidden: " + hidden;
-		debugText += "\nseePlayer: " + seePlayer;
+		if (enableDebug)
+		{
+			debugText = "";
+			debugText += "alert: " + alerted;
+			//debugText += "\nhidden: " + hidden;
+			debugText += "\nseePlayer: " + seePlayer;
+		}
 
 		//behavior
 		BothBehaviors();
@@ -65,8 +79,14 @@ public class Weasel : MonoBehaviour
 
 		//movement
 
-		//debug text
-		GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = debugText;
+		//debug
+		if (enableDebug)
+		{
+			GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = debugText;
+
+			Debug.DrawLine(transform.position + new Vector3(0.0f, 0.25f),transform.position + new Vector3(HEARING_DISTANCE, 0.25f), Color.magenta);
+			Debug.DrawLine(transform.position + new Vector3(0.0f, 0.25f),transform.position + new Vector3(-HEARING_DISTANCE, 0.25f), Color.magenta);
+		}
 	}
 
 	void BothBehaviors()
@@ -76,8 +96,11 @@ public class Weasel : MonoBehaviour
 		distLeft = 0.0f;
 		LedgeTest(ref distLeft, ref distRight, 0.25f);
 
-		debugText += "\ndistLeft: " + distLeft;
-		debugText += "\ndistRight: " + distRight;
+		if (enableDebug)
+		{
+			debugText += "\ndistLeft: " + distLeft;
+			debugText += "\ndistRight: " + distRight;
+		}
 
 		//raycast if player is near
 		if (RaycastPlayer(eye.position, new Vector2(1.0f, 0.0f), distRight, new Color(1.0f, 0.0f, 0.0f, 1.0f)) != -1 || RaycastPlayer(eye.position, new Vector2(-1.0f, 0.0f), -distLeft, new Color(1.0f, 0.0f, 0.0f, 1.0f)) != -1)
@@ -86,8 +109,9 @@ public class Weasel : MonoBehaviour
 			{
 				seePlayer = true;
 				lastPlayerPos = player.position;
-			
-				Debug.DrawLine(transform.position, lastPlayerPos, Color.cyan, 1.0f);
+
+				if (enableDebug)
+					Debug.DrawLine(transform.position, lastPlayerPos, Color.cyan, 1.0f);
 				//SwitchToAlerted();
 			}
 		}
@@ -97,6 +121,55 @@ public class Weasel : MonoBehaviour
 		}
 
 		PlayerMovementDetection();
+		Attacking();
+	}
+
+	void Attack()
+	{
+		if (!attacking)
+		{
+			attacking = true;
+			attackTimer = 0.0f;
+			atorHead.SetTrigger("show");
+		}
+	}
+
+	void Attacking()
+	{
+		if (attacking)
+		{
+			attackTimer += Time.deltaTime;
+			if (attackTimer >= ATTACK_SPEED)
+			{
+				attackTimer = 0.0f;
+				attacking = false;
+
+				if (Vector3.Distance(player.position, head.position) < ATTACK_RANGE)
+				{
+					//Debug.Log("BOOM you're ded");
+					GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+				}
+				atorHead.SetTrigger("hide");
+				SwitchToNotAlerted();
+			}
+
+			float playerDistance = Vector2.Distance(transform.position, player.position);
+
+			if (playerDistance < MIN_PLAYER_DISTANCE)
+			{
+				if (player.position.x < transform.position.x)
+				{
+					MirrorSprite(false);
+				}
+				else if (player.position.x > transform.position.x)
+				{
+					MirrorSprite(true);
+				}
+			}
+
+			if (enableDebug)
+				debugText += "\natt: " + attackTimer;
+		}
 	}
 
 	//not alerted
@@ -118,7 +191,7 @@ public class Weasel : MonoBehaviour
 				//move a little
 				float rand = Random.value*2.0f - 1.0f;
 				targetPos = transform.position + new Vector3(RANDOM_MOVE_RANGE*rand, 0.0f);
-				Debug.Log("random target " + targetPos);
+				//Debug.Log("random target " + targetPos);
 				ResetSleepTimer();
 			}
 		}
@@ -130,41 +203,56 @@ public class Weasel : MonoBehaviour
 		{
 			if (targetPos.x < transform.position.x)
 			{
-				rigid.velocity = new Vector2(-MOVING_SPEED, 0.0f);
-				atorTail.SetBool("moving", true);
-				MirrorSprite(false);
-
-				if (distLeft > -0.6f)
+				if (distLeft > -NEAR_EDGE_THRESHOLD) //target over ledge
 				{
-					//stop, target over ledge
-					targetPos = transform.position;
-					atorTail.SetBool("moving", false);
-					rigid.velocity = new Vector2(0.0f, 0.0f);
+					StopMovement();
+				}
+				else
+				{
+					MoveLeft(MOVING_SPEED);
 				}
 			}
 			else if (targetPos.x > transform.position.x)
 			{
-				rigid.velocity = new Vector2(MOVING_SPEED, 0.0f);
-				atorTail.SetBool("moving", true);
-				MirrorSprite(true);
-
-				if (distRight < 0.6f)
+				if (distRight < NEAR_EDGE_THRESHOLD) //target over ledge
 				{
-					//stop, target over ledge
-					targetPos = transform.position;
-					atorTail.SetBool("moving", false);
-					rigid.velocity = new Vector2(0.0f, 0.0f);
+					StopMovement();
+				}
+				else
+				{
+					MoveRight(MOVING_SPEED);
 				}
 			}
 		}
 		else
 		{
-			//stop
-			targetPos = transform.position;
-			atorTail.SetBool("moving", false);
-			rigid.velocity = new Vector2(0.0f, 0.0f);
+			StopMovement();
 		}
-		
+
+		if (enableDebug)
+			debugText += "\nsleep: " + (sleepTime - sleepTimer);
+	}
+
+	void MoveLeft(float speedParam)
+	{
+		rigid.velocity = new Vector2(-speedParam, 0.0f);
+		atorTail.SetBool("moving", true);
+		MirrorSprite(false);
+	}
+
+	void MoveRight(float speedParam)
+	{
+		rigid.velocity = new Vector2(speedParam, 0.0f);
+		atorTail.SetBool("moving", true);
+		MirrorSprite(true);
+	}
+
+	void StopMovement()
+	{
+		//stop
+		targetPos = transform.position;
+		atorTail.SetBool("moving", false);
+		rigid.velocity = new Vector2(0.0f, 0.0f);
 	}
 
 	//alerted
@@ -182,39 +270,36 @@ public class Weasel : MonoBehaviour
 		{
 			if (lastPlayerPos.x < transform.position.x)
 			{
-				rigid.velocity = new Vector2(-MOVING_SPEED, 0.0f);
-				atorTail.SetBool("moving", true);
-				MirrorSprite(false);
+				//MoveLeft(MOVING_SPEED);
+				if (distLeft > -NEAR_EDGE_THRESHOLD) //target over ledge
+				{
+					StopMovement();
+				}
+				else
+				{
+					MoveLeft(RUNNING_SPEED);
+				}
 			}
 			else if (lastPlayerPos.x > transform.position.x)
 			{
-				rigid.velocity = new Vector2(MOVING_SPEED, 0.0f);
-				atorTail.SetBool("moving", true);
-				MirrorSprite(true);
+				//MoveRight(MOVING_SPEED);
+				if (distRight < NEAR_EDGE_THRESHOLD) //target over ledge
+				{
+					StopMovement();
+				}
+				else
+				{
+					MoveRight(RUNNING_SPEED);
+				}
 			}
 		}
 		else
 		{
-			atorTail.SetBool("moving", false);
-			rigid.velocity = new Vector2(0.0f, 0.0f);
-			//raise head from snow
-			//wait a bit
-			//->
-			float playerRealDistance = Vector2.Distance(transform.position, player.position);
-			if (playerRealDistance > MIN_PLAYER_DISTANCE+0.5f)
-			{
-				SwitchToNotAlerted();
-			}
-			else
-			{
-				atorHead.SetTrigger("show");
-				//atorHead.SetTrigger("hide");
-				Debug.Log("attack");
-			}
-			//pop up? if player still there, attaaack!
-			//else go non-alert
+			StopMovement();
+			Attack();
 		}
-		debugText += "\npDist: " + playerDistance;
+		if (enableDebug)
+			debugText += "\npDist: " + playerDistance;
 	}
 
 	void LedgeTest(ref float distLeft, ref float distRight, float testInterval)
@@ -266,7 +351,8 @@ public class Weasel : MonoBehaviour
 				SwitchToAlerted();
 				lastPlayerPos = player.position;
 			}
-			debugText += "\npMovDetctDst: " + dist;
+			if (enableDebug)
+				debugText += "\npMovDetctDst: " + dist;
 		}
 	}
 
@@ -300,7 +386,8 @@ public class Weasel : MonoBehaviour
 	int Raycast(Vector2 pos, Vector2 dir, float len, int layer, Color debugColor) //returns -1 on no collision, otherwise, the layer collided with
 	{
 		RaycastHit2D hit = Physics2D.Raycast(pos, dir, len, layer);
-		Debug.DrawRay(pos, dir * len, debugColor);
+		if (enableDebug)
+			Debug.DrawRay(pos, dir * len, debugColor);
 
 		if (hit != null)
 		{
