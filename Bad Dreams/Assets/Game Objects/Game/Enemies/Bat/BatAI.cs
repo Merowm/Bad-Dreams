@@ -124,7 +124,7 @@ public class BatAI : MonoBehaviour
     {
         if (Vector3.Distance(bat.transform.position, player.transform.position) < BAT_HIT_AREA)
         {
-            GameplayStateManager.SwitchTo(GameplayState.GameOver);
+            player.GetComponent<HitAnimation>().ActivateAnimation();
         }
     }
 
