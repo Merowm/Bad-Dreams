@@ -21,13 +21,16 @@ public class TreasureSpawner : MonoBehaviour
 
     private void DisableFoundTreasures()
     {
-        Save save = SaveManager.CurrentSave;
+        if (SaveManager.CurrentSave != null)
+        {
+            Save save = SaveManager.CurrentSave;
 
-        if (save.Levels[levelInfo.levelIndex].Collectibles[0] == true)
-            treasures[0].SetActive(false);
-        if (save.Levels[levelInfo.levelIndex].Collectibles[1] == true)
-            treasures[1].SetActive(false);
-        if (save.Levels[levelInfo.levelIndex].Collectibles[2] == true)
-            treasures[2].SetActive(false);
+            if (save.Levels[levelInfo.levelIndex].Collectibles[0] == true)
+                treasures[0].SetActive(false);
+            if (save.Levels[levelInfo.levelIndex].Collectibles[1] == true)
+                treasures[1].SetActive(false);
+            if (save.Levels[levelInfo.levelIndex].Collectibles[2] == true)
+                treasures[2].SetActive(false);
+        }
     }
 }

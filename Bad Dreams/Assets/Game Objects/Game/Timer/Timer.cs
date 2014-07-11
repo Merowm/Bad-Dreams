@@ -7,7 +7,9 @@ public class Timer : MonoBehaviour
 	float timer;
 	UILabel timerLabel;
 
-    public int TimePassed { get { return (int)(time - timer); } }
+    //public int TimePassed { get { return (int)(time - timer); } }
+    public int TimePassed { get { return (int)timePassed; } set {} }
+    private float timePassed;
 
 	void Start ()
 	{
@@ -16,6 +18,8 @@ public class Timer : MonoBehaviour
 	
 	void Update ()
 	{
+        timePassed += Time.deltaTime;
+
 		if (timerLabel == null)
 		{
 			timerLabel = GameObject.Find("UI/Timer/Label").GetComponent<UILabel>();
@@ -45,6 +49,7 @@ public class Timer : MonoBehaviour
 	public void Reset()
 	{
 		timer = time;
+        timePassed = 0.0F;
 	}
 
     public void TimeBonus()
