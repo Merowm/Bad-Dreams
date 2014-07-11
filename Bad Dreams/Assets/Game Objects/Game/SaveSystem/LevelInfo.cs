@@ -6,7 +6,7 @@ public class LevelInfo : MonoBehaviour
 {
     public string levelName;
     public int levelIndex; // first level (tutorial) is 0
-    public int numberOfDrops;
+    public int numberOfDrops { get; set; }
 
     private void Start()
     {
