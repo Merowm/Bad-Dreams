@@ -15,6 +15,7 @@ public class LevelButton : MonoBehaviour
     private UILabel levelIndexLabel;
     private UILabel bestTimeLabel;
     private UILabel dropsFound;
+    private UISprite lockedSprite;
 
     private Color32 collectibleFoundColor;
     private Color32 collectibleNotFoundColor;
@@ -32,6 +33,7 @@ public class LevelButton : MonoBehaviour
         levelIndexLabel = transform.FindChild("Level Index").GetComponent<UILabel>();
         bestTimeLabel = transform.FindChild("Time").GetComponent<UILabel>();
         dropsFound = transform.FindChild("Drops").GetComponent<UILabel>();
+        lockedSprite = transform.FindChild("Lock").GetComponent<UISprite>();
         collectibleNotFoundColor = new Color32(255, 255, 255, 50);
         collectibleFoundColor = new Color32(255, 255, 255, 255);
 
@@ -55,13 +57,13 @@ public class LevelButton : MonoBehaviour
             if (SaveManager.CurrentSave.Levels[index].Locked)
             {
                 locked = true;
-                title.text = "Locked";
-                button.enabled = false;
+                lockedSprite.enabled = true;
+                button.isEnabled = false;
             }
             else
             {
                 locked = false;
-                title.text = "Level " + index;
+                lockedSprite.enabled = false;
             }
 
             if (!SaveManager.CurrentSave.Levels[index].Collectibles[0])
@@ -80,14 +82,13 @@ public class LevelButton : MonoBehaviour
                 collectibleThree.color = collectibleFoundColor;
 
             if (SaveManager.CurrentSave.Levels[index].BestTime != 0)
-                bestTimeLabel.text = "Best Time: " + SaveManager.CurrentSave.Levels[index].BestTime.ToString();
+                bestTimeLabel.text = SaveManager.CurrentSave.Levels[index].BestTime.ToString();
             else
-                bestTimeLabel.text = "Best Time: None";
+                bestTimeLabel.text = "";
 
             if (SaveManager.CurrentSave.Levels[index].TotalDrops != 0)
             {
-                dropsFound.text = "Drops: " +
-                    SaveManager.CurrentSave.Levels[index].DropsCollected.ToString() + " / " +
+                dropsFound.text = SaveManager.CurrentSave.Levels[index].DropsCollected.ToString() + " / " +
                     SaveManager.CurrentSave.Levels[index].TotalDrops.ToString();
             }
             else
