@@ -6,5 +6,13 @@ public enum SoundType
     Movement,
     Droplet,
     Treasure,
-    Time
+    Time,
+	BatSqueak,
+	BatFlap,
+	DogGrowl,
+	DogSnarl,
+	WeaselMove,
+	WeaselPop,
+	WeaselVocal,
+	SpiderRattle
 }
