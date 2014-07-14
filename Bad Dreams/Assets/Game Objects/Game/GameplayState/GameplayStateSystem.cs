@@ -7,7 +7,6 @@ public class GameplayStateSystem : MonoBehaviour
     public GameplayState CurrentState { get; private set; }
 
     private List<GameObject> PauseObjects { get; set; }
-    private List<GameObject> GameOverObjects { get; set; }
     private List<GameObject> OptionsObjects { get; set; }
     private List<GameObject> TutorialObjects { get; set; }
     private List<GameObject> LevelFinishedObjects { get; set; }
@@ -21,7 +20,6 @@ public class GameplayStateSystem : MonoBehaviour
     {
         GameplayStateManager.UpdateReferences();
         GetPauseObjects();
-        GetGameOverObjects();
         GetOptionsObjects();
         GetTutorialObjects();
         GetLevelFinishedObjects();
@@ -39,14 +37,6 @@ public class GameplayStateSystem : MonoBehaviour
 
         PauseObjects.Add(GameObject.Find("Pause Menu"));
         SetGameObjectsActive(PauseObjects, false);
-    }
-
-    private void GetGameOverObjects()
-    {
-        GameOverObjects = new List<GameObject>();
-
-        GameOverObjects.Add(GameObject.Find("Game Over"));
-        SetGameObjectsActive(GameOverObjects, false);
     }
 
     private void GetOptionsObjects()
@@ -146,7 +136,6 @@ public class GameplayStateSystem : MonoBehaviour
     private void SwitchToPlaying()
     {
         Time.timeScale = 1.0F;
-        SetGameObjectsActive(GameOverObjects, false);
         SetGameObjectsActive(PauseObjects, false);
         SetGameObjectsActive(TutorialObjects, false);
     }
