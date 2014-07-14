@@ -197,8 +197,6 @@ public class DogAI : MonoBehaviour
             sound_DogAlert.volume -= Time.deltaTime;
         }
 
-        thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
-
         transform.position += new Vector3(velocity * Time.deltaTime, 0, 0);
 
         //alertness timer
@@ -213,8 +211,15 @@ public class DogAI : MonoBehaviour
             }
         }
 
+        //CAN BE REMOVED LATER
+        //
+        //
+        //
         DEBUG_KEYPRESSES();
-        DEBUG_DRAWCURRENTDIR();
+        //
+        //
+        //
+        //
     }
 
     public bool ReturnIfPlayerInsideEnemyFOV()
@@ -283,7 +288,6 @@ public class DogAI : MonoBehaviour
                                 AimEyesAtPlayer();
                                 visionAllowedToReset = false;
                                 visionResetTimer = 0.0f;
-                                Debug.Log("Hidden in plain sight");
                                 if (Physics2D.GetIgnoreLayerCollision(9, 10))
                                 {
                                     Physics2D.IgnoreLayerCollision(9, 10, false);
@@ -294,10 +298,6 @@ public class DogAI : MonoBehaviour
                                 playerVisible = false;
                                 ResetVision();
                             }
-                        }
-                        else
-                        {
-                            DEBUG_DRAWVISIONLINETOPLAYER(Color.gray);
                         }
                     }
                     else //if player is in the visible layer
@@ -337,7 +337,6 @@ public class DogAI : MonoBehaviour
         {
             if (alertness >= VISION_BECOME_ALERTED_THRESHOLD)
             {
-                DEBUG_DRAWVISIONLINETOPLAYER(Color.red);
                 alertTimer = TIME_ALERT_TIMER_MAX;
                 if (!alerted)
                 {
@@ -348,7 +347,6 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                DEBUG_DRAWVISIONLINETOPLAYER(Color.yellow);
                 alertness += VISION_ALERTNESS_ADDITION_ON_SIGHT * Time.deltaTime;
             }
         }
@@ -388,7 +386,6 @@ public class DogAI : MonoBehaviour
 
     bool RayCastAtTarget(GameObject target)
     {
-        //layermask just for testing
         int layerMask = 1 << 8;
         layerMask |= 1 << 10;
         RaycastHit2D rayCastResult = Physics2D.Raycast(thisEyePos.position, target.transform.position - thisEyePos.position, Vector3.Distance(target.transform.position, thisEyePos.position), layerMask);
@@ -421,18 +418,13 @@ public class DogAI : MonoBehaviour
             FlipAround();
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            thisVisionCone.color = new Color(255, 0, 0, 0);
-        }
-
         if (Input.GetKeyDown(KeyCode.C))
         {
             alerted = false;
             alertness = 0;
             alertTimer = 0.0f;
         }
-    }
+    } //REMOOOOOVE
 
     void UpdateVisionConeColor()
     {
@@ -451,16 +443,6 @@ public class DogAI : MonoBehaviour
                 thisVisionCone.color = new Color(1, 1, 1, 0.3f);
             }
         }
-    }
-
-    void DEBUG_DRAWVISIONLINETOPLAYER(Color color)
-    {
-        Debug.DrawRay(thisEyePos.position, player.transform.position - thisEyePos.position, color);
-    }
-
-    void DEBUG_DRAWCURRENTDIR()
-    {
-        Debug.DrawRay(thisEyePos.position, currentDir, Color.green);
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -484,7 +466,7 @@ public class DogAI : MonoBehaviour
                 {
                     if (!recentlyCollidedWithPlayer)
                     {
-                        GameObject.Find("Collision Against Dog Sound").GetComponent<AudioSource>().Play();
+                        sound_DogCollision.Play();
                         Invoke("AimEyesAtPlayer", 0.2f);
                         Invoke("ResetCollisionWithPlayer", 0.6f);
                     }
@@ -495,7 +477,6 @@ public class DogAI : MonoBehaviour
             {
                 veryCloseToPlayer = true;
 				GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
-                //GameplayStateManager.SwitchTo(GameplayState.GameOver);
             }
         }
     }
@@ -509,7 +490,6 @@ public class DogAI : MonoBehaviour
                 veryCloseToPlayer = true;
                 GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
             }
-            //GameplayStateManager.SwitchTo(GameplayState.GameOver);
         }
     }
 
@@ -576,10 +556,6 @@ public class DogAI : MonoBehaviour
         Vector3 rayFrontDown = new Vector3(thisBounds.center.x + (Mathf.Sign(currentDir.x) * (thisBounds.max.x - thisBounds.center.x)), thisBounds.center.y, 0); //draw a ray from the lower front of the enemy
         Vector3 rayTopTowardsDirection = new Vector3(thisBounds.center.x, thisBounds.max.y, thisBounds.center.z);
         Vector3 rayBotTowardsDirection = new Vector3(thisBounds.center.x, thisBounds.min.y, thisBounds.center.z);
-
-        Debug.DrawRay(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.7f, 0, 0));
-        Debug.DrawRay(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x) * 0.7f, 0, 0));
-        Debug.DrawRay(rayFrontDown, new Vector3(0, -0.6f, 0));
 
         if (stopped)
         {
