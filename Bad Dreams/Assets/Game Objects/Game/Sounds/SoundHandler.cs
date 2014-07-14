@@ -3,11 +3,13 @@ using System.Collections;
 
 public class SoundHandler : MonoBehaviour 
 {
+    bool paused;
+
     AudioSource[] movementList;
     AudioSource droplet, treasure, time;
 
-	AudioSource[] batSqueak, dogGrowl;
-	AudioSource batFlap, dogSnarl, weaselMove, weaselPop, weaselVocal, spiderRattle;
+	AudioSource[] batSqueak;
+	AudioSource batFlap, weaselMove, weaselPop, weaselVocal, spiderRattle;
 
 	void Start () 
     {
@@ -18,10 +20,10 @@ public class SoundHandler : MonoBehaviour
         time = GameObject.Find("Level/Sounds/Time/addtime").GetComponentInChildren<AudioSource>();
 
 		batSqueak = GameObject.Find("Level/Sounds/Bat/Squeak").GetComponentsInChildren<AudioSource>();
-		dogGrowl = GameObject.Find("Level/Sounds/Dog/Growl").GetComponentsInChildren<AudioSource>();
+		//dogGrowl = GameObject.Find("Level/Sounds/Dog/Growl").GetComponentsInChildren<AudioSource>();
 
 		batFlap = GameObject.Find("Level/Sounds/Bat/Flap").GetComponentInChildren<AudioSource>();
-		dogSnarl = GameObject.Find("Level/Sounds/Dog/Snarl").GetComponentInChildren<AudioSource>();
+		//dogSnarl = GameObject.Find("Level/Sounds/Dog/Snarl").GetComponentInChildren<AudioSource>();
 
 		weaselMove = GameObject.Find("Level/Sounds/Weasel/Move").GetComponentInChildren<AudioSource>();
 		weaselPop = GameObject.Find("Level/Sounds/Weasel/Pop").GetComponentInChildren<AudioSource>();
@@ -29,6 +31,24 @@ public class SoundHandler : MonoBehaviour
 		
 		spiderRattle = GameObject.Find("Level/Sounds/Spider/Rattle").GetComponentInChildren<AudioSource>();
 	}
+
+    void Update()
+    {
+        if (Time.timeScale == 0)
+        {
+            paused = true;
+            AudioListener.pause = true;
+        }
+
+        if (paused)
+        {
+            if (Time.timeScale != 0)
+            {
+                paused = false;
+                AudioListener.pause = false;
+            }
+        }
+    }
 
     public void PlaySound(SoundType type)
     {
@@ -61,6 +81,8 @@ public class SoundHandler : MonoBehaviour
 				batSqueak[Random.Range(0, batSqueak.Length)].Play();
 				break;
 
+            /*
+
 				//dog
 			case SoundType.DogGrowl:
 				dogGrowl[Random.Range(0, dogGrowl.Length)].Play();
@@ -69,7 +91,8 @@ public class SoundHandler : MonoBehaviour
 			case SoundType.DogSnarl:
 				dogSnarl.Play();
 				break;
-
+             
+             */
 				//spider
 			case SoundType.SpiderRattle:
 				spiderRattle.Play();
