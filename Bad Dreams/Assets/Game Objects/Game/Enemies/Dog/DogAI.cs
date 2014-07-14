@@ -10,8 +10,8 @@ public class DogAI : MonoBehaviour
     const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
     const float TIME_ALERT_TIMER_MAX = 10.0f;
     const float COLLISION_DISTANCE_FROM_PLAYER_BEFORE_CAN_MOVE_AGAIN = 1.1f;
-    const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 2;
-    const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 4;
+    const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 4;
+    const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 12;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
     const int VISION_BECOME_ALERTED_THRESHOLD = 5;
     const int ENEMY_LAYER = 9;
@@ -60,7 +60,7 @@ public class DogAI : MonoBehaviour
         Physics2D.IgnoreLayerCollision(ENEMY_LAYER, ENEMY_LAYER); //ignores collisions between enemies in the same layer
         thisCollider2D = GetComponent<BoxCollider2D>();
         viewLength = 6.0f; //every 1.0f equals to 64 pixels
-        viewAngle = 30.0f; //the full view angle is double this, vision cone sprite should be aimed to the right
+        viewAngle = 45.0f; //the full view angle is double this, vision cone sprite should be aimed to the right
         player = GameObject.Find("Player");
         playerSpriteRend = player.transform.Find("Animator").GetComponent<SpriteRenderer>();
         thisSpriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
@@ -399,7 +399,7 @@ public class DogAI : MonoBehaviour
 
     void UpdateDistanceToPlayer()
     {
-        playerDistance = Vector3.Distance(transform.position, player.transform.position);
+        playerDistance = Vector3.Distance(thisEyePos.position, player.transform.position);
     }
 
     float ReturnAngleToPlayer()
