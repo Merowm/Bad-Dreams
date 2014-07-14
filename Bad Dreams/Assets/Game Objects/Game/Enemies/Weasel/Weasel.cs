@@ -105,14 +105,22 @@ public class Weasel : MonoBehaviour
 		//raycast if player is near
 		if (RaycastPlayer(eye.position, new Vector2(1.0f, 0.0f), distRight, new Color(1.0f, 0.0f, 0.0f, 1.0f)) != -1 || RaycastPlayer(eye.position, new Vector2(-1.0f, 0.0f), -distLeft, new Color(1.0f, 0.0f, 0.0f, 1.0f)) != -1)
 		{
-			if (!seePlayer)
+			GameObject playerObj = GameObject.Find("Player");
+			if (!playerObj.GetComponent<HidingSkill>().IsHiding)
 			{
-				seePlayer = true;
-				lastPlayerPos = player.position;
+				if (!seePlayer)
+				{
+					seePlayer = true;
+					lastPlayerPos = player.position;
 
-				if (enableDebug)
-					Debug.DrawLine(transform.position, lastPlayerPos, Color.cyan, 1.0f);
-				//SwitchToAlerted();
+					if (enableDebug)
+						Debug.DrawLine(transform.position, lastPlayerPos, Color.cyan, 1.0f);
+					//SwitchToAlerted();
+				}
+			}
+			else
+			{
+				seePlayer = false;
 			}
 		}
 		else
@@ -138,6 +146,7 @@ public class Weasel : MonoBehaviour
 	{
 		if (attacking)
 		{
+			GameObject playerObj = GameObject.Find("Player");
 			attackTimer += Time.deltaTime;
 			if (attackTimer >= ATTACK_SPEED)
 			{
@@ -147,7 +156,12 @@ public class Weasel : MonoBehaviour
 				if (Vector3.Distance(player.position, head.position) < ATTACK_RANGE)
 				{
 					//Debug.Log("BOOM you're ded");
-					GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+					
+					if (!playerObj.GetComponent<HidingSkill>().IsHiding)
+					{
+						GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
+					}
+					
 				}
 				atorHead.SetTrigger("hide");
 				SwitchToNotAlerted();
@@ -155,7 +169,7 @@ public class Weasel : MonoBehaviour
 
 			float playerDistance = Vector2.Distance(transform.position, player.position);
 
-			if (playerDistance < MIN_PLAYER_DISTANCE)
+			if (playerDistance < MIN_PLAYER_DISTANCE && !playerObj.GetComponent<HidingSkill>().IsHiding)
 			{
 				if (player.position.x < transform.position.x)
 				{
