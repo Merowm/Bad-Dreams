@@ -3,28 +3,19 @@ using System.Collections;
 
 public class Checkpoint : MonoBehaviour
 {
-	public float floatingSpeed, floatingAmount;
-
 	bool activated;
-	float radians;
 
-	Vector3 startPosition;
+	SpriteRenderer sprite, runes;
 
 	void Start ()
 	{
-		startPosition = transform.position;
+		sprite = GameObject.Find("Post").GetComponentInChildren<SpriteRenderer>();
+		runes = GameObject.Find("Runes").GetComponentInChildren<SpriteRenderer>();
 		activated = false;
-		radians = 0.0f;
 	}
 	
 	void Update ()
 	{
-		radians += Time.deltaTime * floatingSpeed;
-		if (radians >= 2.0f * Mathf.PI)
-		{
-			radians -= 2.0f * Mathf.PI;
-		}
-		transform.position = startPosition + new Vector3(0.0f, Mathf.Sin(radians) * floatingAmount);
 
 	}
 
@@ -44,7 +35,7 @@ public class Checkpoint : MonoBehaviour
 		if (!activated)
 		{
 			Debug.Log("ZECPOENT");
-			GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+			//GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
 			SetCurrentCheckpoint();
 			activated = true;
@@ -56,7 +47,7 @@ public class Checkpoint : MonoBehaviour
 		if (activated)
 		{
 			Debug.Log("Deactivated checkpoint");
-			GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.6f, 0.6f, 1.0f);
+			//GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.6f, 0.6f, 1.0f);
 			activated = false;
 		}
 	}
