@@ -149,6 +149,16 @@ public class GameplayStateSystem : MonoBehaviour
     private void SwitchToTutorial()
     {
         SetGameObjectsActive(TutorialObjects, true);
+
+        if (TutorialObjects[0].name == "Tutorial Popup")
+        {
+            TweenColor tweenColor = TutorialObjects[0].GetComponentInChildren<TweenColor>();
+            if (tweenColor == null)
+                return;
+            tweenColor.ResetToBeginning();
+            tweenColor.enabled = true;
+            tweenColor.PlayForward();
+        }
     }
 
     private void SwitchToLevelFinished()

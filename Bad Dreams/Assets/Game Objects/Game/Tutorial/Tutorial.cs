@@ -4,8 +4,12 @@ using System.Collections;
 public class Tutorial : MonoBehaviour
 {
     GameObject tutorialTextBoxGameObject;
-    UILabel tutorialTextBox;
+    UILabel tutorialTextBox, helpfulSlash;
+    UISprite controllerImage, keyboardImage;
+
+    public string controllerSprite, keyboardSprite;
     public string tutorialText;
+    public bool controlImagesOn;
     bool insideTutorialCollider, tutorialsDisabled;
 
     bool InsideTutorialCollider
@@ -22,21 +26,36 @@ public class Tutorial : MonoBehaviour
 
     void Start()
     {
-        tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
-        if (tutorialTextBoxGameObject != null)
-        {
-            tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
-        }
     }
 
     void ChangeTutorialText(string text)
     {
-        if (tutorialTextBoxGameObject == null)
+        if (tutorialTextBoxGameObject)
+        {
+            if (controlImagesOn)
+            {
+                helpfulSlash.text = "/";
+            }
+            else
+                helpfulSlash.text = "";
+            controllerImage.spriteName = controllerSprite;
+            keyboardImage.spriteName = keyboardSprite;
+            tutorialTextBox.text = text;
+        }
+        else
         {
             tutorialTextBoxGameObject = GameObject.Find("Tutorial Text");
-            tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+            if (tutorialTextBoxGameObject)
+            {
+                tutorialTextBox = tutorialTextBoxGameObject.GetComponent<UILabel>();
+                controllerImage = GameObject.Find("Tutorial Popup").transform.Find("Controller Image").GetComponent<UISprite>();
+                keyboardImage = GameObject.Find("Tutorial Popup").transform.Find("Keyboard Image").GetComponent<UISprite>();
+                helpfulSlash = GameObject.Find("Tutorial Popup").transform.Find("Helpful Forward Slash").GetComponent<UILabel>();
+                ChangeTutorialText(tutorialText);
+            }
+            else
+                Debug.Log("Something has gone horribly wrong, cannot find the tutorial text box");
         }
-        tutorialTextBox.text = text;
     }
 
     void OnTriggerEnter2D(Collider2D col)

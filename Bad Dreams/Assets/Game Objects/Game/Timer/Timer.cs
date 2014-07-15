@@ -54,6 +54,6 @@ public class Timer : MonoBehaviour
 
     public void TimeBonus()
     {
-        timer = Mathf.Clamp(timer + 20, 0.0F, time);
+        timer = Mathf.Clamp(timer + 1, 0.0F, time);
     }
 }

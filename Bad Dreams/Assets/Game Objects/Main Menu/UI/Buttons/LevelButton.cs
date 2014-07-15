@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using SaveSystem;
+using System.Collections.Generic;
 
 public class LevelButton : MonoBehaviour
 {
@@ -8,9 +9,7 @@ public class LevelButton : MonoBehaviour
 
     private UIButton button;
     private UILabel title;
-    private UISprite collectibleOne;
-    private UISprite collectibleTwo;
-    private UISprite collectibleThree;
+    private List<UISprite> collectibles;
     private UILabel loadedLevelLabel;
     private UILabel levelIndexLabel;
     private UILabel bestTimeLabel;
@@ -26,9 +25,10 @@ public class LevelButton : MonoBehaviour
     {
         button = GetComponent<UIButton>();
         title = transform.FindChild("Title").GetComponent<UILabel>();
-        collectibleOne = transform.FindChild("Collectible 1").GetComponent<UISprite>();
-        collectibleTwo = transform.FindChild("Collectible 2").GetComponent<UISprite>();
-        collectibleThree = transform.FindChild("Collectible 3").GetComponent<UISprite>();
+        collectibles = new List<UISprite>();
+        collectibles.Add(transform.FindChild("Collectible 1").GetComponent<UISprite>());
+        collectibles.Add(transform.FindChild("Collectible 2").GetComponent<UISprite>());
+        collectibles.Add(transform.FindChild("Collectible 3").GetComponent<UISprite>());
         loadedLevelLabel = transform.FindChild("Level Name").GetComponent<UILabel>();
         levelIndexLabel = transform.FindChild("Level Index").GetComponent<UILabel>();
         bestTimeLabel = transform.FindChild("Time").GetComponent<UILabel>();
@@ -54,6 +54,7 @@ public class LevelButton : MonoBehaviour
             int index;
             int.TryParse(levelIndexLabel.text, out index);
 
+            // Locks
             if (SaveManager.CurrentSave.Levels[index].Locked)
             {
                 locked = true;
@@ -66,26 +67,38 @@ public class LevelButton : MonoBehaviour
                 lockedSprite.enabled = false;
             }
 
-            if (!SaveManager.CurrentSave.Levels[index].Collectibles[0])
-                collectibleOne.color = collectibleNotFoundColor;
-            else
-                collectibleOne.color = collectibleFoundColor;
+            // Collectibles
+            for (int i = 0; i < SaveManager.CurrentSave.Levels[index].Collectibles.Count; ++i)
+            {
+                if (SaveManager.CurrentSave.Levels[index].Collectibles[i] == false)
+                    collectibles[i].color = collectibleNotFoundColor;
+                else
+                    collectibles[i].color = collectibleFoundColor;
+            }
 
-            if (!SaveManager.CurrentSave.Levels[index].Collectibles[1])
-                collectibleTwo.color = collectibleNotFoundColor;
-            else
-                collectibleTwo.color = collectibleFoundColor;
-
-            if (!SaveManager.CurrentSave.Levels[index].Collectibles[2])
-                collectibleThree.color = collectibleNotFoundColor;
-            else
-                collectibleThree.color = collectibleFoundColor;
-
+            // Times
             if (SaveManager.CurrentSave.Levels[index].BestTime != 0)
-                bestTimeLabel.text = SaveManager.CurrentSave.Levels[index].BestTime.ToString();
-            else
-                bestTimeLabel.text = "";
+            {
+                int time = SaveManager.CurrentSave.Levels[index].BestTime;
 
+                int minutes = (int)(time / 60);
+                int seconds = (int)(time % 60);
+
+                if (seconds < 10)
+                {
+                    bestTimeLabel.text = minutes + " : 0" + seconds;
+                }
+                else
+                {
+                    bestTimeLabel.text = minutes + " : " + seconds;
+                }
+            }
+            else
+            {
+                bestTimeLabel.text = "";
+            }
+
+            // Drops
             if (SaveManager.CurrentSave.Levels[index].TotalDrops != 0)
             {
                 dropsFound.text = SaveManager.CurrentSave.Levels[index].DropsCollected.ToString() + " / " +
