@@ -87,20 +87,9 @@ public class Player : MonoBehaviour
 			padInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 		else
 			padInput = Vector2.zero;
-		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "velocity: " + rigid.velocity + "\ndeface: " + glideAllowDeFace + "\ndefaceDir: " + glideDefaceDirection + "\nfaceDirection: " + faceDirection;
 
 		float colliderWidth = gameObject.GetComponent<BoxCollider2D>().size.x; //startiin?
 		float colliderHeight = gameObject.GetComponent<BoxCollider2D>().size.y;
-
-		//fix slope sliding
-		/*if (onGround)
-		{
-			rigid.gravityScale = 0.0f;
-		}
-		else
-		{
-			rigid.gravityScale = 1.0f;
-		}*/
 
 		//animation
 		Animation();
@@ -250,156 +239,11 @@ public class Player : MonoBehaviour
 		//camera following and limiting
 		if (allowCameraFollowing)
 			camFollow.UpdateCameraPosition();
+
+		//GameObject.Find("UI/Debug Text/Label").GetComponent<UILabel>().text = "velocity: " + rigid.velocity + "\ndeface: " + glideAllowDeFace + "\ndefaceDir: " + glideDefaceDirection + "\nfaceDirection: " + faceDirection;
 	}
 
-	public void GotoLastCheckpoint()
-	{
-		if (lastCheckpoint)
-		{
-			transform.position = lastCheckpoint.transform.position;
-			rigid.velocity = Vector3.zero;
-		}
-		else
-		{
-			GotoPlayerStart();
-		}
-	}
-
-	public void SetCurrentCheckpoint(GameObject obj)
-	{
-		if (obj)
-		{
-			lastCheckpoint = obj;
-		}
-	}
-
-	void OneWayPlatformCollision(float colliderWidth, float colliderHeight)
-	{
-		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
-		string theTag = "One Way";
-		for (int tag = 0; tag < 2; tag++)
-		{
-			GameObject[] plats = GameObject.FindGameObjectsWithTag(theTag);
-			for (int i = 0; i < plats.Length; i++)
-			{
-				Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
-				if (poos.y < plats[i].transform.position.y + thick.y)
-				{
-					plats[i].layer = 11; //one way
-				}
-				else
-				{
-					plats[i].layer = 8; //terraincollision
-				}
-			}
-			theTag = "Moving and One Way";
-		}
-	}
-
-	void Animation()
-	{
-		if (padInput.x <= deadZone && padInput.x >= -deadZone)
-		{
-			//idle
-			ator.SetBool("running", false);
-		}
-		else if (!dashing)
-		{
-			//run
-			ator.SetBool("running", true);
-
-			//facing direction
-			if (rigid.velocity.x > deadZone)
-			{
-				faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
-			}
-			else if (rigid.velocity.x < -deadZone)
-			{
-				faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
-			}
-		}
-
-		if (faceDirection.x > 0.0f)
-		{
-			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
-			animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
-		}
-		else if (faceDirection.x < 0.0f)
-		{
-			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-			animT.localPosition = new Vector3(0.18f, 0.04f, 1.0f);
-		}
-
-		ator.SetBool("dashing", dashing);
-		ator.SetBool("onGround", onGround);
-		ator.SetBool("gliding", gliding);
-
-		//idle alternating
-		if (idleTimer <= 0.0f)
-		{
-			ator.SetTrigger("altIdle");
-			idleTimer = Random.value * 1.65f + 1.8f;
-		}
-		else
-		{
-			idleTimer -= Time.deltaTime;
-		}
-	}
-
-	public void Kill()
-	{
-		Debug.Log("Kill");
-		//rigid.isKinematic = true;
-		allowInput = false;
-		rigid.velocity = Vector3.zero;
-
-		//turn player invisible
-		SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
-		Color col = spr.color;
-		col.a = 0.0f;
-		spr.color = col;
-	}
-	public void Resurrect()
-	{
-		Debug.Log("Resurrect");
-		if (!allowInput)
-		{
-            stamina.ResetStamina();
-			allowInput = true;
-			//rigid.isKinematic = false;
-
-			//turn player visible
-			SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
-			Color col = spr.color;
-			col.a = 1.0f;
-			spr.color = col;
-		}
-	}
-
-	void CheckIllegalPosition()
-	{
-		float x = transform.position.x;
-		float y = transform.position.y;
-		if (y < -15.0f)
-		{
-			GotoPlayerStart();
-		}
-	}
-
-	void GotoPlayerStart()
-	{
-		GameObject start = GameObject.Find("Player Start");
-
-		if (start != null)
-		{
-			transform.position = start.transform.position;
-		}
-		else
-		{
-			transform.position = Vector3.zero;
-		}
-		rigid.velocity = Vector3.zero;
-	}
+	#region Movement
 
 	void MovementNormal()
 	{
@@ -552,6 +396,92 @@ public class Player : MonoBehaviour
 		rigid.velocity = new Vector3(Mathf.Clamp(rigid.velocity.x, -maxSpeed, maxSpeed), rigid.velocity.y, 0.0f);
 	}
 
+	#endregion
+
+	#region Collision	
+
+	void OneWayPlatformCollision(float colliderWidth, float colliderHeight)
+	{
+		Vector3 poos = transform.position - new Vector3(0.0f, colliderHeight / 2.0f);
+		string theTag = "One Way";
+		for (int tag = 0; tag < 2; tag++)
+		{
+			GameObject[] plats = GameObject.FindGameObjectsWithTag(theTag);
+			for (int i = 0; i < plats.Length; i++)
+			{
+				Vector3 thick = new Vector3(0.0f, plats[i].GetComponent<BoxCollider2D>().size.y / 2.0f);
+				if (poos.y < plats[i].transform.position.y + thick.y)
+				{
+					plats[i].layer = 11; //one way
+				}
+				else
+				{
+					plats[i].layer = 8; //terraincollision
+				}
+			}
+			theTag = "Moving and One Way";
+		}
+	}
+	
+	void TerrainCollision(float colliderWidth, float colliderHeight)
+	{
+		Vector3 bottomPoint = transform.position + new Vector3(0.0f, -colliderHeight / 2.0f - 0.005f);
+		float gap = colliderWidth / 2.0f;
+
+		bool onGroundBefore = onGround;
+
+		//Debug.Log("landcheck");
+		onGround = false;
+		for (float offset = -gap; offset <= gap; offset += gap)
+		{
+			//Debug.Log("offset " + offset);
+			int result = Raycast(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f), 0.03f);
+			if (result != -1)
+			{
+				//touching ground
+				onGround = true;
+				gliding = false;
+				allowBoost = true;
+				glideHitWallTimer = 0.0f;
+			}
+		}
+
+		if (onGroundBefore == false && onGround == true)
+		{
+			dustParticleGen.Trigger();
+            soundHandler.PlaySound(SoundType.Movement);
+		}
+		//Debug.Log("landcheck end");
+	}
+
+	void CheckIllegalPosition()
+	{
+		float x = transform.position.x;
+		float y = transform.position.y;
+		if (y < -15.0f)
+		{
+			GotoPlayerStart();
+		}
+	}
+
+	int Raycast(Vector3 pos, Vector3 direction, float length) //returns collider's layer if collision occurs, -1 when no collision occurs
+	{
+		//user layer 8  is terraincollision
+		//user layer 12 is slope
+		int layer = (1 << 8) | (1 << 12);
+
+		RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, layer);
+
+		if (hit != null)
+		{
+			if (hit.collider != null)
+			{
+				return hit.collider.gameObject.layer;
+			}
+		}
+		return -1;
+	}
+	
 	void GlideWallInteract(float colliderWidth, float colliderHeight)
 	{
 		/*bool tests = false;
@@ -605,7 +535,11 @@ public class Player : MonoBehaviour
 			glideAllowDeFace = true;
 		}
 	}
+	
+	#endregion
 
+	#region Jumping
+	
 	void JumpBoost()
 	{
 		
@@ -627,53 +561,142 @@ public class Player : MonoBehaviour
         soundHandler.PlaySound(SoundType.Movement);
 	}
 
-	void TerrainCollision(float colliderWidth, float colliderHeight)
+	#endregion
+
+	#region Animation
+
+	void Animation()
 	{
-		Vector3 bottomPoint = transform.position + new Vector3(0.0f, -colliderHeight / 2.0f - 0.005f);
-		float gap = colliderWidth / 2.0f;
-
-		bool onGroundBefore = onGround;
-
-		//Debug.Log("landcheck");
-		onGround = false;
-		for (float offset = -gap; offset <= gap; offset += gap)
+		if (padInput.x <= deadZone && padInput.x >= -deadZone)
 		{
-			//Debug.Log("offset " + offset);
-			int result = Raycast(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f), 0.03f);
-			if (result != -1)
+			//idle
+			ator.SetBool("running", false);
+		}
+		else if (!dashing)
+		{
+			//run
+			ator.SetBool("running", true);
+
+			//facing direction
+			if (rigid.velocity.x > deadZone)
 			{
-				//touching ground
-				onGround = true;
-				gliding = false;
-				allowBoost = true;
-				glideHitWallTimer = 0.0f;
+				faceDirection = new Vector3(1.0f, 0.0f, 0.0f);
+			}
+			else if (rigid.velocity.x < -deadZone)
+			{
+				faceDirection = new Vector3(-1.0f, 0.0f, 0.0f);
 			}
 		}
 
-		if (onGroundBefore == false && onGround == true)
+		if (faceDirection.x > 0.0f)
 		{
-			dustParticleGen.Trigger();
-            soundHandler.PlaySound(SoundType.Movement);
+			animT.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+			animT.localPosition = new Vector3(-0.18f, 0.04f, 1.0f);
 		}
-		//Debug.Log("landcheck end");
+		else if (faceDirection.x < 0.0f)
+		{
+			animT.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
+			animT.localPosition = new Vector3(0.18f, 0.04f, 1.0f);
+		}
+
+		ator.SetBool("dashing", dashing);
+		ator.SetBool("onGround", onGround);
+		ator.SetBool("gliding", gliding);
+
+		//idle alternating
+		if (idleTimer <= 0.0f)
+		{
+			ator.SetTrigger("altIdle");
+			idleTimer = Random.value * 1.65f + 1.8f;
+		}
+		else
+		{
+			idleTimer -= Time.deltaTime;
+		}
 	}
 
-	int Raycast(Vector3 pos, Vector3 direction, float length) //returns collider's layer if collision occurs, -1 when no collision occurs
+	#endregion
+
+	#region Checkpoint
+
+	public void GotoLastCheckpoint()
 	{
-		//user layer 8  is terraincollision
-		//user layer 12 is slope
-		int layer = (1 << 8) | (1 << 12);
-
-		RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, layer);
-
-		if (hit != null)
+		if (lastCheckpoint)
 		{
-			if (hit.collider != null)
-			{
-				return hit.collider.gameObject.layer;
-			}
+			transform.position = lastCheckpoint.transform.position;
+			rigid.velocity = Vector3.zero;
 		}
-		return -1;
+		else
+		{
+			GotoPlayerStart();
+		}
+	}
+
+	public void SetCurrentCheckpoint(GameObject obj)
+	{
+		//uncomment for re-activating old checkpoints
+		/*if (lastCheckpoint)
+		{
+			lastCheckpoint.GetComponent<Checkpoint>().DeActivate();
+		}*/
+
+		if (obj)
+		{
+			lastCheckpoint = obj;
+		}
+	}
+
+	#endregion
+
+	public void Kill()
+	{
+		Debug.Log("Kill");
+		//rigid.isKinematic = true;
+		allowInput = false;
+		rigid.velocity = Vector3.zero;
+
+		//turn player invisible
+		SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
+		Color col = spr.color;
+		col.a = 0.0f;
+		spr.color = col;
+	}
+
+	public void Resurrect()
+	{
+		Debug.Log("Resurrect");
+		if (!allowInput)
+		{
+            stamina.ResetStamina();
+			allowInput = true;
+			//rigid.isKinematic = false;
+
+			//turn player visible
+			SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
+			Color col = spr.color;
+			col.a = 1.0f;
+			spr.color = col;
+		}
+	}
+	
+	void GotoPlayerStart()
+	{
+		GameObject start = GameObject.Find("Player Start");
+
+		if (start != null)
+		{
+			transform.position = start.transform.position;
+		}
+		else
+		{
+			transform.position = Vector3.zero;
+		}
+		rigid.velocity = Vector3.zero;
+	}
+	
+	void ResetSoundDelay()
+    {
+        soundDelay = false;
 	}
 
     void OnCollisionEnter2D(Collision2D col)
@@ -695,9 +718,4 @@ public class Player : MonoBehaviour
 	void OnTriggerEnter2D(Collider2D c)
 	{
 	}
-
-    void ResetSoundDelay()
-    {
-        soundDelay = false;
-    }
 }
