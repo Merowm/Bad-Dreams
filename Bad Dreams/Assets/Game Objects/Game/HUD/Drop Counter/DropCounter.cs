@@ -31,6 +31,12 @@ public class DropCounter : MonoBehaviour
 
     private void PlayTween()
     {
+        if (spriteScaleTween == null ||
+            textScaleTween == null)
+        {
+            return;
+        }
+
         spriteScaleTween.ResetToBeginning();
         textScaleTween.ResetToBeginning();
 
