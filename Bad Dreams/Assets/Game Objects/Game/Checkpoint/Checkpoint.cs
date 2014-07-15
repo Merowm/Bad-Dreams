@@ -6,11 +6,12 @@ public class Checkpoint : MonoBehaviour
 	bool activated;
 
 	//SpriteRenderer sprite, runes;
+	Animator atorLamp, atorRunes;
 
 	void Start ()
 	{
-		//sprite = GameObject.Find("Post").GetComponentInChildren<SpriteRenderer>();
-		//runes = GameObject.Find("Runes").GetComponentInChildren<SpriteRenderer>();
+		atorLamp = GameObject.Find("Lamp").GetComponent<Animator>();
+		atorRunes = GameObject.Find("Runes").GetComponent<Animator>();
 		activated = false;
 	}
 	
@@ -35,19 +36,20 @@ public class Checkpoint : MonoBehaviour
 		if (!activated)
 		{
 			Debug.Log("ZECPOENT");
-			//GetComponent<SpriteRenderer>().color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-
+			atorLamp.SetTrigger("activate");
+			atorRunes.SetTrigger("activate");
 			SetCurrentCheckpoint();
 			activated = true;
 		}
 	}
 
-	void DeActivate()
+	public void DeActivate()
 	{
 		if (activated)
 		{
 			Debug.Log("Deactivated checkpoint");
-			//GetComponent<SpriteRenderer>().color = new Color(0.6f, 0.6f, 0.6f, 1.0f);
+			atorLamp.SetTrigger("deActivate");
+			atorRunes.SetTrigger("deActivate");
 			activated = false;
 		}
 	}
