@@ -37,28 +37,5 @@ public class ButtonSelectedScale : MonoBehaviour
                 tweenScale.enabled = false;
             }
         }
-
-
-        //if (UICamera.selectedObject == this.gameObject)
-        //{
-        //    UICamera.hoveredObject = null;
-        //    tweenScale.enabled = true;
-        //}
-        //if (UICamera.hoveredObject == this.gameObject)
-        //{
-        //    UICamera.selectedObject = null;
-        //    tweenScale.enabled = true;
-        //}
-
-        //if (UICamera.hoveredObject != this.gameObject && 
-        //    UICamera.selectedObject != this.gameObject &&
-        //    tweenScale.enabled)
-        //{
-        //    if (tweenScale.direction == AnimationOrTween.Direction.Forward)
-        //    {
-        //        tweenScale.ResetToBeginning();
-        //        tweenScale.enabled = false;
-        //    }
-        //}
     }
 }
