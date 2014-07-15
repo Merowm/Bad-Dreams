@@ -10,6 +10,8 @@ public class DogAI : MonoBehaviour
     const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
     const float TIME_ALERT_TIMER_MAX = 10.0f;
     const float COLLISION_DISTANCE_FROM_PLAYER_BEFORE_CAN_MOVE_AGAIN = 1.1f;
+    const float GROWL_DELAY = 3.5f;
+    const float DOG_SPATIAL_AWARENESS_RADIUS = 3.0f;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 4;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 12;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
@@ -19,7 +21,6 @@ public class DogAI : MonoBehaviour
     const int SPEED_RUN = 2;
     const int SPEED_CHARGE = 5;
     const int BUMP_ALERTNESS_ADDITION = 6;
-    const float GROWL_DELAY = 3.5f;
 
     #endregion
 
@@ -205,14 +206,14 @@ public class DogAI : MonoBehaviour
 
         if (alertness > 0.1f)
         {
-            if (sound_DogGrumble.volume < 1.0f)
-                sound_DogGrumble.volume += Time.deltaTime;
+            //if (sound_DogGrumble.volume < 1.0f)
+                sound_DogGrumble.volume = alertness / VISION_BECOME_ALERTED_THRESHOLD;
         }
         else
         {
-            if (sound_DogGrumble.volume > 0)
-                sound_DogGrumble.volume -= Time.deltaTime;
-            if (sound_DogGrumble.volume <= 0)
+            //if (sound_DogGrumble.volume > 0)
+                //sound_DogGrumble.volume -= Time.deltaTime;
+            //if (sound_DogGrumble.volume <= 0)
                 sound_DogGrumble.volume = 0;
         }
 
@@ -345,7 +346,15 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                playerVisible = false;
+                if (playerDistance < DOG_SPATIAL_AWARENESS_RADIUS)
+                alertness += Time.deltaTime;
+                if (!alerted && alertness >= VISION_BECOME_ALERTED_THRESHOLD)
+                {
+                    recentlyCollidedWithPlayer = true;
+                    Invoke("ResetCollisionWithPlayer", 1.4f);
+                    alerted = true;
+                    Invoke("FlipAround", 0.8f);
+                }
                 ResetVision();
             }
         }
@@ -403,10 +412,13 @@ public class DogAI : MonoBehaviour
             {
                 if (alertness > 0)
                 {
+                    if (!(playerDistance < DOG_SPATIAL_AWARENESS_RADIUS))
                     alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT * Time.deltaTime;
                 }
             }
         }
+
+        alertness = Mathf.Clamp(alertness, 0, VISION_BECOME_ALERTED_THRESHOLD);
     }
 
     bool RayCastAtTarget(GameObject target)
