@@ -6,10 +6,16 @@ public class DropCounter : MonoBehaviour
     private int dropCount;
     private UILabel uiLabel;
 
+    private TweenScale spriteScaleTween;
+    private TweenScale textScaleTween;
+
     private void Start()
     {
         dropCount = 0;
-        uiLabel = GameObject.Find("Drop Counter Text").GetComponentInChildren<UILabel>();
+        GameObject dropCounterText = GameObject.Find("Drop Counter Text");
+        uiLabel = dropCounterText.GetComponentInChildren<UILabel>();
+        textScaleTween = dropCounterText.GetComponent<TweenScale>();
+        spriteScaleTween = GetComponent<TweenScale>();
     }
 
     public int DropCount
@@ -17,8 +23,21 @@ public class DropCounter : MonoBehaviour
         get { return dropCount; }
         set
         {
+            PlayTween();
             dropCount = Mathf.Clamp(value, 0, int.MaxValue);
             uiLabel.text = dropCount.ToString();
         }
+    }
+
+    private void PlayTween()
+    {
+        spriteScaleTween.ResetToBeginning();
+        textScaleTween.ResetToBeginning();
+
+        spriteScaleTween.enabled = true;
+        textScaleTween.enabled = true;
+
+        spriteScaleTween.PlayForward();
+        textScaleTween.PlayForward();
     }
 }
