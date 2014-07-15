@@ -5,12 +5,12 @@ public class Checkpoint : MonoBehaviour
 {
 	bool activated;
 
-	SpriteRenderer sprite, runes;
+	//SpriteRenderer sprite, runes;
 
 	void Start ()
 	{
-		sprite = GameObject.Find("Post").GetComponentInChildren<SpriteRenderer>();
-		runes = GameObject.Find("Runes").GetComponentInChildren<SpriteRenderer>();
+		//sprite = GameObject.Find("Post").GetComponentInChildren<SpriteRenderer>();
+		//runes = GameObject.Find("Runes").GetComponentInChildren<SpriteRenderer>();
 		activated = false;
 	}
 	
