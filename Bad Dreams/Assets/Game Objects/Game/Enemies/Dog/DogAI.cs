@@ -346,8 +346,9 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                if (playerDistance < DOG_SPATIAL_AWARENESS_RADIUS)
-                alertness += Time.deltaTime;
+                if (!alerted && playerDistance < DOG_SPATIAL_AWARENESS_RADIUS)
+                    alertness += Time.deltaTime;
+
                 if (!alerted && alertness >= VISION_BECOME_ALERTED_THRESHOLD)
                 {
                     recentlyCollidedWithPlayer = true;
