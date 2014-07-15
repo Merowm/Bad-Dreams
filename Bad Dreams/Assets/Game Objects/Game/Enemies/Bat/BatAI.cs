@@ -45,7 +45,7 @@ public class BatAI : MonoBehaviour
 
     GameObject player;
 
-    
+    BatSounds batSounds;
 
     #endregion
 
@@ -73,6 +73,8 @@ public class BatAI : MonoBehaviour
 
         bat.transform.localPosition = point1.localPosition;
         currentLocalX = bat.transform.localPosition.x;
+
+        batSounds = bat.GetComponent<BatSounds>();
 
     }
 
@@ -174,6 +176,9 @@ public class BatAI : MonoBehaviour
         {
             if (Mathf.Abs(playerPos.y - ReturnYCoordinateOnParabola(playerPos.x)) <= BAT_Y_VARIATION)
             {
+                if (swooping == false)
+                    batSounds.BatSqueak();
+
                 Swooping = true;
                 currentBatSpeed = batSpeed;
             }
