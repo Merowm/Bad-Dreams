@@ -32,6 +32,9 @@ public class Collectible : MonoBehaviour
 
     #endregion
 
+    private Timer timer;
+    private DropCounter dropCounter;
+
     void Start()
     {
         soundHandler = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
@@ -44,6 +47,9 @@ public class Collectible : MonoBehaviour
         origPos = transform.position;
 
 		pickupParticle = Resources.Load<GameObject>(pickupParticleResource);
+
+        timer = GameObject.Find("Timer").GetComponent<Timer>();
+        dropCounter = GameObject.Find("Drop Counter").GetComponent<DropCounter>();
     }
 
     void Update()
@@ -77,8 +83,7 @@ public class Collectible : MonoBehaviour
 
     void AddTime()
     {
-        Debug.Log("+20 SECONDS");
-        GameObject.Find("Timer").GetComponent<Timer>().TimeBonus();
+        timer.TimeBonus();
         soundHandler.PlaySound(SoundType.Time);
         ParticleSystem particleSystem = GameObject.Find("Clock Particle Effect").GetComponent<ParticleSystem>();
         if (particleSystem != null)
@@ -93,7 +98,7 @@ public class Collectible : MonoBehaviour
 
     void AddPoints()
     {
-        GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount++;
+        dropCounter.DropCount++;
         soundHandler.PlaySound(SoundType.Droplet);
 		Instantiate(pickupParticle, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
