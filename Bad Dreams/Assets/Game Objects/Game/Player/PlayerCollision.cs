@@ -54,4 +54,13 @@ public class PlayerCollision : MonoBehaviour
 			transform.parent = other.gameObject.transform;
 		}
     }
+
+	/*void OnTriggerEnter2D(Collider2D c)
+	{
+		if (c.gameObject.name == "Lethal Spikes")
+		{
+			if (player.rigidbody2D.velocity.y < -6.0f)
+				player.GetComponent<HitAnimation>().ActivateAnimation();
+		}
+	}*/
 }
