@@ -7,9 +7,12 @@ public class StaminaBar : MonoBehaviour
 	//Stamina stamina;
 
 	public GameObject[] bars;
+
+    private TweenColor[] tweenColors;
+
 	void Start ()
 	{
-		
+        tweenColors = new TweenColor[bars.Length];
 	}
 	
 	void Update ()
@@ -22,6 +25,8 @@ public class StaminaBar : MonoBehaviour
 		for (int i = 0; i < bars.Length; i++)
 		{
 			bars[i] = GameObject.Find("Bar" + i);
+            tweenColors[i] = bars[i].GetComponent<TweenColor>();
+
 			if (bars[i] == null)
 			{
 				Debug.Log("foobar");
@@ -45,7 +50,8 @@ public class StaminaBar : MonoBehaviour
 				{
 					//Debug.Log("add " + (stam - 1));
 					bars[stam - 1].SetActive(true);
-					
+                    tweenColors[stam - 1].enabled = true;
+                    tweenColors[stam - 1].PlayForward();
 				}
 			}
 		}
@@ -62,7 +68,7 @@ public class StaminaBar : MonoBehaviour
 				{
 					//Debug.Log("sub " + (stam + 1));
 					bars[stam].SetActive(false);
-					
+                    tweenColors[stam].ResetToBeginning();
 				}
 			}
 		}
