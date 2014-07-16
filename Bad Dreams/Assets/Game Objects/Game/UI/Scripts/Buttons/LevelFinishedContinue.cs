@@ -12,7 +12,7 @@ public class LevelFinishedContinue : MonoBehaviour
 
     private void OnClick()
     {
-        transition.PlayForward();
+        transition.PlayForward(TransitionStyle.LevelFinish);
         transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "SwitchToLevelSelect"));
     }
 
@@ -21,6 +21,6 @@ public class LevelFinishedContinue : MonoBehaviour
         transition.GetComponent<TweenScale>().RemoveOnFinished(new EventDelegate(this, "SwitchToLevelSelect"));
         PlayerPrefs.SetString("TargetState", "LevelSelection");
         Application.LoadLevel("MainMenu");
-        transition.PlayReverse();
+        transition.PlayReverse(TransitionStyle.LevelFinish);
     }
 }

@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using SaveSystem;
 
 public class LevelFinishDropsCollected : MonoBehaviour
 {
+    public bool countDownFinished;
+    public bool newRecord;
+
     private UILabel uiLabel;
+    private LevelInfo levelInfo;
     private bool countDrops;
     private int counter;
     private int totalDrops;
@@ -13,9 +18,14 @@ public class LevelFinishDropsCollected : MonoBehaviour
     {
         Time.timeScale = 1.0F;
         uiLabel = GetComponentInChildren<UILabel>();
+        levelInfo = GameObject.Find("LevelInfo").GetComponent<LevelInfo>();
         DropCounter dropCounter = GameObject.Find("Drop Counter").GetComponent<DropCounter>();
         totalDrops = dropCounter.DropCount;
-        LevelInfo levelInfo = GameObject.Find("LevelInfo").GetComponent<LevelInfo>();
+        int oldDropRecord = SaveManager.CurrentSave.Levels[levelInfo.levelIndex].DropsCollected;
+        if (totalDrops > oldDropRecord)
+        {
+            newRecord = true;
+        }
         uiLabel.text = 0 + " / " + levelInfo.numberOfDrops;
         maxDrops = levelInfo.numberOfDrops;
         counter = 0;
@@ -39,6 +49,7 @@ public class LevelFinishDropsCollected : MonoBehaviour
         if (counter >= totalDrops)
         {
             countDrops = false;
+            countDownFinished = true;
             return;
         }
 
