@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 50461ea8bad42fc45afd363470048d97
+guid: 3a0965f4e83a2c340bf9ea27da5540bd
 TextureImporter:
   serializedVersion: 2
   mipmaps:
@@ -21,7 +21,7 @@ TextureImporter:
   generateCubemap: 0
   seamlessCubemap: 0
   textureFormat: -1
-  maxTextureSize: 2048
+  maxTextureSize: 1024
   textureSettings:
     filterMode: -1
     aniso: 1
@@ -45,67 +45,67 @@ TextureImporter:
     compressionQuality: 50
   spriteSheet:
     sprites:
-    - name: CheckPointSnow_0
+    - name: LanternSnow_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1024
-        width: 1024
-        height: 1024
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: CheckPointSnow_1
+    - name: LanternSnow_1
       rect:
         serializedVersion: 2
-        x: 1024
-        y: 1024
-        width: 1024
-        height: 1024
+        x: 256
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: CheckPointSnow_2
+    - name: LanternSnow_2
       rect:
         serializedVersion: 2
-        x: 2048
-        y: 1024
-        width: 1024
-        height: 1024
+        x: 512
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: CheckPointSnow_3
+    - name: LanternSnow_3
       rect:
         serializedVersion: 2
-        x: 3072
-        y: 1024
-        width: 1024
-        height: 1024
+        x: 768
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: CheckPointSnow_4
+    - name: LanternSnow_4
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1024
-        height: 1024
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: CheckPointSnow_5
+    - name: LanternSnow_5
       rect:
         serializedVersion: 2
-        x: 1024
+        x: 256
         y: 0
-        width: 1024
-        height: 1024
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
-    - name: CheckPointSnow_6
+    - name: LanternSnow_6
       rect:
         serializedVersion: 2
-        x: 2048
+        x: 512
         y: 0
-        width: 1024
-        height: 1024
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
   spritePackingTag: 
