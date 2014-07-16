@@ -32,7 +32,7 @@ public class Spike : MonoBehaviour
 
             transform.position = new Vector3(transform.position.x, transform.position.y - speed * Time.deltaTime, transform.position.z);
 
-            if (Physics2D.Raycast(transform.position, -Vector2.up, transform.localScale.x * 0.7f, LAYERMASK))
+            if (Physics2D.Raycast(transform.position, -Vector2.up, transform.localScale.x * 2.1f, LAYERMASK))
             {
                 OnHitGround();
             }
