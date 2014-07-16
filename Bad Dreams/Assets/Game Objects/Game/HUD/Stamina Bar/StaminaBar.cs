@@ -50,8 +50,11 @@ public class StaminaBar : MonoBehaviour
 				{
 					//Debug.Log("add " + (stam - 1));
 					bars[stam - 1].SetActive(true);
-                    tweenColors[stam - 1].enabled = true;
-                    tweenColors[stam - 1].PlayForward();
+                    if (tweenColors[stam - 1] != null)
+                    {
+                        tweenColors[stam - 1].enabled = true;
+                        tweenColors[stam - 1].PlayForward();
+                    }
 				}
 			}
 		}
@@ -68,7 +71,10 @@ public class StaminaBar : MonoBehaviour
 				{
 					//Debug.Log("sub " + (stam + 1));
 					bars[stam].SetActive(false);
-                    tweenColors[stam].ResetToBeginning();
+                    if (tweenColors[stam] != null)
+                    {
+                        tweenColors[stam].ResetToBeginning();
+                    }
 				}
 			}
 		}
