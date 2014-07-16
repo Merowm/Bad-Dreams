@@ -7,8 +7,10 @@ public class SpiderAI : MonoBehaviour
     public SpiderAIState PreviousState { get; private set; }
     public float regularSpeed;
     public float chasingSpeed;
-    public float attackSpeed;
+    public float minimumIdleLength;
+    public float maximumIdleLength;
 
+    private float attackSpeed;
     private GameObject player;
     private Vector2 targetPosition;
     private Rigidbody2D spiderRigidbody;
@@ -23,6 +25,7 @@ public class SpiderAI : MonoBehaviour
     {
         State = SpiderAIState.Moving;
         PreviousState = State;
+        attackSpeed = 0.8F;
         player = GameObject.Find("Player");
         spiderRigidbody = GetComponent<Rigidbody2D>();
         webCollider = transform.parent.GetComponent<CircleCollider2D>();
@@ -92,7 +95,7 @@ public class SpiderAI : MonoBehaviour
     private void OnSwitchToIdle()
     {
         idleTimer = 0.0F;
-        idleDuration = Random.RandomRange(2.0F, 6.0F);
+        idleDuration = Random.RandomRange(minimumIdleLength, maximumIdleLength);
     }
 
     private void UpdateIdle()
