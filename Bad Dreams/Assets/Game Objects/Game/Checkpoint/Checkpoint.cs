@@ -10,8 +10,8 @@ public class Checkpoint : MonoBehaviour
 
 	void Start ()
 	{
-		atorLamp = GameObject.Find("Lamp").GetComponent<Animator>();
-		atorRunes = GameObject.Find("Runes").GetComponent<Animator>();
+		atorLamp = GameObject.Find(name + "Lamp").GetComponent<Animator>();
+		atorRunes = GameObject.Find(name + "Runes").GetComponent<Animator>();
 		
 		activated = false;
 	}

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Particle : MonoBehaviour
 {
-	public float speed, dir, addDir, ttl;
+	public float speed, addSpeed, dir, addDir, ttl;
 
 
 	float rad; //degrees in radians
@@ -64,6 +64,8 @@ public class Particle : MonoBehaviour
 		transform.position += direction * speed * Time.deltaTime;
 		transform.position += velocity * Time.deltaTime;
 		velocity += addVelocity * Time.deltaTime;
+
+		speed += addSpeed * Time.deltaTime;
 	}
 
 	float DegToRad(float deg)
