@@ -14,6 +14,7 @@ public class SoundHandler : MonoBehaviour
 
 	void Start () 
     {
+        weaselMoving = true;
         movementList = GameObject.Find("Level/Sounds/Movement").GetComponentsInChildren<AudioSource>();
 
         treasure = GameObject.Find("Level/Sounds/Treasure/teddybear").GetComponentInChildren<AudioSource>();
@@ -69,7 +70,7 @@ public class SoundHandler : MonoBehaviour
 
 				//spider
 			case SoundType.SpiderRattle:
-				spiderRattle.Play();
+                    spiderRattle.Play();
 				break;
 
 				//weasel
@@ -79,7 +80,6 @@ public class SoundHandler : MonoBehaviour
                     weaselMoving = true;
                     Debug.Log("AHT");
                     weaselMove.Play();
-                    StopCoroutine("FadeOut");
                     StartCoroutine(FadeIn(weaselMove, 0.5f));
                 }
 				break;
@@ -106,10 +106,8 @@ public class SoundHandler : MonoBehaviour
                 if (weaselMoving)
                 {
                     weaselMoving = false;
-                    StopCoroutine("FadeIn");
                     StartCoroutine(FadeOut(weaselMove, 0.5f));
                 }
-                //weaselMove.Stop();
                 break;
         }
     }
