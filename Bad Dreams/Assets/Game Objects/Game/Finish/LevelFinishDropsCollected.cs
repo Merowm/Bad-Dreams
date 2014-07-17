@@ -9,10 +9,12 @@ public class LevelFinishDropsCollected : MonoBehaviour
 
     private UILabel uiLabel;
     private LevelInfo levelInfo;
+    private GameObject newRecordSprite;
     private bool countDrops;
     private int counter;
     private int totalDrops;
     private int maxDrops;
+    private int oldDropRecord;
 
     private void OnEnable()
     {
@@ -20,9 +22,9 @@ public class LevelFinishDropsCollected : MonoBehaviour
         uiLabel = GetComponentInChildren<UILabel>();
         levelInfo = GameObject.Find("LevelInfo").GetComponent<LevelInfo>();
         DropCounter dropCounter = GameObject.Find("Drop Counter").GetComponent<DropCounter>();
+        newRecordSprite = transform.FindChild("New Record").gameObject;
         totalDrops = dropCounter.DropCount;
-        int oldDropRecord = SaveManager.CurrentSave.Levels[levelInfo.levelIndex].DropsCollected;
-        if (totalDrops > oldDropRecord)
+        if (totalDrops > oldDropRecord && GameplayStateManager.CurrentState == GameplayState.LevelFinished)
         {
             newRecord = true;
         }
@@ -31,6 +33,11 @@ public class LevelFinishDropsCollected : MonoBehaviour
         counter = 0;
         countDrops = false;
         Invoke("StartCounting", 1.5F);
+    }
+
+    private void Start()
+    {
+        oldDropRecord = SaveManager.CurrentSave.Levels[levelInfo.levelIndex].DropsCollected;
     }
 
     private void Update()
@@ -50,6 +57,10 @@ public class LevelFinishDropsCollected : MonoBehaviour
         {
             countDrops = false;
             countDownFinished = true;
+            if (newRecord)
+            {
+                newRecordSprite.SetActive(true);
+            }
             return;
         }
 

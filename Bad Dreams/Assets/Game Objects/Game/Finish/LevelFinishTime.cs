@@ -9,6 +9,7 @@ public class LevelFinishTime : MonoBehaviour
 
     private UILabel uiLabel;
     private LevelInfo levelInfo;
+    private GameObject newRecordSprite;
     private int finalTime;
     private int counter;
     private bool countTime;
@@ -19,6 +20,7 @@ public class LevelFinishTime : MonoBehaviour
     {
         finalTime = GameObject.Find("Timer").GetComponent<Timer>().TimePassed;
         levelFinishDrops = GameObject.Find("Drops Collected").GetComponent<LevelFinishDropsCollected>();
+        newRecordSprite = transform.FindChild("New Record").gameObject;
         SetTimeCounterSpeed();
         levelInfo = GameObject.Find("LevelInfo").GetComponent<LevelInfo>();
         int oldBestTime = SaveManager.CurrentSave.Levels[levelInfo.levelIndex].BestTime;
@@ -44,7 +46,7 @@ public class LevelFinishTime : MonoBehaviour
             if (levelFinishDrops.newRecord == false)
                 Invoke("StartCounting", 0.25F);
             else
-                Invoke("StartCounting", 2.0F);
+                Invoke("StartCounting", 1.5F);
         }
 
         if (levelFinishDrops.countDownFinished && this.countDownFinished)
