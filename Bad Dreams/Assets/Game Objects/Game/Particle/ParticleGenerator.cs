@@ -10,6 +10,7 @@ public class ParticleGenerator : MonoBehaviour
 	public string resourcePath;		//path + prefix, where the script tries to locate particles (ex. "Particles/Particle" seeks prefabs named Particle0, Particle1, ...)
 	public string parentName;		//all particles are created inside this gameobject
 	public bool dontDestroy;		//don't destroy, when count == 0 || ttl == 0
+	public bool triggerOnStart;		//trigger on start
 
 	int startingCount;
 	float timer;
@@ -20,6 +21,12 @@ public class ParticleGenerator : MonoBehaviour
 	{
 		timer = 0.0f;
 		startingCount = count;
+
+		if (!triggerOnStart)
+			count = 0;
+
+		//else
+		//	startingCount = 0;
 
 		bottomRight = GameObject.Find(name + "/Top Left").transform;
 		topLeft = GameObject.Find(name + "/Bottom Right").transform;
@@ -83,7 +90,7 @@ public class ParticleGenerator : MonoBehaviour
 					Vector3 position = new Vector3(posX, posY);
 					GameObject temp = Instantiate(particles[i], position, Quaternion.identity) as GameObject;
 					temp.transform.parent = backgroundParticlesObj.transform;
-					temp.GetComponent<Particle>().dir = Random.value * 360.0f; //Todo: move this to background particle start
+					//temp.GetComponent<Particle>().dir = Random.value * 360.0f; //Todo: move this to background particle start
 
 					if (count > 0)
 					{

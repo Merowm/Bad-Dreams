@@ -7,11 +7,13 @@ public class Checkpoint : MonoBehaviour
 
 	//SpriteRenderer sprite, runes;
 	Animator atorLamp, atorRunes;
+	ParticleGenerator pGen;
 
 	void Start ()
 	{
 		atorLamp = GameObject.Find(name + "Lamp").GetComponent<Animator>();
 		atorRunes = GameObject.Find(name + "Runes").GetComponent<Animator>();
+		pGen = GameObject.Find(name + "Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
 		
 		activated = false;
 	}
@@ -37,8 +39,11 @@ public class Checkpoint : MonoBehaviour
 		if (!activated)
 		{
 			Debug.Log("ZECPOENT");
+
 			atorLamp.SetTrigger("activate");
 			atorRunes.SetTrigger("activate");
+			pGen.Trigger();
+
 			SetCurrentCheckpoint();
 			activated = true;
 		}
@@ -48,7 +53,7 @@ public class Checkpoint : MonoBehaviour
 	{
 		if (activated)
 		{
-			Debug.Log("Deactivated checkpoint");
+			//Debug.Log("Deactivated checkpoint");
 			atorLamp.SetTrigger("deActivate");
 			atorRunes.SetTrigger("deActivate");
 			activated = false;

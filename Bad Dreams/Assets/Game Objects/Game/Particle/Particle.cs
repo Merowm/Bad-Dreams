@@ -19,6 +19,8 @@ public class Particle : MonoBehaviour
 
 	public float randomAddVelocityMultiplier;
 
+	public bool randomDir;
+
 	SpriteRenderer spr;
 
 	void Start ()
@@ -36,6 +38,9 @@ public class Particle : MonoBehaviour
 		float xx = (Random.value * 2.0f - 1.0f) * randomStartingVelocity.x;
 		float yy = (Random.value * 2.0f - 1.0f) * randomStartingVelocity.y;
 		velocity = new Vector3(xx, yy);
+
+		if (randomDir)
+			dir = Random.value * 360.0f;
 	}
 	
 	void Update()
