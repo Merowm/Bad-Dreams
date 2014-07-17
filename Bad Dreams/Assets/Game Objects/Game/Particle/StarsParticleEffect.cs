@@ -12,7 +12,7 @@ public class StarsParticleEffect : MonoBehaviour
         {
             for (int i = 0; i < SaveManager.CurrentSave.Levels.Count; ++i)
             {
-                particleSystem.emissionRate += SaveManager.CurrentSave.Levels[i].DropsCollected / 3;
+                particleSystem.emissionRate += SaveManager.CurrentSave.Levels[i].DropsCollected / 2;
             }
         }
     }

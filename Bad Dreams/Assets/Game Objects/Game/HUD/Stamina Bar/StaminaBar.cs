@@ -104,9 +104,17 @@ public class StaminaBar : MonoBehaviour
     public void ResetStamina()
     {
         if (bars != null)
-        foreach (GameObject bar in bars)
         {
-            bar.SetActive(true);
+            foreach (GameObject bar in bars)
+            {
+                bar.SetActive(true);
+
+            }
+        }
+
+        foreach (TweenColor tweenColor in tweenColors)
+        {
+            tweenColor.PlayForward();
         }
     }
 }
