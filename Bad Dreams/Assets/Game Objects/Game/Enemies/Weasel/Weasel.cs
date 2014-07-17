@@ -39,6 +39,8 @@ public class Weasel : MonoBehaviour
 	bool enableDebug;
 	string debugText;
 
+    SoundHandler sh;
+
 	void Start ()
 	{
 		rigid = GetComponent<Rigidbody2D>();
@@ -52,6 +54,8 @@ public class Weasel : MonoBehaviour
 		SwitchToNotAlerted();
 		attackTimer = 0.0f;
 		enableDebug = false;
+
+        sh = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
 	}
 	
 	void Update ()
@@ -136,6 +140,7 @@ public class Weasel : MonoBehaviour
 	{
 		if (!attacking)
 		{
+            sh.PlaySound(SoundType.WeaselPop);
 			attacking = true;
 			attackTimer = 0.0f;
 			atorHead.SetTrigger("show");
@@ -249,6 +254,7 @@ public class Weasel : MonoBehaviour
 
 	void MoveLeft(float speedParam)
 	{
+        sh.PlaySound(SoundType.WeaselMove);
 		rigid.velocity = new Vector2(-speedParam, 0.0f);
 		atorTail.SetBool("moving", true);
 		MirrorSprite(false);
@@ -256,6 +262,7 @@ public class Weasel : MonoBehaviour
 
 	void MoveRight(float speedParam)
 	{
+        sh.PlaySound(SoundType.WeaselMove);
 		rigid.velocity = new Vector2(speedParam, 0.0f);
 		atorTail.SetBool("moving", true);
 		MirrorSprite(true);
@@ -264,6 +271,7 @@ public class Weasel : MonoBehaviour
 	void StopMovement()
 	{
 		//stop
+        sh.StopSound(SoundType.WeaselMove);
 		targetPos = transform.position;
 		atorTail.SetBool("moving", false);
 		rigid.velocity = new Vector2(0.0f, 0.0f);

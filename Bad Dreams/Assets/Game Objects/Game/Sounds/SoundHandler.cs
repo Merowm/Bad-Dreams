@@ -8,8 +8,9 @@ public class SoundHandler : MonoBehaviour
     AudioSource[] movementList;
     AudioSource droplet, treasure, time;
 
-	AudioSource[] batSqueak;
-	AudioSource batFlap, weaselMove, weaselPop, weaselVocal, spiderRattle;
+	AudioSource weaselMove, weaselPop, weaselVocal, spiderRattle;
+
+    bool weaselMoving;
 
 	void Start () 
     {
@@ -18,12 +19,6 @@ public class SoundHandler : MonoBehaviour
         treasure = GameObject.Find("Level/Sounds/Treasure/teddybear").GetComponentInChildren<AudioSource>();
         droplet = GameObject.Find("Level/Sounds/Droplet/waterdroplet").GetComponentInChildren<AudioSource>();
         time = GameObject.Find("Level/Sounds/Time/addtime").GetComponentInChildren<AudioSource>();
-
-		batSqueak = GameObject.Find("Level/Sounds/Bat/Squeak").GetComponentsInChildren<AudioSource>();
-		//dogGrowl = GameObject.Find("Level/Sounds/Dog/Growl").GetComponentsInChildren<AudioSource>();
-
-		batFlap = GameObject.Find("Level/Sounds/Bat/Flap").GetComponentInChildren<AudioSource>();
-		//dogSnarl = GameObject.Find("Level/Sounds/Dog/Snarl").GetComponentInChildren<AudioSource>();
 
 		weaselMove = GameObject.Find("Level/Sounds/Weasel/Move").GetComponentInChildren<AudioSource>();
 		weaselPop = GameObject.Find("Level/Sounds/Weasel/Pop").GetComponentInChildren<AudioSource>();
@@ -72,27 +67,6 @@ public class SoundHandler : MonoBehaviour
                 time.Play();
                 break;
 
-				//bat
-			case SoundType.BatFlap:
-				batFlap.Play();
-				break;
-
-			case SoundType.BatSqueak:
-				batSqueak[Random.Range(0, batSqueak.Length)].Play();
-				break;
-
-            /*
-
-				//dog
-			case SoundType.DogGrowl:
-				dogGrowl[Random.Range(0, dogGrowl.Length)].Play();
-				break;
-
-			case SoundType.DogSnarl:
-				dogSnarl.Play();
-				break;
-             
-             */
 				//spider
 			case SoundType.SpiderRattle:
 				spiderRattle.Play();
@@ -100,16 +74,64 @@ public class SoundHandler : MonoBehaviour
 
 				//weasel
 			case SoundType.WeaselMove:
-				weaselMove.Play();
+                if (!weaselMoving)
+                {
+                    weaselMoving = true;
+                    Debug.Log("AHT");
+                    weaselMove.Play();
+                    StopCoroutine("FadeOut");
+                    StartCoroutine(FadeIn(weaselMove, 0.5f));
+                }
 				break;
 			
 			case SoundType.WeaselPop:
-				weaselPop.Play();
+                if (!weaselPop.isPlaying && !weaselVocal.isPlaying)
+                {
+                    weaselPop.Play();
+                    weaselVocal.Play();
+                }
 				break;
 
 			case SoundType.WeaselVocal:
 				weaselVocal.Play();
 				break;
         }
+    }
+
+    public void StopSound(SoundType type)
+    {
+        switch (type)
+        {
+            case SoundType.WeaselMove:
+                if (weaselMoving)
+                {
+                    weaselMoving = false;
+                    StopCoroutine("FadeIn");
+                    StartCoroutine(FadeOut(weaselMove, 0.5f));
+                }
+                //weaselMove.Stop();
+                break;
+        }
+    }
+
+    IEnumerator FadeOut(AudioSource audioSource, float time)
+    {
+        for (float t = audioSource.volume; t > 0.0f; t -= Time.deltaTime / time)
+        {
+            audioSource.volume = t;
+            yield return new WaitForEndOfFrame();
+        }
+        Debug.Log("Faded out");
+        audioSource.Stop();
+    }
+
+    IEnumerator FadeIn(AudioSource audioSource, float time)
+    {
+        for (float t = audioSource.volume; t <= 1.0f; t += Time.deltaTime / time)
+        {
+            audioSource.volume = t;
+            yield return new WaitForEndOfFrame();
+        }
+        Debug.Log("Faded in");
     }
 }
