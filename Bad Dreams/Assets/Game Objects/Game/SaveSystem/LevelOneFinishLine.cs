@@ -34,10 +34,7 @@ public class LevelOneFinishLine : MonoBehaviour
 
             levelFinishDrops.oldDropRecord = SaveManager.CurrentSave.Levels[levelInfo.levelIndex].DropsCollected;
             levelFinishDrops.totalDrops = GameObject.Find("Drop Counter").GetComponent<DropCounter>().DropCount;
-            Debug.Log(levelFinishDrops.totalDrops + ", " + levelFinishDrops.oldDropRecord);
             levelFinishDrops.newRecord = (levelFinishDrops.totalDrops > levelFinishDrops.oldDropRecord);
-
-            Debug.Log("Drops: " + levelFinishDrops.newRecord + "; Time: " + levelFinishTime.newRecord);
 
             // Save new stuff
             Save save = SaveManager.CurrentSave;
