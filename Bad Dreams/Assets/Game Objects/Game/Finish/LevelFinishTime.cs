@@ -6,33 +6,27 @@ public class LevelFinishTime : MonoBehaviour
 {
     public bool countDownFinished { get; set; }
     public bool newRecord { get; set; }
+    public int oldBestTime { get; set; }
+    public int finalTime { get; set; }
 
     private UILabel uiLabel;
     private LevelInfo levelInfo;
     private GameObject newRecordSprite;
-    private int finalTime;
     private int counter;
     private bool countTime;
     private LevelFinishDropsCollected levelFinishDrops;
     private GameObject continueButton;
-
+    
     private void OnEnable()
     {
-        finalTime = GameObject.Find("Timer").GetComponent<Timer>().TimePassed;
         levelFinishDrops = GameObject.Find("Drops Collected").GetComponent<LevelFinishDropsCollected>();
         newRecordSprite = transform.FindChild("New Record").gameObject;
         SetTimeCounterSpeed();
         levelInfo = GameObject.Find("LevelInfo").GetComponent<LevelInfo>();
-        int oldBestTime = SaveManager.CurrentSave.Levels[levelInfo.levelIndex].BestTime;
-        if (finalTime < oldBestTime)
-        {
-            newRecord = true;
-        }
     }
 
     private void Start()
     {
-        Time.timeScale = 1.0F;
         uiLabel = GetComponentInChildren<UILabel>();
         counter = 0;
         countTime = false;
@@ -67,6 +61,10 @@ public class LevelFinishTime : MonoBehaviour
     {
         if (counter >= finalTime)
         {
+            if (newRecord)
+            {
+                newRecordSprite.SetActive(true);
+            }
             countDownFinished = true;
             countTime = false;
             return;
