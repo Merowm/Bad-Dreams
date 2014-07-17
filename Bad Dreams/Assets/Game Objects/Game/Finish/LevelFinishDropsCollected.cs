@@ -4,8 +4,8 @@ using SaveSystem;
 
 public class LevelFinishDropsCollected : MonoBehaviour
 {
-    public bool countDownFinished;
-    public bool newRecord;
+    public bool countDownFinished { get; set; }
+    public bool newRecord { get; set; }
 
     private UILabel uiLabel;
     private LevelInfo levelInfo;
@@ -42,7 +42,7 @@ public class LevelFinishDropsCollected : MonoBehaviour
     }
 
     private float timer = 0.0F;
-    private float interval = 0.05F;
+    private float interval = 0.07F;
 
     private void UpdateDropsLabel()
     {

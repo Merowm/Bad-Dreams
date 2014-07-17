@@ -166,14 +166,16 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToLevelFinished()
     {
-        Time.timeScale = 0.0F;
+        GameObject.Find("Player").GetComponent<Player>().enabled = false;
         transition.PlayForward(TransitionStyle.LevelFinish);
         transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "ActivateLevelFinishScreen"));
     }
 
     private void SwitchToLevelFailed()
     {
-        Time.timeScale = 0.0F;
+        GameObject player = GameObject.Find("Player");
+        player.GetComponent<Player>().enabled = false;
+        player.GetComponent<BoxCollider2D>().enabled = false;
         transition.PlayForward();
         transition.GetComponent<TweenScale>().AddOnFinished(new EventDelegate(this, "ActivateLevelFailedScreen"));
     }

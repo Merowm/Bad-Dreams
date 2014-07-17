@@ -4,8 +4,8 @@ using SaveSystem;
 
 public class LevelFinishTime : MonoBehaviour
 {
-    public bool countDownFinished;
-    public bool newRecord;
+    public bool countDownFinished { get; set; }
+    public bool newRecord { get; set; }
 
     private UILabel uiLabel;
     private LevelInfo levelInfo;
@@ -87,10 +87,12 @@ public class LevelFinishTime : MonoBehaviour
     private void SetTimeCounterSpeed()
     {
         if (finalTime > 30)
-            interval = 0.04F;
+            interval = 0.03F;
         if (finalTime > 60)
-            interval = 0.02F;
-        if (interval > 120)
             interval = 0.01F;
+        if (finalTime > 120)
+            interval = 0.005F;
+        if (finalTime > 180)
+            interval = 0.001F;
     }
 }
