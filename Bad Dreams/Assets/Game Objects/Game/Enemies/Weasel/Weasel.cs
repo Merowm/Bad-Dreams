@@ -219,7 +219,7 @@ public class Weasel : MonoBehaviour
 	//not alerted
 	void SwitchToNotAlerted()
 	{
-		Debug.Log("weasel: SwitchToNotAlerted");
+		//Debug.Log("weasel: SwitchToNotAlerted");
 		alerted = false;
 		ResetSleepTimer();
 	}
@@ -305,7 +305,7 @@ public class Weasel : MonoBehaviour
 	//alerted
 	void SwitchToAlerted()
 	{
-		Debug.Log("weasel: SwitchToAlerted");
+		//Debug.Log("weasel: SwitchToAlerted");
 		alerted = true;
 	}
 	

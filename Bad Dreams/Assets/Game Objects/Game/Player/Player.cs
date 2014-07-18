@@ -426,15 +426,15 @@ public class Player : MonoBehaviour
 	void TerrainCollision(float colliderWidth, float colliderHeight)
 	{
 		Vector3 bottomPoint = transform.position + new Vector3(0.0f, -colliderHeight / 2.0f - 0.005f);
-		float gap = colliderWidth / 2.0f;
-
+		//float gap = colliderWidth / 2.0f; //original
+		float gap = colliderWidth / 2.0f + 0.02f; //test for fixing "falling while on ledge"
 		bool onGroundBefore = onGround;
 
-		//Debug.Log("landcheck");
 		onGround = false;
 		for (float offset = -gap; offset <= gap; offset += gap)
 		{
-			//Debug.Log("offset " + offset);
+			Debug.DrawRay(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f) * 0.03f);
+
 			int result = Raycast(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f), 0.03f);
 			if (result != -1)
 			{
@@ -451,7 +451,6 @@ public class Player : MonoBehaviour
 			dustParticleGen.Trigger();
             soundHandler.PlaySound(SoundType.Movement);
 		}
-		//Debug.Log("landcheck end");
 	}
 
 	void CheckIllegalPosition()
@@ -650,7 +649,7 @@ public class Player : MonoBehaviour
 
 	public void Kill()
 	{
-		Debug.Log("Kill");
+		//Debug.Log("Kill");
 		//rigid.isKinematic = true;
 		allowInput = false;
 		rigid.velocity = Vector3.zero;
@@ -664,7 +663,7 @@ public class Player : MonoBehaviour
 
 	public void Resurrect()
 	{
-		Debug.Log("Resurrect");
+		//Debug.Log("Resurrect");
 		if (!allowInput)
 		{
             stamina.ResetStamina();
