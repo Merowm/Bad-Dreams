@@ -9,9 +9,7 @@ public class DogAI : MonoBehaviour
     const float TIME_VISION_RESET = 2.0f;
     const float TIME_SPENT_STILL_BEFORE_TURNING = 2.5f;
     const float TIME_ALERT_TIMER_MAX = 10.0f;
-    const float COLLISION_DISTANCE_FROM_PLAYER_BEFORE_CAN_MOVE_AGAIN = 1.1f;
     const float GROWL_DELAY = 3.5f;
-    const float DOG_SPATIAL_AWARENESS_RADIUS = 3.0f;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT = 4;
     const int VISION_ALERTNESS_ADDITION_ON_SIGHT_WHILE_ALERTED = 12;
     const int VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT = 1;
@@ -38,8 +36,6 @@ public class DogAI : MonoBehaviour
 
     #region Private Variables
 
-    float distFromPlayerBeforeMoveAgain;
-
     SpriteRenderer thisSpriteRend, thisVisionCone;
     Animator thisAnimator;
     BoxCollider2D thisCollider2D;
@@ -52,13 +48,11 @@ public class DogAI : MonoBehaviour
     Vector3 currentDir;
 
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
-    float alertness;
+    float alertness, distFromPlayerBeforeMoveAgain, spatialAwarenessRadius, growlDelay;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer, recentlyCollidedWithPlayer, veryCloseToPlayer;
 
     AudioSource sound_DogGrumble, sound_DogCollision;
     AudioSource[] sound_DogAlert;
-
-    float growlDelay;
 
     int currentSound;
 
@@ -76,6 +70,9 @@ public class DogAI : MonoBehaviour
         player = GameObject.Find("Player");
         playerSpriteRend = player.transform.Find("Animator").GetComponent<SpriteRenderer>();
         thisSpriteRend = transform.FindChild("Sprite").GetComponent<SpriteRenderer>();
+
+        spatialAwarenessRadius = transform.FindChild("Sprite").localScale.x + 4.0f;
+
         thisAnimator = transform.FindChild("Sprite").GetComponent<Animator>();
         currentDir = new Vector3(thisSpriteRend.transform.localScale.x, 0, 0);
         alertness = 0;
@@ -350,7 +347,7 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                if (!alerted && playerDistance < DOG_SPATIAL_AWARENESS_RADIUS)
+                if (!alerted && playerDistance < spatialAwarenessRadius)
                     alertness += Time.deltaTime;
 
                 if (!alerted && alertness >= VISION_BECOME_ALERTED_THRESHOLD)
@@ -417,7 +414,7 @@ public class DogAI : MonoBehaviour
             {
                 if (alertness > 0)
                 {
-                    if (!(playerDistance < DOG_SPATIAL_AWARENESS_RADIUS))
+                    if (!(playerDistance < spatialAwarenessRadius))
                     alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT * Time.deltaTime;
                 }
             }
