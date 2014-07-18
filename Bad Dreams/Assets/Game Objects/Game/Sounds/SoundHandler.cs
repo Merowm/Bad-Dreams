@@ -70,6 +70,7 @@ public class SoundHandler : MonoBehaviour
 
 				//spider
 			case SoundType.SpiderRattle:
+                if (!spiderRattle.isPlaying)
                     spiderRattle.Play();
 				break;
 
