@@ -26,7 +26,10 @@ public class LoadGameButton : MonoBehaviour
 
     private void OnClick()
     {
-        MainMenuStateManager.SwitchTo(MainMenuState.LevelSelection);
+        if (PlayerPrefs.HasKey("Save"))
+        {
+            MainMenuStateManager.SwitchTo(MainMenuState.LevelSelection);
+        }
     }
 
     private void OnEnable()
