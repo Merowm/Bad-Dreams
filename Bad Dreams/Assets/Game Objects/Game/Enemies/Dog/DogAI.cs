@@ -38,6 +38,8 @@ public class DogAI : MonoBehaviour
 
     #region Private Variables
 
+    float distFromPlayerBeforeMoveAgain;
+
     SpriteRenderer thisSpriteRend, thisVisionCone;
     Animator thisAnimator;
     BoxCollider2D thisCollider2D;
@@ -68,6 +70,7 @@ public class DogAI : MonoBehaviour
 
         Physics2D.IgnoreLayerCollision(ENEMY_LAYER, ENEMY_LAYER); //ignores collisions between enemies in the same layer
         thisCollider2D = GetComponent<BoxCollider2D>();
+        distFromPlayerBeforeMoveAgain = thisCollider2D.size.x;
         viewLength = 6.0f; //every 1.0f equals to 64 pixels
         viewAngle = 45.0f; //the full view angle is double this, vision cone sprite should be aimed to the right
         player = GameObject.Find("Player");
@@ -96,7 +99,8 @@ public class DogAI : MonoBehaviour
 
     void Update()
     {
-        thisBounds = new Bounds(transform.position, thisCollider2D.size);
+        thisBounds = new Bounds(transform.position + new Vector3(thisCollider2D.center.x, thisCollider2D.center.y, 0), thisCollider2D.size);
+        //Debug.Log(thisBounds.center.x + " " + thisBounds.center.y + ", " + transform.position.x + " " + transform.position.y); 
 
         GroundCheck();
 
@@ -151,7 +155,7 @@ public class DogAI : MonoBehaviour
             UpdateVisionConeColor();
         }
 
-        if (Vector3.Distance(player.transform.position, transform.position) > COLLISION_DISTANCE_FROM_PLAYER_BEFORE_CAN_MOVE_AGAIN)
+        if (Vector3.Distance(player.transform.position, transform.position) > distFromPlayerBeforeMoveAgain)
         {
             veryCloseToPlayer = false;
         }
@@ -542,16 +546,18 @@ public class DogAI : MonoBehaviour
         {
             if (player.transform.position.x <= transform.position.x)
             {
-                thisSpriteRend.transform.localScale = new Vector3(-0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+                //thisSpriteRend.transform.localScale = new Vector3(-Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
                 currentDir = new Vector3(-1, 0, 0);
             }
             else
             {
-                thisSpriteRend.transform.localScale = new Vector3(0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+                //thisSpriteRend.transform.localScale = new Vector3(Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
                 currentDir = new Vector3(1, 0, 0);
             }
+            thisSpriteRend.transform.localScale = new Vector3(currentDir.x * Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+
             thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
         }
         else
@@ -566,7 +572,7 @@ public class DogAI : MonoBehaviour
         {
             currentDir = Vector3.Normalize(player.transform.position - thisEyePos.position);
 
-            thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * 0.2f, thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
+            thisSpriteRend.transform.localScale = new Vector3(Mathf.Sign(currentDir.x) * Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
 
             thisEyePos.localPosition = new Vector3(Mathf.Abs(thisEyePos.localPosition.x) * Mathf.Sign(currentDir.x), thisEyePos.localPosition.y, thisEyePos.localPosition.z);
         }
@@ -600,16 +606,18 @@ public class DogAI : MonoBehaviour
             UpdateIfStillStopped();
         }
 
-        if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
+        Debug.DrawRay(rayBotTowardsDirection, new Vector2(Mathf.Sign(currentDir.x) * (thisBounds.center.x - thisBounds.min.x + 0.1f), 0));
+        Debug.DrawRay(rayTopTowardsDirection, new Vector2(Mathf.Sign(currentDir.x) * (thisBounds.center.x - thisBounds.min.x + 0.1f), 0));
+        Debug.DrawRay(rayFrontDown, new Vector2(0, thisBounds.min.y - thisBounds.max.y));
+        if (Raycast(rayBotTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), thisBounds.center.x - thisBounds.min.x + 0.1f))
         {
             GroundCheckActions();
         }
-        else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), 0.7f))
+        else if (Raycast(rayTopTowardsDirection, new Vector3(Mathf.Sign(currentDir.x), 0, 0), thisBounds.center.x - thisBounds.min.x + 0.1f))
         {
             GroundCheckActions();
-        }
-
-        else if (!Raycast(rayFrontDown, Vector3.down, 0.6f))
+        }    
+        else if (!Raycast(rayFrontDown, Vector3.down, thisBounds.max.y - thisBounds.min.y))
         {
             GroundCheckActions();
         }
