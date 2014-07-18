@@ -11,21 +11,60 @@ public class Timer : MonoBehaviour
     public int TimePassed { get { return (int)timePassed; } set {} }
     private float timePassed;
 
+	Animator staminator;
+	bool animationTriggered;
+
 	void Start ()
 	{
+		animationTriggered = false;
 		timer = time;
 	}
-	
+
+	void StartStaminaAnimation()
+	{
+		if (staminator && !animationTriggered)
+		{
+			animationTriggered = true;
+			staminator.SetTrigger("startHighlight");
+		}
+	}
+
+	void ResetStaminaAnimation()
+	{
+		if (staminator && animationTriggered)
+		{
+			animationTriggered = false;
+			staminator.SetTrigger("reset");
+		}
+	}
+
 	void Update ()
 	{
         timePassed += Time.deltaTime;
+
+		if (!staminator)
+		{
+			GameObject staminaBG = GameObject.Find("StaminaBG");
+			if (staminaBG)
+			{
+				staminator = staminaBG.GetComponent<Animator>();
+			}
+		}
 
 		if (timerLabel == null)
 		{
 			timerLabel = GameObject.Find("UI/Timer/Label").GetComponent<UILabel>();
 		}
-		else
+		if (timerLabel)
 		{
+			if (timer < 21.0f)
+			{
+				StartStaminaAnimation();
+			}
+			else
+			{
+				ResetStaminaAnimation();
+			}
 			int mins = (int)(timer / 60);
 			int secs = (int)(timer % 60);
 
@@ -42,6 +81,7 @@ public class Timer : MonoBehaviour
 			if (timer <= 0.0f)
 			{
 				GameplayStateManager.SwitchTo(GameplayState.LevelFailed);
+				timerLabel.text = "0:00";
 			}
 		}
 	}

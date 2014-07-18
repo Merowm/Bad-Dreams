@@ -3,16 +3,16 @@ using System.Collections;
 
 public class Weasel : MonoBehaviour
 {
-	const float MAX_SLEEP_TIME =			10.0f;	//sleep times
+	const float MAX_SLEEP_TIME =			12.0f;	//sleep times
 	const float MIN_SLEEP_TIME =			8.0f;
-	const float HEARING_DISTANCE =			8.0f;	//how far the weasel can detect player
-	const float MOVING_SPEED =				0.6f;	//non-alerted moving speed
+	const float HEARING_DISTANCE =			6.0f;	//how far the weasel can detect player
+	const float MOVING_SPEED =				0.5f;	//non-alerted moving speed
 	const float RUNNING_SPEED =				1.2f;	//alerted speed
 	const float MIN_PLAYER_DISTANCE =		0.5f;	//how near the weasel gets before attacking
 	const float PLAYER_MOVEMENT_DETECT =	0.2f;	//smaller == detect easier
 	const float RANDOM_MOVE_RANGE =			4.0f;	//how far do we go when not alerted
 	const float ATTACK_SPEED =				0.1f;
-	const float ATTACK_RANGE =				1.2f;
+	const float ATTACK_RANGE =				1.0f;
 	const float NEAR_EDGE_THRESHOLD =		0.75f;	//minimum distance between weasel and ledge
 
 	bool alerted;				//is weasel chasing the player
@@ -41,6 +41,8 @@ public class Weasel : MonoBehaviour
 
     SoundHandler sh;
 
+	int headShownState, headHiddenState;
+
 	void Start ()
 	{
 		rigid = GetComponent<Rigidbody2D>();
@@ -53,9 +55,12 @@ public class Weasel : MonoBehaviour
 		player = GameObject.Find("Player").transform;
 		SwitchToNotAlerted();
 		attackTimer = 0.0f;
-		enableDebug = false;
+		enableDebug = true;
 
         sh = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
+
+		headShownState = Animator.StringToHash("Base Layer.WeasleyHeadShown");
+		headHiddenState = Animator.StringToHash("Base Layer.WeasleyHeadHidden");
 	}
 	
 	void Update ()
@@ -134,6 +139,22 @@ public class Weasel : MonoBehaviour
 
 		PlayerMovementDetection();
 		Attacking();
+		Animation();
+	}
+
+	void Animation()
+	{
+		AnimatorStateInfo asi = atorHead.GetCurrentAnimatorStateInfo(0);
+		if (asi.nameHash == headHiddenState)
+		{
+			//atorHead.SetBool("show", false);
+			atorHead.SetBool("hide", false);
+		}
+		else if (asi.nameHash == headShownState)
+		{
+			atorHead.SetBool("show", false);
+			//atorHead.SetBool("hide", false);
+		}
 	}
 
 	void Attack()
@@ -143,7 +164,9 @@ public class Weasel : MonoBehaviour
             sh.PlaySound(SoundType.WeaselPop);
 			attacking = true;
 			attackTimer = 0.0f;
-			atorHead.SetTrigger("show");
+			//atorHead.SetTrigger("show");
+			atorHead.SetBool("show",true);
+			atorHead.SetBool("hide", false);
 		}
 	}
 
@@ -168,7 +191,9 @@ public class Weasel : MonoBehaviour
 					}
 					
 				}
-				atorHead.SetTrigger("hide");
+				//atorHead.SetTrigger("hide");
+				atorHead.SetBool("show", false);
+				atorHead.SetBool("hide", true);
 				SwitchToNotAlerted();
 			}
 
