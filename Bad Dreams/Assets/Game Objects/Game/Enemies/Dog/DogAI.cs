@@ -607,7 +607,7 @@ public class DogAI : MonoBehaviour
 
     bool Raycast(Vector3 pos, Vector3 direction, float length)
     {
-        RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, 1 << 8);
+        RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, (1 << 8 | 1 << 11));
 
         if (hit.collider != null)
         {

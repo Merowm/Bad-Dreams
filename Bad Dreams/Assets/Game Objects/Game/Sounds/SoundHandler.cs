@@ -14,7 +14,7 @@ public class SoundHandler : MonoBehaviour
 
 	void Start () 
     {
-        weaselMoving = true;
+        weaselMoving = false;
         movementList = GameObject.Find("Level/Sounds/Movement").GetComponentsInChildren<AudioSource>();
 
         treasure = GameObject.Find("Level/Sounds/Treasure/teddybear").GetComponentInChildren<AudioSource>();

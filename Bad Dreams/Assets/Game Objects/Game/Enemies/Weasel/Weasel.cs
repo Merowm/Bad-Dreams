@@ -7,13 +7,13 @@ public class Weasel : MonoBehaviour
 	const float MIN_SLEEP_TIME =			8.0f;
 	const float HEARING_DISTANCE =			6.0f;	//how far the weasel can detect player
 	const float MOVING_SPEED =				0.5f;	//non-alerted moving speed
-	const float RUNNING_SPEED =				1.2f;	//alerted speed
+	const float RUNNING_SPEED =				1.55f;	//alerted speed
 	const float MIN_PLAYER_DISTANCE =		0.5f;	//how near the weasel gets before attacking
 	const float PLAYER_MOVEMENT_DETECT =	0.2f;	//smaller == detect easier
 	const float RANDOM_MOVE_RANGE =			4.0f;	//how far do we go when not alerted
 	const float ATTACK_SPEED =				0.1f;
 	const float ATTACK_RANGE =				1.0f;
-	const float NEAR_EDGE_THRESHOLD =		0.75f;	//minimum distance between weasel and ledge
+	const float NEAR_EDGE_THRESHOLD =		0.5f;	//minimum distance between weasel and ledge
 
 	bool alerted;				//is weasel chasing the player
 	bool seePlayer;				//does the weasel see the player (or hear)
@@ -39,15 +39,17 @@ public class Weasel : MonoBehaviour
 	bool enableDebug;
 	string debugText;
 
-    SoundHandler sh;
+    SoundHandler soundHandler;
 
 	int headShownState, headHiddenState;
 
 	void Start ()
 	{
+        soundHandler = GameObject.Find("Level/Sounds/Sound Handler").GetComponent<SoundHandler>();
+
 		rigid = GetComponent<Rigidbody2D>();
-		atorTail = GameObject.Find("Tail Graphics").GetComponent<Animator>();
-		atorHead = GameObject.Find("Head Graphics").GetComponent<Animator>();
+		atorTail = transform.Find("Tail Graphics").GetComponent<Animator>();
+		atorHead = transform.Find("Head Graphics").GetComponent<Animator>();
 		lastPlayerPos = Vector3.zero;
 		seePlayer = false;
 		eye = transform.FindChild("Eye Position");
@@ -56,8 +58,6 @@ public class Weasel : MonoBehaviour
 		SwitchToNotAlerted();
 		attackTimer = 0.0f;
 		enableDebug = true;
-
-        sh = GameObject.Find("Sound Handler").GetComponent<SoundHandler>();
 
 		headShownState = Animator.StringToHash("Base Layer.WeasleyHeadShown");
 		headHiddenState = Animator.StringToHash("Base Layer.WeasleyHeadHidden");
@@ -96,6 +96,12 @@ public class Weasel : MonoBehaviour
 			Debug.DrawLine(transform.position + new Vector3(0.0f, 0.25f),transform.position + new Vector3(HEARING_DISTANCE, 0.25f), Color.magenta);
 			Debug.DrawLine(transform.position + new Vector3(0.0f, 0.25f),transform.position + new Vector3(-HEARING_DISTANCE, 0.25f), Color.magenta);
 		}
+
+        if (alerted)
+        {
+            Debug.Log("currently alerted");
+            soundHandler.PlaySound(SoundType.WeaselMove);
+        }
 	}
 
 	void BothBehaviors()
@@ -114,8 +120,7 @@ public class Weasel : MonoBehaviour
 		//raycast if player is near
 		if (RaycastPlayer(eye.position, new Vector2(1.0f, 0.0f), distRight, new Color(1.0f, 0.0f, 0.0f, 1.0f)) != -1 || RaycastPlayer(eye.position, new Vector2(-1.0f, 0.0f), -distLeft, new Color(1.0f, 0.0f, 0.0f, 1.0f)) != -1)
 		{
-			GameObject playerObj = GameObject.Find("Player");
-			if (!playerObj.GetComponent<HidingSkill>().IsHiding)
+			if (!player.GetComponent<HidingSkill>().IsHiding)
 			{
 				if (!seePlayer)
 				{
@@ -161,7 +166,7 @@ public class Weasel : MonoBehaviour
 	{
 		if (!attacking)
 		{
-            sh.PlaySound(SoundType.WeaselPop);
+            soundHandler.PlaySound(SoundType.WeaselPop);
 			attacking = true;
 			attackTimer = 0.0f;
 			//atorHead.SetTrigger("show");
@@ -219,7 +224,8 @@ public class Weasel : MonoBehaviour
 	//not alerted
 	void SwitchToNotAlerted()
 	{
-		//Debug.Log("weasel: SwitchToNotAlerted");
+        soundHandler.StopSound(SoundType.WeaselMove);
+		Debug.Log("weasel: SwitchToNotAlerted");
 		alerted = false;
 		ResetSleepTimer();
 	}
@@ -279,7 +285,6 @@ public class Weasel : MonoBehaviour
 
 	void MoveLeft(float speedParam)
 	{
-        sh.PlaySound(SoundType.WeaselMove);
 		rigid.velocity = new Vector2(-speedParam, 0.0f);
 		atorTail.SetBool("moving", true);
 		MirrorSprite(false);
@@ -287,7 +292,6 @@ public class Weasel : MonoBehaviour
 
 	void MoveRight(float speedParam)
 	{
-        sh.PlaySound(SoundType.WeaselMove);
 		rigid.velocity = new Vector2(speedParam, 0.0f);
 		atorTail.SetBool("moving", true);
 		MirrorSprite(true);
@@ -296,7 +300,6 @@ public class Weasel : MonoBehaviour
 	void StopMovement()
 	{
 		//stop
-        sh.StopSound(SoundType.WeaselMove);
 		targetPos = transform.position;
 		atorTail.SetBool("moving", false);
 		rigid.velocity = new Vector2(0.0f, 0.0f);
@@ -305,7 +308,7 @@ public class Weasel : MonoBehaviour
 	//alerted
 	void SwitchToAlerted()
 	{
-		//Debug.Log("weasel: SwitchToAlerted");
+		Debug.Log("weasel: SwitchToAlerted");
 		alerted = true;
 	}
 	
@@ -457,7 +460,7 @@ public class Weasel : MonoBehaviour
 	int RaycastTerrain(Vector2 pos, Vector2 dir, float len, Color debugColor)
 	{
 		//user layer 8 is terrain
-		int layer = (1 << 8);
+		int layer = (1 << 8) | (1 << 11);
 
 		return Raycast(pos, dir, len, layer, debugColor);
 	}
