@@ -11,10 +11,18 @@ public class Checkpoint : MonoBehaviour
 
 	void Start ()
 	{
-		atorLamp = GameObject.Find(name + "Lamp").GetComponent<Animator>();
-		atorRunes = GameObject.Find(name + "Runes").GetComponent<Animator>();
-		pGen = GameObject.Find(name + "Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
-		
+		atorLamp = GameObject.Find(gameObject.name + "/Lamp").GetComponent<Animator>();
+		atorRunes = GameObject.Find(gameObject.name + "/Runes").GetComponent<Animator>();
+
+
+		Transform pGenT = this.transform.FindChild("Checkpoint Particle Generator");
+
+		pGen = pGenT.gameObject.GetComponent<ParticleGenerator>();
+		//pGen = GameObject.Find(gameObject.name + "/Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
+
+
+		//Debug.Log("checpoints are so stupid they don't even know their names: " + name);
+
 		activated = false;
 	}
 	
