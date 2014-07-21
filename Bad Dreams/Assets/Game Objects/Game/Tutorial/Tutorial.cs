@@ -53,8 +53,6 @@ public class Tutorial : MonoBehaviour
                 helpfulSlash = GameObject.Find("Tutorial Popup").transform.Find("Helpful Forward Slash").GetComponent<UILabel>();
                 ChangeTutorialText(tutorialText);
             }
-            else
-                Debug.Log("Something has gone horribly wrong, cannot find the tutorial text box");
         }
     }
 

@@ -7,7 +7,7 @@ public class Weasel : MonoBehaviour
 	const float MIN_SLEEP_TIME =			8.0f;
 	const float HEARING_DISTANCE =			6.0f;	//how far the weasel can detect player
 	const float MOVING_SPEED =				0.5f;	//non-alerted moving speed
-	const float RUNNING_SPEED =				1.2f;	//alerted speed
+	const float RUNNING_SPEED =				1.55f;	//alerted speed
 	const float MIN_PLAYER_DISTANCE =		0.5f;	//how near the weasel gets before attacking
 	const float PLAYER_MOVEMENT_DETECT =	0.2f;	//smaller == detect easier
 	const float RANDOM_MOVE_RANGE =			4.0f;	//how far do we go when not alerted

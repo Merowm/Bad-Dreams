@@ -6,24 +6,24 @@ public class BatAI : MonoBehaviour
     #region Constants
 
     const float BAT_Y_VARIATION = 0.2f;
-    const float BAT_HIT_AREA = 0.3f;
+    const float BAT_HIT_AREA = 0.6f;
 
     #endregion
 
     #region Public Variables
 
-    public bool debugging;
-    public float batSpeed;
-    public bool alwaysSwoop;
-    public float alwaysSwoopDelay;
+    public bool debugging, alwaysSwoop;
+    public float batSpeed, alwaysSwoopDelay;
 
     #endregion
 
     #region Private Variables
 
     Transform point1, point2;
-    GameObject bat;
+    GameObject bat, player;
     Animator batAnim;
+    BatSounds batSounds;
+
     float x1, x2, y1, y2, finalA, finalB, currentLocalX, alwaysSwoopTimer, currentBatSpeed;
     bool flip, swooping;
 
@@ -42,10 +42,6 @@ public class BatAI : MonoBehaviour
             }
         }
     }
-
-    GameObject player;
-
-    BatSounds batSounds;
 
     #endregion
 
@@ -101,7 +97,10 @@ public class BatAI : MonoBehaviour
             }
         }
         else
-            CheckIfPlayerCrossesOverFlightPath();
+            if (!swooping)
+            {
+                CheckIfPlayerCrossesOverFlightPath();
+            }
         
 
 
