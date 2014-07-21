@@ -173,6 +173,7 @@ public class GameplayStateSystem : MonoBehaviour
 
     private void SwitchToLevelFailed()
     {
+        SetGameObjectsActive(TutorialObjects, false);
         GameObject player = GameObject.Find("Player");
         player.GetComponent<Player>().enabled = false;
         player.GetComponent<BoxCollider2D>().enabled = false;
