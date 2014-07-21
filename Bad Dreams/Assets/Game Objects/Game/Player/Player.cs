@@ -426,8 +426,8 @@ public class Player : MonoBehaviour
 	void TerrainCollision(float colliderWidth, float colliderHeight)
 	{
 		Vector3 bottomPoint = transform.position + new Vector3(0.0f, -colliderHeight / 2.0f - 0.005f);
-		//float gap = colliderWidth / 2.0f; //original
-		float gap = colliderWidth / 2.0f + 0.02f; //test for fixing "falling while on ledge"
+		float gap = colliderWidth / 2.0f; //original
+		//float gap = colliderWidth / 2.0f + 0.02f; //test for fixing "falling while on ledge"
 		bool onGroundBefore = onGround;
 
 		onGround = false;
@@ -457,7 +457,7 @@ public class Player : MonoBehaviour
 	{
 		float x = transform.position.x;
 		float y = transform.position.y;
-		if (y < -15.0f)
+		if (y < -95.0f)
 		{
 			GotoPlayerStart();
 		}
