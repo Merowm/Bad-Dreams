@@ -50,11 +50,10 @@ public class DogAI : MonoBehaviour
     float playerDistance, viewLength, viewAngle, alertTimer, lastVisionCheckTimer, stoppedTimer, visionResetTimer, velocity;
     float alertness, distFromPlayerBeforeMoveAgain, spatialAwarenessRadius, growlDelay;
     bool playerVisible, alerted, stopped, visionAllowedToReset, flipAllowed, belowPlayer, recentlyCollidedWithPlayer, veryCloseToPlayer;
+    int currentSound;
 
     AudioSource sound_DogGrumble, sound_DogCollision;
     AudioSource[] sound_DogAlert;
-
-    int currentSound;
 
     #endregion
 
@@ -97,7 +96,6 @@ public class DogAI : MonoBehaviour
     void Update()
     {
         thisBounds = new Bounds(transform.position + new Vector3(thisCollider2D.center.x, thisCollider2D.center.y, 0), thisCollider2D.size);
-        //Debug.Log(thisBounds.center.x + " " + thisBounds.center.y + ", " + transform.position.x + " " + transform.position.y); 
 
         GroundCheck();
 
@@ -207,15 +205,11 @@ public class DogAI : MonoBehaviour
 
         if (alertness > 0.1f)
         {
-            //if (sound_DogGrumble.volume < 1.0f)
-                sound_DogGrumble.volume = alertness / VISION_BECOME_ALERTED_THRESHOLD;
+            sound_DogGrumble.volume = alertness / VISION_BECOME_ALERTED_THRESHOLD;
         }
         else
         {
-            //if (sound_DogGrumble.volume > 0)
-                //sound_DogGrumble.volume -= Time.deltaTime;
-            //if (sound_DogGrumble.volume <= 0)
-                sound_DogGrumble.volume = 0;
+            sound_DogGrumble.volume = 0;
         }
 
         transform.position += new Vector3(velocity * Time.deltaTime, 0, 0);
@@ -237,16 +231,6 @@ public class DogAI : MonoBehaviour
                 }
             }
         }
-
-        //CAN BE REMOVED LATER
-        //
-        //
-        //
-        DEBUG_KEYPRESSES();
-        //
-        //
-        //
-        //
     }
 
     public bool ReturnIfPlayerInsideEnemyFOV()
@@ -273,21 +257,6 @@ public class DogAI : MonoBehaviour
 
         if (playerVisible)
             recentlyCollidedWithPlayer = false;
-    }
-
-    void ChangePlayerSortingLayer()
-    {
-        if (playerSpriteRend.sortingLayerName == "Player Background")
-        {
-            Debug.Log("Player comes out from hiding");
-            playerSpriteRend.sortingLayerName = "Player Foreground";
-        }
-
-        else
-        {
-            Debug.Log("Player hides");
-            playerSpriteRend.sortingLayerName = "Player Background";
-        }
     }
 
     void ToggleAlerted(bool value)
@@ -450,21 +419,6 @@ public class DogAI : MonoBehaviour
         lastVisionCheckTimer = 0.0f;
     }
 
-    void DEBUG_KEYPRESSES()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            FlipAround();
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            alerted = false;
-            alertness = 0;
-            alertTimer = 0.0f;
-        }
-    } //REMOOOOOVE
-
     void UpdateVisionConeColor()
     {
         if (alerted)
@@ -543,14 +497,10 @@ public class DogAI : MonoBehaviour
         {
             if (player.transform.position.x <= transform.position.x)
             {
-                //thisSpriteRend.transform.localScale = new Vector3(-Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
-
                 currentDir = new Vector3(-1, 0, 0);
             }
             else
             {
-                //thisSpriteRend.transform.localScale = new Vector3(Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
-
                 currentDir = new Vector3(1, 0, 0);
             }
             thisSpriteRend.transform.localScale = new Vector3(currentDir.x * Mathf.Abs(thisSpriteRend.transform.localScale.x), thisSpriteRend.transform.localScale.y, thisSpriteRend.transform.localScale.z);
@@ -657,8 +607,6 @@ public class DogAI : MonoBehaviour
 
     bool Raycast(Vector3 pos, Vector3 direction, float length)
     {
-        //LAYER 8 = TERRAIN
-        //LAYER 9 = ENEMY
         RaycastHit2D hit = Physics2D.Raycast(pos, direction, length, 1 << 8);
 
         if (hit.collider != null)

@@ -79,7 +79,6 @@ public class SoundHandler : MonoBehaviour
                 if (!weaselMoving)
                 {
                     weaselMoving = true;
-                    Debug.Log("AHT");
                     weaselMove.Play();
                     StartCoroutine(FadeIn(weaselMove, 0.5f));
                 }
@@ -120,7 +119,6 @@ public class SoundHandler : MonoBehaviour
             audioSource.volume = t;
             yield return new WaitForEndOfFrame();
         }
-        Debug.Log("Faded out");
         audioSource.Stop();
     }
 
@@ -131,6 +129,5 @@ public class SoundHandler : MonoBehaviour
             audioSource.volume = t;
             yield return new WaitForEndOfFrame();
         }
-        Debug.Log("Faded in");
     }
 }
