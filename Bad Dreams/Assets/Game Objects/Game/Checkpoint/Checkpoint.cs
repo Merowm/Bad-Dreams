@@ -9,18 +9,13 @@ public class Checkpoint : MonoBehaviour
 	Animator atorLamp, atorRunes;
 	ParticleGenerator pGen;
 
+	public GameObject pGenObj;
+
 	void Start ()
 	{
-		atorLamp = GameObject.Find(gameObject.name + "/Lamp").GetComponent<Animator>();
-		atorRunes = GameObject.Find(gameObject.name + "/Runes").GetComponent<Animator>();
-
-
-		Transform pGenT = this.transform.FindChild("Checkpoint Particle Generator");
-
-		pGen = pGenT.gameObject.GetComponent<ParticleGenerator>();
-		//pGen = GameObject.Find(gameObject.name + "/Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
-
-
+		pGen = null;
+		
+		//pGen = pGenObj.GetComponent<ParticleGenerator>();
 		//Debug.Log("checpoints are so stupid they don't even know their names: " + name);
 
 		activated = false;
@@ -29,6 +24,27 @@ public class Checkpoint : MonoBehaviour
 	void Update ()
 	{
 
+	}
+
+	void AcquireThings()
+	{
+		if (!atorLamp)
+			atorLamp = GameObject.Find(gameObject.name + "/Lamp").GetComponent<Animator>();
+		
+		if (!atorRunes)
+			atorRunes = GameObject.Find(gameObject.name + "/Runes").GetComponent<Animator>();
+
+
+		if (!pGen)
+		{
+			//Transform pGenT = this.transform.Find("Checkpoint Particle Generator");
+			//pGen = pGenT.gameObject.GetComponent<ParticleGenerator>();
+
+			Debug.Log(gameObject.name + "/Checkpoint_Particle_Generator");
+			pGen = GameObject.Find(gameObject.name + "/Checkpoint_Particle_Generator").GetComponent<ParticleGenerator>();
+
+		}
+		//pGen = GameObject.Find(gameObject.name + "/Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
 	}
 
 	void OnTriggerEnter2D(Collider2D c)
@@ -44,6 +60,7 @@ public class Checkpoint : MonoBehaviour
 
 	void Activate()
 	{
+		AcquireThings();
 		if (!activated)
 		{
 			Debug.Log("ZECPOENT");
@@ -59,6 +76,7 @@ public class Checkpoint : MonoBehaviour
 
 	public void DeActivate()
 	{
+		AcquireThings();
 		if (activated)
 		{
 			//Debug.Log("Deactivated checkpoint");

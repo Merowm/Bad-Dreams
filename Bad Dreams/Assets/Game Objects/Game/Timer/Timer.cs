@@ -4,6 +4,7 @@ using System.Collections;
 public class Timer : MonoBehaviour
 {
 	public float time;
+	public bool freeze, hideTime;
 	float timer;
 	UILabel timerLabel;
 
@@ -57,6 +58,7 @@ public class Timer : MonoBehaviour
 		}
 		if (timerLabel)
 		{
+			
 			if (timer < 21.0f)
 			{
 				StartStaminaAnimation();
@@ -68,21 +70,32 @@ public class Timer : MonoBehaviour
 			int mins = (int)(timer / 60);
 			int secs = (int)(timer % 60);
 
-			if (secs < 10)
+			if (!hideTime)
 			{
-				timerLabel.text = mins + ":0" + secs;
+				if (secs < 10)
+				{
+					timerLabel.text = mins + ":0" + secs;
+				}
+				else
+				{
+					timerLabel.text = mins + ":" + secs;
+				}
+
+				if (timer <= 0.0f)
+				{
+					timerLabel.text = "0:00";
+				}
 			}
 			else
 			{
-				timerLabel.text = mins + ":" + secs;
+				timerLabel.text = "";
 			}
-			timer -= Time.deltaTime;
 
 			if (timer <= 0.0f)
-			{
 				GameplayStateManager.SwitchTo(GameplayState.LevelFailed);
-				timerLabel.text = "0:00";
-			}
+			
+			if (!freeze)
+				timer -= Time.deltaTime;
 		}
 	}
 
