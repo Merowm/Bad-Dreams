@@ -11,11 +11,17 @@ public class HidingSkill : MonoBehaviour
     public bool OverCoverObject { get; set; }
     public GameObject CoverObject { get; set; }
 
+    private GameObject uiHidingEffect;
+    private TweenAlpha tweenAlpha;
+
     private SpriteRenderer spriteRenderer;
         
     private void Start()
     {
         spriteRenderer = transform.FindChild("Animator").GetComponent<SpriteRenderer>();
+        uiHidingEffect = GameObject.Find("UI Hiding Effect");
+        tweenAlpha = uiHidingEffect.GetComponent<TweenAlpha>();
+        uiHidingEffect.SetActive(false);
     }
 
     public void Hide(GameObject cover)
@@ -24,14 +30,13 @@ public class HidingSkill : MonoBehaviour
         SwapLayerTo("Player Background");
         Physics2D.IgnoreLayerCollision(9, 10, true);
         CoverObject = cover;
-
-        // Play animation?
-        // Play sound?
-        // Play particle effect?
+        uiHidingEffect.SetActive(true);
+        tweenAlpha.PlayForward();
     }
 
     public void Unhide()
     {
+        tweenAlpha.PlayReverse();
         IsHiding = false;
         SwapLayerTo("Player Foreground");
         Physics2D.IgnoreLayerCollision(9, 10, false);
