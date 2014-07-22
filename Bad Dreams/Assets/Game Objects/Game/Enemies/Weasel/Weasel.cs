@@ -57,7 +57,7 @@ public class Weasel : MonoBehaviour
 		player = GameObject.Find("Player").transform;
 		SwitchToNotAlerted();
 		attackTimer = 0.0f;
-		enableDebug = true;
+		enableDebug = false;
 
 		headShownState = Animator.StringToHash("Base Layer.WeasleyHeadShown");
 		headHiddenState = Animator.StringToHash("Base Layer.WeasleyHeadHidden");
