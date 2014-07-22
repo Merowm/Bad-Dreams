@@ -316,7 +316,7 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                if (!alerted && playerDistance < spatialAwarenessRadius)
+                if (!alerted && playerDistance < spatialAwarenessRadius && playerSpriteRend.sortingLayerName != "Player Background")
                     alertness += Time.deltaTime;
 
                 if (!alerted && alertness >= VISION_BECOME_ALERTED_THRESHOLD)
@@ -383,7 +383,7 @@ public class DogAI : MonoBehaviour
             {
                 if (alertness > 0)
                 {
-                    if (!(playerDistance < spatialAwarenessRadius))
+                    if (playerSpriteRend.sortingLayerName == "Player Background" || !(playerDistance < spatialAwarenessRadius))
                     alertness -= VISION_ALERTNESS_DECREASE_ON_LOSE_SIGHT * Time.deltaTime;
                 }
             }
@@ -432,7 +432,8 @@ public class DogAI : MonoBehaviour
             }
             else
             {
-                thisVisionCone.color = new Color(1, 1, 1, 0.3f);
+                float alertnessColor = 1.0f - (alertness / VISION_BECOME_ALERTED_THRESHOLD);
+                thisVisionCone.color = new Color(1, alertnessColor, alertnessColor, 0.3f);
             }
         }
     }
