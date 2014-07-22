@@ -105,8 +105,11 @@ public class Timer : MonoBehaviour
         timePassed = 0.0F;
 	}
 
+    private int timeBonusSize = 1;
+
     public void TimeBonus()
     {
-        timer = Mathf.Clamp(timer + 1, 0.0F, time);
+        timePassed -= timeBonusSize;
+        timer = Mathf.Clamp(timer + timeBonusSize, 0.0F, time);
     }
 }
