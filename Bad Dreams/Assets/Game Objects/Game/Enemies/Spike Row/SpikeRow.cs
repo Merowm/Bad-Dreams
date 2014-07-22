@@ -7,7 +7,6 @@ public class SpikeRow : MonoBehaviour
     public float spikeDelay;
     public float spikeEndDelay;
 
-    float leftSideX, rightSideX;
     Vector2[] vectors;
     int currentSpike;
     GameObject spike;
@@ -17,8 +16,8 @@ public class SpikeRow : MonoBehaviour
     {
         activated = true;
         spike = Resources.Load("Enemies/Spike") as GameObject;
-        leftSideX = transform.Find("Left Side").position.x;
-        rightSideX = transform.Find("Right Side").position.x;
+        float leftSideX = transform.Find("Left Side").position.x;
+        float rightSideX = transform.Find("Right Side").position.x;
 
         currentSpike = 0;
 
@@ -30,8 +29,6 @@ public class SpikeRow : MonoBehaviour
         {
             vectors[i] = new Vector2(leftSideX + maxLength * i, transform.position.y);
         }
-
-        MakeSpike();
 	}
 
     void MakeSpike()
