@@ -12,6 +12,7 @@ public class HidingSkill : MonoBehaviour
     public GameObject CoverObject { get; set; }
 
     private GameObject uiHidingEffect;
+    private TweenAlpha tweenAlpha;
 
     private SpriteRenderer spriteRenderer;
         
@@ -19,6 +20,7 @@ public class HidingSkill : MonoBehaviour
     {
         spriteRenderer = transform.FindChild("Animator").GetComponent<SpriteRenderer>();
         uiHidingEffect = GameObject.Find("UI Hiding Effect");
+        tweenAlpha = uiHidingEffect.GetComponent<TweenAlpha>();
         uiHidingEffect.SetActive(false);
     }
 
@@ -29,11 +31,12 @@ public class HidingSkill : MonoBehaviour
         Physics2D.IgnoreLayerCollision(9, 10, true);
         CoverObject = cover;
         uiHidingEffect.SetActive(true);
+        tweenAlpha.PlayForward();
     }
 
     public void Unhide()
     {
-        uiHidingEffect.SetActive(false);
+        tweenAlpha.PlayReverse();
         IsHiding = false;
         SwapLayerTo("Player Foreground");
         Physics2D.IgnoreLayerCollision(9, 10, false);
