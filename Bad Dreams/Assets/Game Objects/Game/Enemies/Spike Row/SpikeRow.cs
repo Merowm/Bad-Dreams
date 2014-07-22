@@ -11,9 +11,11 @@ public class SpikeRow : MonoBehaviour
     Vector2[] vectors;
     int currentSpike;
     GameObject spike;
+    bool activated;
 
 	void Start () 
     {
+        activated = true;
         spike = Resources.Load("Enemies/Spike") as GameObject;
         leftSideX = transform.Find("Left Side").position.x;
         rightSideX = transform.Find("Right Side").position.x;
@@ -43,6 +45,20 @@ public class SpikeRow : MonoBehaviour
 
         Instantiate(spike, vectors[currentSpike], Quaternion.identity);
         ++currentSpike;
+
+        if (activated)
         Invoke("MakeSpike", spikeDelay);
+    }
+
+    void OnEnable()
+    {
+        activated = true;
+        currentSpike = 0;
+        Invoke("MakeSpike", spikeDelay);
+    }
+
+    void OnDisable()
+    {
+        activated = false;
     }
 }
