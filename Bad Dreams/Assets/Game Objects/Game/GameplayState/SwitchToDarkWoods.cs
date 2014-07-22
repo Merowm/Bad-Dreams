@@ -22,6 +22,7 @@ public class SwitchToDarkWoods : MonoBehaviour
         firstSectionBackground = GameObject.Find("First Section Background");
         secondSectionBackground = GameObject.Find("Second Section Background");
         secondSectionBackground.SetActive(false);
+        ModifyScene();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
