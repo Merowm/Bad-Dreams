@@ -394,8 +394,7 @@ public class DogAI : MonoBehaviour
 
     bool RayCastAtTarget(GameObject target)
     {
-        int layerMask = 1 << 8;
-        layerMask |= 1 << 10;
+        int layerMask = (1 << 8 | 1 << 10 | 1 << 11);
         RaycastHit2D rayCastResult = Physics2D.Raycast(thisEyePos.position, target.transform.position - thisEyePos.position, Vector3.Distance(target.transform.position, thisEyePos.position), layerMask);
         if (rayCastResult.collider == target.collider2D)
             return true;
