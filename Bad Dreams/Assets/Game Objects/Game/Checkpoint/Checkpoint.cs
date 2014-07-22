@@ -41,8 +41,7 @@ public class Checkpoint : MonoBehaviour
 			//pGen = pGenT.gameObject.GetComponent<ParticleGenerator>();
 
 			Debug.Log(gameObject.name + "/Checkpoint_Particle_Generator");
-			//pGen = GameObject.Find(gameObject.name + "/Checkpoint_Particle_Generator").GetComponent<ParticleGenerator>();
-            pGen = GameObject.Find(gameObject.name + "Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
+			pGen = GameObject.Find(gameObject.name + "/Checkpoint_Particle_Generator").GetComponent<ParticleGenerator>();
 		}
 		//pGen = GameObject.Find(gameObject.name + "/Checkpoint Particle Generator").GetComponent<ParticleGenerator>();
 	}
