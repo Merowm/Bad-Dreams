@@ -98,6 +98,7 @@ public class Collectible : MonoBehaviour
 
     void AddPoints()
     {
+        timer.TimeBonus();
         dropCounter.DropCount++;
         soundHandler.PlaySound(SoundType.Droplet);
 		Instantiate(pickupParticle, transform.position, Quaternion.identity);
