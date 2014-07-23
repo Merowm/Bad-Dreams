@@ -206,7 +206,7 @@ public class Player : MonoBehaviour
 
 		//for debugging only
 		//free movement
-		if (Input.GetKey(KeyCode.Keypad8))
+		/*if (Input.GetKey(KeyCode.Keypad8))
 		{
 			rigid.velocity = new Vector2(0.0f, 15.0f);
 		}
@@ -221,7 +221,7 @@ public class Player : MonoBehaviour
 		if (Input.GetKey(KeyCode.Keypad6))
 		{
 			rigid.velocity = new Vector2(15.0f, 0.0f);
-		}
+		}*/
 
 		TerrainCollision(colliderWidth, colliderHeight);
 		CheckIllegalPosition();
@@ -433,7 +433,7 @@ public class Player : MonoBehaviour
 		onGround = false;
 		for (float offset = -gap; offset <= gap; offset += gap)
 		{
-			Debug.DrawRay(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f) * 0.03f);
+			//Debug.DrawRay(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f) * 0.03f);
 
 			int result = Raycast(bottomPoint + new Vector3(offset, 0.0f, 0.0f), new Vector3(0.0f, -1.0f, 0.0f), 0.03f);
 			if (result != -1)
