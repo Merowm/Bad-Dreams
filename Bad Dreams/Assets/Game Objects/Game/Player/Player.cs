@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
 
 		//boost
 		allowBoost = true; //clears after boosting, sets when touching ground or ?
-		boostStrength = 5.5f;
+		boostStrength = 5.7f;
 	}
 
 	void Update()
