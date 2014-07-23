@@ -14,7 +14,8 @@ public class LevelInfo : MonoBehaviour
         
         for (int i = 0; i < collectibles.Length; ++i)
         {
-            if (collectibles[i].name == "Points")
+            if (collectibles[i].name == "Points" ||
+                collectibles[i].name == "Ice Droplet")
             {
                 ++numberOfDrops;
             }
