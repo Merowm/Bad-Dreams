@@ -38,6 +38,7 @@ public class SpiderAI : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(State);
         switch (State)
         {
             case SpiderAIState.Idle:
@@ -163,7 +164,6 @@ public class SpiderAI : MonoBehaviour
         ChasePlayer();
         ChasingUpdatePosition();
         AttackPlayerIfNear();
-        StopIfPlayerOutsideWeb();
     }
 
     private void ChasingUpdatePosition()
