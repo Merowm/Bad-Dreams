@@ -12,6 +12,15 @@ public class CreditsChangePage : MonoBehaviour
         assetCredits = transform.parent.FindChild("Assets").gameObject;
     }
 
+    private void OnEnable()
+    {
+        if (teamCredits != null && assetCredits != null)
+        {
+            teamCredits.SetActive(true);
+            assetCredits.SetActive(false);
+        }
+    }
+
     private void OnClick()
     {
         if (teamCredits.activeSelf)
