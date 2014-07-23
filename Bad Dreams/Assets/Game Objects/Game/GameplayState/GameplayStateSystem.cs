@@ -191,9 +191,9 @@ public class GameplayStateSystem : MonoBehaviour
         foreach (DogAI dog in dogs)
             dog.Reset();
 
-        HangingSpider[] hangingSpiders = (HangingSpider[])GameObject.FindObjectsOfType(typeof(HangingSpider));
-        foreach (HangingSpider hangingSpider in hangingSpiders)
-            hangingSpider.Reset();
+        //HangingSpider[] hangingSpiders = (HangingSpider[])GameObject.FindObjectsOfType(typeof(HangingSpider));
+        //foreach (HangingSpider hangingSpider in hangingSpiders)
+        //    hangingSpider.Reset();
 
         SpiderAI[] spiders = (SpiderAI[])GameObject.FindObjectsOfType(typeof(SpiderAI));
         foreach (SpiderAI spider in spiders)
