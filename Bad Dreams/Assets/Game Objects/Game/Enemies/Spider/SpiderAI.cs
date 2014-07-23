@@ -38,7 +38,6 @@ public class SpiderAI : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(State);
         switch (State)
         {
             case SpiderAIState.Idle:
