@@ -82,8 +82,11 @@ public class GameplayStateSystem : MonoBehaviour
     {
 		if (CurrentState != state)
 		{
-            if (CurrentState == GameplayState.LevelFinished && state == GameplayState.LevelFailed)
+            if (CurrentState == GameplayState.LevelFinished &&
+                (state == GameplayState.LevelFailed || state == GameplayState.GameOver))
+            {
                 return;
+            }
 
             CurrentState = state;
 
