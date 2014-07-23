@@ -99,7 +99,7 @@ public class Weasel : MonoBehaviour
 
         if (alerted)
         {
-            Debug.Log("currently alerted");
+            //Debug.Log("currently alerted");
             soundHandler.PlaySound(SoundType.WeaselMove);
         }
 	}
@@ -125,7 +125,8 @@ public class Weasel : MonoBehaviour
 				if (!seePlayer)
 				{
 					seePlayer = true;
-					lastPlayerPos = player.position;
+					//lastPlayerPos = player.position;
+					lastPlayerPos = new Vector3(player.position.x, transform.position.y, 0.0f); //test
 
 					if (enableDebug)
 						Debug.DrawLine(transform.position, lastPlayerPos, Color.cyan, 1.0f);
@@ -225,7 +226,7 @@ public class Weasel : MonoBehaviour
 	void SwitchToNotAlerted()
 	{
         soundHandler.StopSound(SoundType.WeaselMove);
-		Debug.Log("weasel: SwitchToNotAlerted");
+		//Debug.Log("weasel: SwitchToNotAlerted");
 		alerted = false;
 		ResetSleepTimer();
 	}
@@ -308,7 +309,7 @@ public class Weasel : MonoBehaviour
 	//alerted
 	void SwitchToAlerted()
 	{
-		Debug.Log("weasel: SwitchToAlerted");
+		//Debug.Log("weasel: SwitchToAlerted");
 		alerted = true;
 	}
 	
@@ -395,11 +396,15 @@ public class Weasel : MonoBehaviour
 	{
 		if (seePlayer)
 		{
-			float dist = Vector2.Distance(player.position, lastPlayerPos);
+			//Vector3 playerPos = player.position;
+			Vector3 playerPos = new Vector3(player.position.x, transform.position.y, 0.0f); //test
+
+			
+			float dist = Vector2.Distance(playerPos, lastPlayerPos);
 			if (dist >= PLAYER_MOVEMENT_DETECT)
 			{
 				SwitchToAlerted();
-				lastPlayerPos = player.position;
+				lastPlayerPos = playerPos; //test, y already terminated, check above
 			}
 			if (enableDebug)
 				debugText += "\npMovDetctDst: " + dist;
