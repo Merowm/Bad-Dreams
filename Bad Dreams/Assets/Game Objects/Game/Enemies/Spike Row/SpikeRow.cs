@@ -14,6 +14,8 @@ public class SpikeRow : MonoBehaviour
 
 	void Start () 
     {
+        Destroy(this.renderer);
+
         activated = true;
         spike = Resources.Load("Enemies/Spike") as GameObject;
         float leftSideX = transform.Find("Left Side").position.x;
