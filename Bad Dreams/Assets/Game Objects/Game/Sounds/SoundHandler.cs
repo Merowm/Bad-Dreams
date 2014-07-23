@@ -14,6 +14,17 @@ public class SoundHandler : MonoBehaviour
 
 	void Start () 
     {
+        if (Time.timeScale == 0)
+        {
+            paused = true;
+            AudioListener.pause = true;
+        }
+        else
+        {
+            paused = false;
+            AudioListener.pause = false;
+        }
+
         weaselMoving = false;
         movementList = GameObject.Find("Level/Sounds/Movement").GetComponentsInChildren<AudioSource>();
 
