@@ -653,6 +653,7 @@ public class Player : MonoBehaviour
 		//rigid.isKinematic = true;
 		allowInput = false;
 		rigid.velocity = Vector3.zero;
+		GetComponent<BoxCollider2D>().enabled = false;
 
 		//turn player invisible
 		SpriteRenderer spr = GameObject.Find("Player/Animator").GetComponent<SpriteRenderer>();
@@ -668,6 +669,7 @@ public class Player : MonoBehaviour
 		{
             stamina.ResetStamina();
 			allowInput = true;
+			GetComponent<BoxCollider2D>().enabled = true;
 			//rigid.isKinematic = false;
 
 			//turn player visible
