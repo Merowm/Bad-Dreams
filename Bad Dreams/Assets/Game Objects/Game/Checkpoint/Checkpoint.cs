@@ -65,7 +65,7 @@ public class Checkpoint : MonoBehaviour
 		AcquireThings();
 		if (!activated)
 		{
-			Debug.Log("ZECPOENT");
+			//Debug.Log("ZECPOENT");
 
 			atorLamp.SetTrigger("activate");
 			atorRunes.SetTrigger("activate");
