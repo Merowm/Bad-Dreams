@@ -8,7 +8,6 @@ public class Dripper : MonoBehaviour
     GameObject acidBall;
     Transform tip;
 
-	// Use this for initialization
 	void Start () 
     {
         tip = transform.Find("Tip");
@@ -16,7 +15,6 @@ public class Dripper : MonoBehaviour
         acidDelayOn = false;
 	}
 	
-	// Update is called once per frame
 	void Update () 
     {
         if (!acidDelayOn)

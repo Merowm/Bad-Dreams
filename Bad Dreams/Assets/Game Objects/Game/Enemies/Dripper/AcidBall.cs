@@ -13,14 +13,11 @@ public class AcidBall : MonoBehaviour
 
     bool falling;
 
-    Animator anim;
     SpriteRenderer spriteRend;
 
-	// Use this for initialization
 	void Start () 
     {
         spriteRend = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>();
 
         StartCoroutine(FadeToExistence(3.0f));
         name = "Acid Ball";
@@ -28,7 +25,6 @@ public class AcidBall : MonoBehaviour
         falling = true;
 	}
 	
-	// Update is called once per frame
 	void Update () 
     {
         if (falling)
@@ -65,8 +61,9 @@ public class AcidBall : MonoBehaviour
     void OnHitGround()
     {
         falling = false;
-        Destroy(this.collider2D);
-        AcidSplash();
+        Destroy(this.gameObject);
+        //Destroy(this.collider2D);
+        //AcidSplash();
     }
 
     void OnHitPlayer()
@@ -74,22 +71,6 @@ public class AcidBall : MonoBehaviour
         falling = false;
         Destroy(this.gameObject);
         GameObject.Find("Player").GetComponent<HitAnimation>().ActivateAnimation();
-    }
-
-    void AcidSplash()
-    {
-        Sound();
-        anim.SetBool("hit", true);
-    }
-
-    void DestroySelf()
-    {
-        Destroy(this.gameObject);
-    }
-
-    void Sound()
-    {
-        //add sound effect of acid/ice hitting the ground/player playing here
     }
 
     IEnumerator FadeToExistence(float timeMultiplier)
